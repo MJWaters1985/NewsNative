@@ -253,25 +253,6 @@ NSString * const MenuHandler = @"handler";
     [self.items addObject:@{MenuSegmentTitles : @[], MenuThemeSegment : @YES}];
 }
 
-- (UIImage *)themeImageWithName:(NSString *)name selected:(BOOL)selected {
-    if (selected) {
-        name = [name stringByAppendingString:@"-sel"];
-    }
-
-    UIImage *image = [UIImage imageNamed:name];
-
-    // Scale to a consistent size that fits well in the segmented control
-    CGFloat size = 22.0;
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomMac) {
-        size = 20.0;
-    }
-
-    image = [Utilities imageWithImage:image convertToSize:CGSizeMake(size, size)];
-    image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-
-    return image;
-}
-
 - (UITableViewCell *)makeThemeSegmentedTableCell {
     UITableViewCell *cell = [UITableViewCell new];
     cell.frame = CGRectMake(0, 0, 240, kMenuOptionHeight);
@@ -279,50 +260,18 @@ NSString * const MenuHandler = @"handler";
     cell.separatorInset = UIEdgeInsetsZero;
     cell.backgroundColor = MenuTableViewCell.menuBackgroundColor;
 
-    // Determine which theme segment to select based on user's actual choice
-    // If user chose Auto, show Auto selected (not the resolved theme)
-    NSString *themeStyle = [[NSUserDefaults standardUserDefaults] objectForKey:@"theme_style"];
-    NSUInteger valueIndex;
-
-    if ([themeStyle isEqualToString:@"auto"] || themeStyle == nil) {
-        valueIndex = 0; // Auto
-    } else {
-        // User chose light or dark mode - show the specific variant
-        NSString *effectiveTheme = [ThemeManager themeManager].effectiveTheme;
-        NSArray *values = @[ThemeStyleAuto, ThemeStyleLight, ThemeStyleSepia, ThemeStyleMedium, ThemeStyleDark];
-        valueIndex = [values indexOfObject:effectiveTheme];
-        if (valueIndex == NSNotFound) {
-            valueIndex = 0;
-        }
-    }
-    
     UISegmentedControl *segmentedControl = [[UISegmentedControl alloc] initWithFrame:CGRectMake(8, 7, cell.frame.size.width - 8 * 2, kMenuOptionHeight - 7 * 2)];
     segmentedControl.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
     [segmentedControl addTarget:self action:@selector(changeTheme:) forControlEvents:UIControlEventValueChanged];
 
-    UIImage *lightImage = [self themeImageWithName:@"theme_color_light" selected:NO];
-    UIImage *sepiaImage = [self themeImageWithName:@"theme_color_sepia" selected:NO];
-    UIImage *mediumImage = [self themeImageWithName:@"theme_color_medium" selected:NO];
-    UIImage *darkImage = [self themeImageWithName:@"theme_color_dark" selected:NO];
-
+    // MenuViewController.m uses the native segmented control with SF Symbols for Auto, Light and Dark.
+    [segmentedControl removeAllSegments];
     [segmentedControl insertSegmentWithTitle:[NBLocalization text:@"Auto"] atIndex:0 animated:NO];
-    [segmentedControl insertSegmentWithImage:lightImage atIndex:1 animated:NO];
-    [segmentedControl insertSegmentWithImage:sepiaImage atIndex:2 animated:NO];
-    [segmentedControl insertSegmentWithImage:mediumImage atIndex:3 animated:NO];
-    [segmentedControl insertSegmentWithImage:darkImage atIndex:4 animated:NO];
-
-#if !TARGET_OS_MACCATALYST
-    segmentedControl.backgroundColor = UIColorFromRGB(0xeeeeee);
-#endif
-    [segmentedControl setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"WhitneySSm-Medium" size:12.0f]} forState:UIControlStateNormal];
-
+    [segmentedControl insertSegmentWithImage:[UIImage systemImageNamed:@"sun.max"] atIndex:1 animated:NO];
+    [segmentedControl insertSegmentWithImage:[UIImage systemImageNamed:@"moon"] atIndex:2 animated:NO];
     [[ThemeManager themeManager] updateSegmentedControl:segmentedControl];
-
-    segmentedControl.selectedSegmentIndex = valueIndex;
-
-    // Show white pill for all selections (Auto and color themes)
-    segmentedControl.selectedSegmentTintColor = UIColorFromLightSepiaMediumDarkRGB(0xdce6f0, 0xFAF5ED, 0xbbbbbb, 0x888890);
+    segmentedControl.selectedSegmentIndex = [@[ThemeStyleAuto, ThemeStyleLight, ThemeStyleDark] indexOfObject:[ThemeManager themeManager].theme];
 
     [cell.contentView addSubview:segmentedControl];
 
@@ -330,42 +279,12 @@ NSString * const MenuHandler = @"handler";
 }
 
 - (IBAction)changeTheme:(UISegmentedControl *)sender {
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    NSInteger selectedIndex = sender.selectedSegmentIndex;
+    NSInteger selectedIndex = [sender selectedSegmentIndex];
+    NSArray<NSString *> *themes = @[ThemeStyleAuto, ThemeStyleLight, ThemeStyleDark];
 
-    // Update the new theme system: theme_style + theme_light/theme_dark
-    switch (selectedIndex) {
-        case 0:
-            // Auto - follow system
-            [userPreferences setObject:@"auto" forKey:@"theme_style"];
-            break;
-        case 1:
-            // Light (Normal)
-            [userPreferences setObject:@"light" forKey:@"theme_style"];
-            [userPreferences setObject:ThemeStyleLight forKey:@"theme_light"];
-            break;
-        case 2:
-            // Sepia
-            [userPreferences setObject:@"light" forKey:@"theme_style"];
-            [userPreferences setObject:ThemeStyleSepia forKey:@"theme_light"];
-            break;
-        case 3:
-            // Gray (Medium)
-            [userPreferences setObject:@"dark" forKey:@"theme_style"];
-            [userPreferences setObject:ThemeStyleMedium forKey:@"theme_dark"];
-            break;
-        case 4:
-            // Black (Dark)
-            [userPreferences setObject:@"dark" forKey:@"theme_style"];
-            [userPreferences setObject:ThemeStyleDark forKey:@"theme_dark"];
-            break;
-
-        default:
-            break;
+    if (selectedIndex >= 0 && selectedIndex < (NSInteger)themes.count) {
+        [ThemeManager themeManager].theme = themes[selectedIndex];
     }
-
-    [userPreferences synchronize];
-    [[ThemeManager themeManager] updateTheme];
 
     self.menuTableView.backgroundColor = MenuTableViewCell.menuBackgroundColor;
     self.navigationController.popoverPresentationController.backgroundColor = MenuTableViewCell.menuBackgroundColor;

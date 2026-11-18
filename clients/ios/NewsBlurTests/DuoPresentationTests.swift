@@ -742,7 +742,7 @@ private final class DuoSidebarResizePan: FeedsSidebarResizePanGestureRecognizer 
             }
         }
         let observer = AskAIThemeObserver()
-        for theme in [ThemeStyleLight, ThemeStyleSepia, ThemeStyleMedium, ThemeStyleDark, ThemeStyleLight] {
+        for theme in [ThemeStyleLight, ThemeStyleDark, ThemeStyleLight] {
             let previousTheme = manager.effectiveTheme
             let previousVersion = observer.themeVersion
             manager.theme = theme

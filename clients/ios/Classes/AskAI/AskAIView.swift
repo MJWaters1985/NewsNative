@@ -97,12 +97,8 @@ private struct NewsBlurColors {
         // Use effectiveTheme which resolves "auto" to the actual visual theme
         let effectiveTheme = themeManager.effectiveTheme
 
-        if effectiveTheme == ThemeStyleMedium || effectiveTheme == "medium" {
-            hex = medium
-        } else if effectiveTheme == ThemeStyleDark || effectiveTheme == "dark" {
+        if effectiveTheme == ThemeStyleDark || effectiveTheme == "dark" {
             hex = dark
-        } else if effectiveTheme == ThemeStyleSepia || effectiveTheme == "sepia" {
-            hex = sepia
         } else {
             hex = light
         }
@@ -857,12 +853,8 @@ struct MarkdownText: View {
         // Use effectiveTheme which resolves "auto" to the actual visual theme
         let effectiveTheme = themeManager.effectiveTheme
 
-        if effectiveTheme == ThemeStyleMedium || effectiveTheme == "medium" {
-            return Color(red: 0.88, green: 0.88, blue: 0.88) // #E0E0E0
-        } else if effectiveTheme == ThemeStyleDark || effectiveTheme == "dark" {
+        if effectiveTheme == ThemeStyleDark || effectiveTheme == "dark" {
             return Color(red: 0.91, green: 0.91, blue: 0.91) // #E8E8E8
-        } else if effectiveTheme == ThemeStyleSepia || effectiveTheme == "sepia" {
-            return Color(red: 0.36, green: 0.29, blue: 0.24) // #5C4A3D
         } else {
             return Color(red: 0.369, green: 0.384, blue: 0.404) // #5E6267
         }

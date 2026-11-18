@@ -375,7 +375,8 @@ del {
 }
 
 .NB-story-url.NB-score--1 .NB-story-url-matched {
-    color: #e07070;
+    /* storyDetailViewDark.css keeps 4.5:1 contrast across the whole header gradient (StoryURLContrastTests.swift). */
+    color: #ee8a8a;
 }
 
 #NB-story .NB-classifier-highlight-positive {

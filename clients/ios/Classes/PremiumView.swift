@@ -53,22 +53,7 @@ private struct PremiumColors {
             return colorFromHex(light)
         }
 
-        let hex: Int
-        if themeManager.isDarkTheme {
-            let theme = themeManager.theme
-            if theme == ThemeStyleMedium || theme == "medium" {
-                hex = medium
-            } else {
-                hex = dark
-            }
-        } else {
-            let theme = themeManager.theme
-            if theme == ThemeStyleSepia || theme == "sepia" {
-                hex = sepia
-            } else {
-                hex = light
-            }
-        }
+        let hex = themeManager.isDarkTheme ? dark : light
         return colorFromHex(hex)
     }
 

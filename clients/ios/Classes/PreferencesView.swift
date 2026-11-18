@@ -57,12 +57,8 @@ private struct PreferencesColors {
         // Use effectiveTheme which resolves "auto" to the actual visual theme
         let effectiveTheme = themeManager.effectiveTheme
 
-        if effectiveTheme == ThemeStyleMedium || effectiveTheme == "medium" {
-            hex = medium
-        } else if effectiveTheme == ThemeStyleDark || effectiveTheme == "dark" {
+        if effectiveTheme == ThemeStyleDark || effectiveTheme == "dark" {
             hex = dark
-        } else if effectiveTheme == ThemeStyleSepia || effectiveTheme == "sepia" {
-            hex = sepia
         } else {
             hex = light
         }
@@ -448,11 +444,6 @@ class PreferencesViewModel: ObservableObject {
             hidden.insert("story_font_size")
         }
 
-        // Show brightness threshold slider only when brightness override is enabled
-        if !defaults.bool(forKey: "theme_auto_toggle") {
-            hidden.insert("theme_auto_brightness")
-        }
-
         // Hide infrequent stories per month when infrequent site stories is disabled
         if !defaults.bool(forKey: "show_infrequent_site_stories") {
             hidden.insert("infrequent_stories_per_month")
@@ -810,37 +801,6 @@ class PreferencesViewModel: ObservableObject {
                         subtitle: NBLocalization.text("Auto follows system appearance")
                     ),
                     PreferenceItem(
-                        title: NBLocalization.text("Light appearance"),
-                        icon: "sun.max",
-                        iconColor: .orange,
-                        type: .multiValue(
-                            key: "theme_light",
-                            titles: [NBLocalization.text("Normal"), NBLocalization.text("Warm")],
-                            values: ["light", "sepia"],
-                            defaultValue: "light"
-                        ),
-                        subtitle: NBLocalization.text("Theme variant for light mode")
-                    ),
-                    PreferenceItem(
-                        title: NBLocalization.text("Dark appearance"),
-                        icon: "moon.fill",
-                        iconColor: .indigo,
-                        type: .multiValue(
-                            key: "theme_dark",
-                            titles: [NBLocalization.text("Gray"), NBLocalization.text("Black")],
-                            values: ["medium", "dark"],
-                            defaultValue: "dark"
-                        ),
-                        subtitle: NBLocalization.text("Theme variant for dark mode")
-                    ),
-                    PreferenceItem(
-                        title: NBLocalization.text("Two-finger swipe to switch"),
-                        icon: "hand.draw",
-                        iconColor: .purple,
-                        type: .toggle(key: "theme_gesture", defaultValue: true),
-                        subtitle: NBLocalization.text("Swipe up/down with two fingers to change theme")
-                    ),
-                    PreferenceItem(
                         title: NBLocalization.text("Reduce motion"),
                         icon: "figure.stand",
                         iconColor: .indigo,
@@ -863,37 +823,6 @@ class PreferencesViewModel: ObservableObject {
                         iconColor: PreferencesColors.newsblurGreen,
                         type: .appIcon,
                         subtitle: NBLocalization.text("12 color flavors with light and dark variants.")
-                    )
-                ]
-            ),
-
-            // MARK: Brightness Override Section
-            PreferenceSection(
-                title: NBLocalization.text("Brightness Override"),
-                icon: "sun.max.trianglebadge.exclamationmark",
-                iconColor: .orange,
-                footerText: NBLocalization.text("Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting."),
-                items: [
-                    PreferenceItem(
-                        title: NBLocalization.text("Override system with brightness"),
-                        icon: "light.max",
-                        iconColor: .yellow,
-                        type: .toggle(key: "theme_auto_toggle", defaultValue: false),
-                        subtitle: NBLocalization.text("Ignore system theme, use screen brightness instead")
-                    ),
-                    PreferenceItem(
-                        title: NBLocalization.text("Brightness threshold"),
-                        icon: "slider.horizontal.3",
-                        iconColor: .orange,
-                        type: .slider(
-                            key: "theme_auto_brightness",
-                            minValue: 0,
-                            maxValue: 1,
-                            defaultValue: 0.5,
-                            minImage: "moon.fill",
-                            maxImage: "sun.max.fill"
-                        ),
-                        subtitle: NBLocalization.text("Dark theme below, light theme above")
                     )
                 ]
             ),

@@ -101,12 +101,8 @@ struct DiscoverColors {
         let effectiveTheme = themeManager.effectiveTheme
 
         let hex: Int
-        if effectiveTheme == ThemeStyleMedium || effectiveTheme == "medium" {
-            hex = medium
-        } else if effectiveTheme == ThemeStyleDark || effectiveTheme == "dark" {
+        if effectiveTheme == ThemeStyleDark || effectiveTheme == "dark" {
             hex = dark
-        } else if effectiveTheme == ThemeStyleSepia || effectiveTheme == "sepia" {
-            hex = sepia
         } else {
             hex = light
         }

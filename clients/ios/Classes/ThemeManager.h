@@ -20,8 +20,6 @@
 
 extern NSString * const ThemeStyleAuto;
 extern NSString * const ThemeStyleLight;
-extern NSString * const ThemeStyleSepia;
-extern NSString * const ThemeStyleMedium;
 extern NSString * const ThemeStyleDark;
 
 @interface ThemeManager : NSObject
@@ -31,7 +29,7 @@ extern NSString * const ThemeStyleDark;
 @property (nonatomic, strong) NSString *theme;
 @property (nonatomic, readonly) NSString *themeDisplayName;
 @property (nonatomic, readonly) NSString *themeCSSSuffix;
-@property (nonatomic, readonly) NSString *effectiveTheme; // The actual visual theme being displayed (resolves auto to light/sepia/medium/dark)
+@property (nonatomic, readonly) NSString *effectiveTheme; // The actual visual theme being displayed (resolves auto to light/dark)
 @property (nonatomic, readonly) UIColor *storyListBackgroundColor;
 @property (nonatomic, readonly) BOOL isAutoTheme;
 @property (nonatomic, readonly) BOOL isDarkTheme;
@@ -40,13 +38,15 @@ extern NSString * const ThemeStyleDark;
 
 + (instancetype)themeManager;
 
-- (NSString *)similarTheme;
+@property (nonatomic, class, readonly) UIColor *barBackgroundColor;
+
 - (BOOL)isValidTheme:(NSString *)theme;
 
 - (UIColor *)fixedColorFromRGB:(NSInteger)rgbValue;
 - (UIColor *)colorFromLightRGB:(NSInteger)lightRGBValue darkRGB:(NSUInteger)darkRGBValue;
 - (UIColor *)colorFromLightRGB:(NSInteger)lightRGBValue sepiaRGB:(NSUInteger)sepiaRGBValue mediumRGB:(NSUInteger)mediumRGBValue darkRGB:(NSUInteger)darkRGBValue;
 - (UIColor *)themedColorFromRGB:(NSInteger)rgbValue;
+- (UIColor *)resolvedColor:(UIColor *)color;
 
 + (UIColor *)colorFromRGB:(NSArray<NSNumber *> *)rgbValues;
 
@@ -61,8 +61,6 @@ extern NSString * const ThemeStyleDark;
 - (void)prepareForWindow:(UIWindow *)window;
 - (void)updateTheme;
 - (void)updatePreferencesTheme;
-- (BOOL)autoChangeTheme;
-- (UIGestureRecognizer *)addThemeGestureRecognizerToView:(UIView *)view;
 - (void)updateForSystemAppearance;
 - (void)systemAppearanceDidChange:(BOOL)isDark;
 

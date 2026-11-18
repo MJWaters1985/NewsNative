@@ -74,12 +74,8 @@ private struct ShortcutsColors {
         let hex: Int
         let effectiveTheme = themeManager.effectiveTheme
 
-        if effectiveTheme == ThemeStyleMedium || effectiveTheme == "medium" {
-            hex = medium
-        } else if effectiveTheme == ThemeStyleDark || effectiveTheme == "dark" {
+        if effectiveTheme == ThemeStyleDark || effectiveTheme == "dark" {
             hex = dark
-        } else if effectiveTheme == ThemeStyleSepia || effectiveTheme == "sepia" {
-            hex = sepia
         } else {
             hex = light
         }

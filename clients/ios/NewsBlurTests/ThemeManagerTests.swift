@@ -5,7 +5,7 @@ import UIKit
 
 final class ThemeManagerTests: XCTestCase {
     private let defaults = UserDefaults.standard
-    private let keys = ["theme_style", "theme_light", "theme_dark"]
+    private let keys = ["theme_style", "theme_light", "theme_dark", "theme_follow_system", "theme_auto_toggle", "theme_auto_brightness", "theme_gesture"]
     private var savedValues: [String: Any] = [:]
 
     override func setUp() {
@@ -31,33 +31,38 @@ final class ThemeManagerTests: XCTestCase {
         super.tearDown()
     }
 
-    func test_themeDisplayName_usesExplicitLightAndDarkVariants() throws {
+    func test_retiredWarmAndGrayThemesResolveToNativeAppearances() throws {
+        // ThemeManagerTests.swift: people who chose Warm or Gray keep the nearest native appearance
+        // rather than falling back to Auto, both before and after ThemeManager.m migrates the setting.
         let manager = try XCTUnwrap(ThemeManager.shared)
 
-        defaults.set("light", forKey: "theme_style")
-        defaults.set("sepia", forKey: "theme_light")
-        XCTAssertEqual(manager.themeDisplayName, "Warm")
+        defaults.set("sepia", forKey: "theme_style")
+        XCTAssertEqual(manager.theme, ThemeStyleLight)
+        XCTAssertFalse(manager.isDarkTheme)
 
-        defaults.set("dark", forKey: "theme_style")
-        defaults.set("medium", forKey: "theme_dark")
-        XCTAssertEqual(manager.themeDisplayName, "Gray")
+        defaults.set("medium", forKey: "theme_style")
+        XCTAssertEqual(manager.theme, ThemeStyleDark)
+        XCTAssertTrue(manager.isDarkTheme)
+        XCTAssertEqual(manager.themeCSSSuffix, "Dark")
+
+        manager.perform(NSSelectorFromString("migrateLegacyThemePreferences"))
+        XCTAssertEqual(defaults.string(forKey: "theme_style"), ThemeStyleDark)
+        XCTAssertNil(defaults.object(forKey: "theme_dark"))
     }
 
-    func test_themeCSSSuffix_followsExplicitThemeVariants() throws {
+    func test_themeCSSSuffix_followsExplicitTheme() throws {
         let manager = try XCTUnwrap(ThemeManager.shared)
 
         defaults.set("light", forKey: "theme_style")
-        defaults.set("light", forKey: "theme_light")
         XCTAssertEqual(manager.themeCSSSuffix, "Light")
 
         defaults.set("dark", forKey: "theme_style")
-        defaults.set("dark", forKey: "theme_dark")
         XCTAssertEqual(manager.themeCSSSuffix, "Dark")
     }
 
     @MainActor func test_storyListSurfaceDoesNotFlashWhileRowsEnter() throws {
         // ThemeManagerTests.swift protects the exposed loading/entrance surface, not a particular palette value.
-        // Leaving UIKit's default background under the fading story artwork produces a black flash in Gray.
+        // Leaving UIKit's default background under the fading story artwork produces a black flash.
         let controller = StorySurfaceController()
         controller.appDelegate = nil
         let table = UITableView(frame: CGRect(x: 0, y: 0, width: 375, height: 200), style: .plain)
@@ -80,7 +85,7 @@ final class ThemeManagerTests: XCTestCase {
             previousKeyWindow?.makeKey()
         }
 
-        for theme in ["medium", "sepia", "light", "dark"] {
+        for theme in ["light", "dark"] {
             defaults.set(theme, forKey: "theme_style")
             controller.updateTheme()
             table.reloadData()
@@ -128,7 +133,7 @@ final class ThemeManagerTests: XCTestCase {
     }
 
     @MainActor func test_loadingPulseStaysCloseToStoryListSurface() throws {
-        // ThemeManagerTests.swift catches a loading placeholder swinging from Gray to almost black before stories arrive.
+        // ThemeManagerTests.swift catches a loading placeholder swinging to almost black before stories arrive.
         let controller = StorySurfaceController()
         controller.appDelegate = nil
         controller.view = UIView(frame: CGRect(x: 0, y: 0, width: 375, height: 200))
@@ -149,7 +154,7 @@ final class ThemeManagerTests: XCTestCase {
             previousKeyWindow?.makeKey()
         }
 
-        for theme in ["medium", "sepia", "light", "dark"] {
+        for theme in ["light", "dark"] {
             defaults.set(theme, forKey: "theme_style")
             controller.updateTheme()
             loading.animate()

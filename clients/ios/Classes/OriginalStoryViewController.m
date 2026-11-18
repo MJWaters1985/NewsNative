@@ -62,10 +62,8 @@
     progressView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
     [self.navigationController.navigationBar addSubview:progressView];
     
-    [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.webView];
     
     // This makes the theme gesture work reliably, but makes scrolling more "sticky", so isn't acceptable:
-//    UIGestureRecognizer *themeGesture = [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.webView];
 //    [self.webView.scrollView.panGestureRecognizer requireGestureRecognizerToFail:themeGesture];
     
     if (!self.isPhone) {

@@ -299,11 +299,7 @@ static NSString *NBAccessibilitySlug(NSString *value) {
             [disclosureButton addTarget:appDelegate.feedsViewController action:@selector(didToggleAllFolders:) forControlEvents:UIControlEventTouchUpInside];
 
             UIImage *disclosureBorder = [UIImage imageNamed:@"disclosure_border"];
-            if ([[[ThemeManager themeManager] effectiveTheme] isEqualToString:ThemeStyleSepia]) {
-                disclosureBorder = [UIImage imageNamed:@"disclosure_border_sepia"];
-            } else if ([[[ThemeManager themeManager] effectiveTheme] isEqualToString:ThemeStyleMedium]) {
-                disclosureBorder = [UIImage imageNamed:@"disclosure_border_medium"];
-            } else if ([[[ThemeManager themeManager] effectiveTheme] isEqualToString:ThemeStyleDark]) {
+            if ([[[ThemeManager themeManager] effectiveTheme] isEqualToString:ThemeStyleDark]) {
                 disclosureBorder = [UIImage imageNamed:@"disclosure_border_dark"];
             }
             [disclosureBorder drawInRect:[self nb_directionalRect:CGRectMake(rect.origin.x + customView.frame.size.width - 32, CGRectGetMidY(rect)-disclosureHeight/2 - 1, disclosureHeight, disclosureHeight) within:headerBounds]];
@@ -318,11 +314,7 @@ static NSString *NBAccessibilitySlug(NSString *value) {
             [disclosureButton addTarget:appDelegate.feedsViewController action:@selector(didCollapseFolder:) forControlEvents:UIControlEventTouchUpInside];
 
             UIImage *disclosureBorder = [UIImage imageNamed:@"disclosure_border"];
-            if ([[[ThemeManager themeManager] effectiveTheme] isEqualToString:ThemeStyleSepia]) {
-                disclosureBorder = [UIImage imageNamed:@"disclosure_border_sepia"];
-            } else if ([[[ThemeManager themeManager] effectiveTheme] isEqualToString:ThemeStyleMedium]) {
-                disclosureBorder = [UIImage imageNamed:@"disclosure_border_medium"];
-            } else if ([[[ThemeManager themeManager] effectiveTheme] isEqualToString:ThemeStyleDark]) {
+            if ([[[ThemeManager themeManager] effectiveTheme] isEqualToString:ThemeStyleDark]) {
                 disclosureBorder = [UIImage imageNamed:@"disclosure_border_dark"];
             }
             [disclosureBorder drawInRect:[self nb_directionalRect:CGRectMake(rect.origin.x + customView.frame.size.width - 32, CGRectGetMidY(rect)-disclosureHeight/2 - 1, disclosureHeight, disclosureHeight) within:headerBounds]];

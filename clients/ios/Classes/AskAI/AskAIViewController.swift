@@ -104,10 +104,6 @@ import Combine
         let theme = ThemeManager.shared.effectiveTheme ?? ThemeStyleLight
         let backgroundColor: UIColor
         switch theme {
-        case ThemeStyleSepia:
-            backgroundColor = UIColor(red: 0.96, green: 0.90, blue: 0.83, alpha: 1.0) // #F5E6D3
-        case ThemeStyleMedium:
-            backgroundColor = UIColor(red: 0.24, green: 0.24, blue: 0.24, alpha: 1.0) // #3D3D3D
         case ThemeStyleDark:
             backgroundColor = UIColor(red: 0.10, green: 0.10, blue: 0.10, alpha: 1.0) // #1A1A1A
         default:

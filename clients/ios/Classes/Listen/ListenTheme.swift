@@ -30,7 +30,7 @@ enum ListenColors {
 
     static var isDark: Bool {
         let theme = ThemeManager.shared?.effectiveTheme ?? ThemeStyleLight
-        return theme == ThemeStyleMedium || theme == ThemeStyleDark
+        return theme == ThemeStyleDark
     }
 
     static func uiColor(light: Int, sepia: Int, medium: Int, dark: Int) -> UIColor {
@@ -44,12 +44,8 @@ enum ListenColors {
     private static func hex(light: Int, sepia: Int, medium: Int, dark: Int) -> Color {
         let theme = ThemeManager.shared?.effectiveTheme ?? ThemeStyleLight
         let value: Int
-        if theme == ThemeStyleMedium {
-            value = medium
-        } else if theme == ThemeStyleDark {
+        if theme == ThemeStyleDark {
             value = dark
-        } else if theme == ThemeStyleSepia {
-            value = sepia
         } else {
             value = light
         }

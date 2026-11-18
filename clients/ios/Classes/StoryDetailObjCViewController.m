@@ -189,7 +189,6 @@
                                               initWithTarget:self action:@selector(pinchGesture:)];
     [self.webView addGestureRecognizer:pinchGesture];
     
-    [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.webView];
     
     self.pageIndex = -2;
     self.inTextView = NO;

@@ -10,9 +10,9 @@ import XCTest
         navigationFinished = nil
     }
 
-    func test_grayThemeURLClassifiersRemainReadable() async throws {
+    func test_darkThemeURLClassifiersRemainReadable() async throws {
         let base = try css("storyDetailView")
-        let theme = try css("storyDetailViewMedium")
+        let theme = try css("storyDetailViewDark")
         let controller = UIViewController()
         let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
         let previousKeyWindow = scene.windows.first(where: \.isKeyWindow)
@@ -50,13 +50,13 @@ import XCTest
         try await Task.sleep(nanoseconds: 300_000_000)
         let snapshot = try await web.takeSnapshot(configuration: nil)
         let attachment = XCTAttachment(image: snapshot)
-        attachment.name = "gray-theme-positive-and-negative-url-matches"
+        attachment.name = "dark-theme-positive-and-negative-url-matches"
         attachment.lifetime = .keepAlways
         add(attachment)
         for style in styles {
             let fill = try rgba(style["background"] as! String)
-            // StoryURLContrastTests.swift checks both ends of storyDetailViewMedium.css's header gradient.
-            for gray in [64.0 / 255, 96.0 / 255] {
+            // StoryURLContrastTests.swift checks both ends of storyDetailViewDark.css's header gradient.
+            for gray in [17.0 / 255, 51.0 / 255] {
                 let background = (0..<3).map { fill[$0] * fill[3] + gray * (1 - fill[3]) }
                 for element in style["colors"] as! [[String: String]] {
                     let foreground = try rgba(element["color"]!)

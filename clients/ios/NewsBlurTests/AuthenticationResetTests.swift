@@ -1326,7 +1326,7 @@ private final class AuthenticationRefreshPublication: @unchecked Sendable {
             }
         }
         let (controller, _) = makeDiscovery()
-        for (theme, hex) in [(ThemeStyleLight, 0xEAECE6), (ThemeStyleSepia, 0xF3E2CB), (ThemeStyleMedium, 0x3D3D3D), (ThemeStyleDark, 0x1A1A1A)] {
+        for (theme, hex) in [(ThemeStyleLight, 0xEAECE6), (ThemeStyleDark, 0x1A1A1A)] {
             defaults.set(theme, forKey: "theme_style")
             defaults.set(theme, forKey: "theme_light")
             defaults.set(theme, forKey: "theme_dark")

@@ -172,28 +172,7 @@
         }
     }
     
-    // Determine which theme segment to select based on user's actual choice
-    // If user chose Auto, show Auto selected (not the resolved theme)
-    // If user chose a specific theme mode, show the variant they selected
-    NSString *themeStyle = [[NSUserDefaults standardUserDefaults] objectForKey:@"theme_style"];
-
-    if ([themeStyle isEqualToString:@"auto"] || themeStyle == nil) {
-        self.themeSegment.selectedSegmentIndex = 0; // Auto
-    } else {
-        // User chose light or dark mode - show the specific variant
-        NSString *effectiveTheme = [ThemeManager themeManager].effectiveTheme;
-        if ([effectiveTheme isEqualToString:ThemeStyleLight]) {
-            self.themeSegment.selectedSegmentIndex = 1;
-        } else if ([effectiveTheme isEqualToString:ThemeStyleSepia]) {
-            self.themeSegment.selectedSegmentIndex = 2;
-        } else if ([effectiveTheme isEqualToString:ThemeStyleMedium]) {
-            self.themeSegment.selectedSegmentIndex = 3;
-        } else if ([effectiveTheme isEqualToString:ThemeStyleDark]) {
-            self.themeSegment.selectedSegmentIndex = 4;
-        } else {
-            self.themeSegment.selectedSegmentIndex = 0;
-        }
-    }
+    self.themeSegment.selectedSegmentIndex = [@[ThemeStyleAuto, ThemeStyleLight, ThemeStyleDark] indexOfObject:[ThemeManager themeManager].theme];
     
     [self.menuTableView reloadData];
     
@@ -310,42 +289,12 @@
 }
 
 - (IBAction)changeTheme:(id)sender {
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     NSInteger selectedIndex = [sender selectedSegmentIndex];
+    NSArray<NSString *> *themes = @[ThemeStyleAuto, ThemeStyleLight, ThemeStyleDark];
 
-    // Update the new theme system: theme_style + theme_light/theme_dark
-    switch (selectedIndex) {
-        case 0:
-            // Auto - follow system
-            [userPreferences setObject:@"auto" forKey:@"theme_style"];
-            break;
-        case 1:
-            // Light (Normal)
-            [userPreferences setObject:@"light" forKey:@"theme_style"];
-            [userPreferences setObject:ThemeStyleLight forKey:@"theme_light"];
-            break;
-        case 2:
-            // Sepia
-            [userPreferences setObject:@"light" forKey:@"theme_style"];
-            [userPreferences setObject:ThemeStyleSepia forKey:@"theme_light"];
-            break;
-        case 3:
-            // Gray (Medium)
-            [userPreferences setObject:@"dark" forKey:@"theme_style"];
-            [userPreferences setObject:ThemeStyleMedium forKey:@"theme_dark"];
-            break;
-        case 4:
-            // Black (Dark)
-            [userPreferences setObject:@"dark" forKey:@"theme_style"];
-            [userPreferences setObject:ThemeStyleDark forKey:@"theme_dark"];
-            break;
-
-        default:
-            break;
+    if (selectedIndex >= 0 && selectedIndex < (NSInteger)themes.count) {
+        [ThemeManager themeManager].theme = themes[selectedIndex];
     }
-
-    [userPreferences synchronize];
-    [[ThemeManager themeManager] updateTheme];
 
     self.menuTableView.backgroundColor = MenuTableViewCell.menuBackgroundColor;
     self.menuTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
@@ -741,52 +690,19 @@
     cell.separatorInset = UIEdgeInsetsZero;
     cell.backgroundColor = MenuTableViewCell.menuBackgroundColor;
 
-    UIImage *lightImage = [self themeImageWithName:@"theme_color_light" selected:NO];
-    UIImage *sepiaImage = [self themeImageWithName:@"theme_color_sepia" selected:NO];
-    UIImage *mediumImage = [self themeImageWithName:@"theme_color_medium" selected:NO];
-    UIImage *darkImage = [self themeImageWithName:@"theme_color_dark" selected:NO];
-
     self.themeSegment.frame = CGRectMake(8, 7, cell.frame.size.width - 8*2, kMenuOptionHeight - 7*2);
-    [self.themeSegment setTitle:[NBLocalization text:@"Auto"] forSegmentAtIndex:0];
-    [self.themeSegment setImage:lightImage forSegmentAtIndex:1];
-    [self.themeSegment setImage:sepiaImage forSegmentAtIndex:2];
-    [self.themeSegment setImage:mediumImage forSegmentAtIndex:3];
-    [self.themeSegment setImage:darkImage forSegmentAtIndex:4];
-
-#if !TARGET_OS_MACCATALYST
-    self.themeSegment.backgroundColor = UIColorFromRGB(0xeeeeee);
-#endif
-    [self.themeSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"WhitneySSm-Medium" size:12.0f]} forState:UIControlStateNormal];
-
-    // Use standard segmented control styling
+    // FontSettingsViewController.m uses the native segmented control with SF Symbols for Auto, Light and Dark.
+    [self.themeSegment removeAllSegments];
+    [self.themeSegment insertSegmentWithTitle:[NBLocalization text:@"Auto"] atIndex:0 animated:NO];
+    [self.themeSegment insertSegmentWithImage:[UIImage systemImageNamed:@"sun.max"] atIndex:1 animated:NO];
+    [self.themeSegment insertSegmentWithImage:[UIImage systemImageNamed:@"moon"] atIndex:2 animated:NO];
     [[ThemeManager themeManager] updateSegmentedControl:self.themeSegment];
-
-    // Show white pill for all selections (Auto and color themes)
-    self.themeSegment.selectedSegmentTintColor = UIColorFromLightSepiaMediumDarkRGB(0xdce6f0, 0xFAF5ED, 0xbbbbbb, 0x888890);
+    self.themeSegment.selectedSegmentIndex = [@[ThemeStyleAuto, ThemeStyleLight, ThemeStyleDark] indexOfObject:[ThemeManager themeManager].theme];
 
     self.themeSegment.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     [cell.contentView addSubview:self.themeSegment];
 
     return cell;
-}
-
-- (UIImage *)themeImageWithName:(NSString *)name selected:(BOOL)selected {
-    if (selected) {
-        name = [name stringByAppendingString:@"-sel"];
-    }
-
-    UIImage *image = [UIImage imageNamed:name];
-
-    // Scale to a consistent size that fits well in the segmented control
-    CGFloat size = 22.0;
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomMac) {
-        size = 20.0;
-    }
-
-    image = [Utilities imageWithImage:image convertToSize:CGSizeMake(size, size)];
-    image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-
-    return image;
 }
 
 @end

@@ -55,23 +55,30 @@ The app uses **Objective-C** as the primary language with **Swift** for newer co
 
 - **StoriesCollection** (`Classes/StoriesCollection.h/m`): Manages the current collection of stories being displayed (feed, folder, river view). Handles story state (read/unread/saved) and navigation.
 
-- **ThemeManager** (`Classes/ThemeManager.h/m`): Handles app theming (Light/Sepia/Medium/Dark). Uses macros like `UIColorFromRGB()` and `UIColorFromLightDarkRGB()`.
+- **ThemeManager** (`Classes/ThemeManager.h/m`): Handles app theming (Auto/Light/Dark, native iOS appearances). Uses macros like `UIColorFromRGB()` and `UIColorFromLightDarkRGB()`.
 
 ### Theme Colors
 
-The app supports 4 themes: Light, Warm (Sepia), Medium (Gray), and Dark (Black). Use `UIColorFromLightSepiaMediumDarkRGB()` macro to specify colors for all themes.
+The app uses native iOS styling with three theme settings: **Auto** (follows the system), **Light** and **Dark**. The `theme_style` preference stores `auto`, `light` or `dark`. The former Warm (`sepia`) and Gray (`medium`) themes are retired: `ThemeManager.m` reads them as Light and Dark and migrates the saved setting on launch.
 
-| Purpose | Light | Warm/Sepia | Medium | Dark |
-|---------|-------|------------|--------|------|
-| Navigation bar | `0xE3E6E0` | `0xF3E2CB` | `0x333333` | `0x222222` |
-| View background (gray) | `0xd7dadf` | `0xE8DED0` | `0x333333` | `0x111111` |
-| Content background (white) | `0xFFFFFF` | `0xFAF5ED` | `0x333333` | `0x111111` |
-| Section header background | `0xf4f4f4` | `0xF3E2CB` | `0x333333` | `0x222222` |
-| Section header text | `0x8F918B` | `0x8B7B6B` | `0x8F918B` | `0x8F918B` |
-| Grid/card background | `0xECEEEA` | `0xF3E2CB` | `0x333333` | `0x222222` |
-| Separator | `0xE9E8E4` | `0xD4C8B8` | `0x333333` | `0x222222` |
+- **Prefer semantic system colors** for new UI: `systemBackground`, `secondarySystemBackground`, `systemGroupedBackground`, `label`, `secondaryLabel`, `separator`, `link`, `systemFill`, and the system tints.
+- **Resolve colors for the active theme.** Much of the app takes `.CGColor` for layers, gradients and drawing, and repaints in `updateTheme`. Use `[ThemeManager.shared resolvedColor:UIColor.systemBackgroundColor]` (Swift: `ThemeManager.shared.resolvedColor(.systemBackground)`) wherever a color is stored, turned into a `CGColor` or used outside `drawRect:`. A raw dynamic color is fine as a view's `backgroundColor` or when drawn inside `drawRect:`.
+- **Legacy hex macros still work.** `UIColorFromLightDarkRGB(light, dark)` returns the color for the active theme. `UIColorFromRGB(rgb)` inverts the color in Dark. `UIColorFromLightSepiaMediumDarkRGB()` ignores its Sepia and Medium arguments; don't use it in new code. These helpers map NewsBlur's original palette roles to system colors:
 
-**Important:** When adding colors to modals/popovers, always use `UIColorFromLightSepiaMediumDarkRGB()` instead of `UIColorFromRGB()` to ensure correct colors in Warm theme. The generic `UIColorFromRGB()` applies a matrix transformation that can produce unintended yellow tints for gray colors.
+| Original light value | Role | Native color |
+|----------------------|------|--------------|
+| `0xFFFFFF` | Content background | `systemBackground` |
+| `0xd7dadf`, `0xe0e0e0`, `0xE3E6E0` | View background / bars | `systemGroupedBackground` |
+| `0xf4f4f4`, `0xECEEEA` | Section header / card background | `secondarySystemBackground` |
+| `0xE9E8E4` | Separator | `separator` |
+| `0x000000`, `0x333333` | Primary text | `label` |
+| `0x8F918B`, `0x999999` | Secondary text | `secondaryLabel` |
+| `NEWSBLUR_LINK_COLOR` | Links | `link` |
+
+A pair maps only when its dark value plays the same role, so a fixed white or black that stays the same in both appearances keeps its literal value.
+
+- **Bars:** `ThemeManager.barBackgroundColor` is the shared opaque bar color (`systemBackground`). Screens that pin a header over content, such as the Duo rail, story titles and the reader, read it through `UINavigationBar.appearance()`.
+- **Custom-drawn views** (`FeedTableCell.m`, `FolderTitleView.m`, `UnreadCountView.m`) must redraw when `UITraitUserInterfaceStyle` changes, and opaque views must fill their own background in `drawRect:`.
 
 ### View Controller Hierarchy
 
@@ -119,7 +126,7 @@ Uses **PINCache** for image caching (`cachedFavicons`, `cachedStoryImages`).
 Story content is rendered in WKWebView with:
 - `static/storyDetailView.js` - Story interaction JavaScript
 - `static/storyDetailView.css` - Base styles
-- `static/storyDetailView{Light,Sepia,Medium,Dark}.css` - Theme variants
+- `static/storyDetailView{Light,Dark}.css` - Theme variants
 
 ## Targets & Schemes
 

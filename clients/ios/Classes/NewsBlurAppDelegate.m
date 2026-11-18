@@ -1193,7 +1193,6 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
             if (!presentsOverLogin) {
                 [swiftUIPrefs configureDelegate:(id<PreferencesViewDelegate>)self.feedsViewController];
             }
-            [[ThemeManager themeManager] addThemeGestureRecognizerToView:swiftUIPrefs.view];
         }];
     }
 }
@@ -1212,7 +1211,6 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         // NewsBlurAppDelegate.m waits for the story settings popover before presenting its shortcuts dialog.
         [self hidePopoverAnimated:YES completion:^{
             [self.navigationControllerForPopover presentViewController:shortcutsVC animated:YES completion:^{
-                [[ThemeManager themeManager] addThemeGestureRecognizerToView:shortcutsVC.view];
             }];
         }];
     }

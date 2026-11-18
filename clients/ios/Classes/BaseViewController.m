@@ -205,7 +205,6 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
 
     BOOL isDark = [NewsBlurAppDelegate sharedAppDelegate].window.windowScene.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
 
-    [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.view];
     [[ThemeManager themeManager] systemAppearanceDidChange:isDark];
 
     [self addKeyCommandWithInput:@"/" modifierFlags:UIKeyModifierShift action:@selector(showKeyboardShortcuts:) discoverabilityTitle:@"Keyboard Shortcuts"];

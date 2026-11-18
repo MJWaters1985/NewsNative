@@ -35,7 +35,8 @@ enum MacReaderChrome {
         let manager = ThemeManager.shared!
         nativeChrome?.perform(NSSelectorFromString("updateAppearance:"), with: [
             "dark": manager.isDarkTheme,
-            "warm": manager.effectiveTheme == "sepia"
+            // MacReaderChrome.swift: the Warm theme was retired for native light and dark styling.
+            "warm": false
         ] as NSDictionary)
     }
 

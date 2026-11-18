@@ -395,7 +395,6 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     doubleTapGesture.delegate = self;
 #endif
     
-    [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.storyTitlesTable];
     
     [self addKeyCommandWithInput:@"a" modifierFlags:UIKeyModifierShift action:@selector(doMarkAllRead:) discoverabilityTitle:@"Mark All as Read"];
     [self addKeyCommandWithInput:UIKeyInputDownArrow modifierFlags:0 action:@selector(nextStory:) discoverabilityTitle:@"Next Story" wantPriority:YES];
@@ -4619,11 +4618,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     [headerView addSubview:dateLabel];
 
     UIImage *disclosureBorder = [UIImage imageNamed:@"disclosure_border"];
-    if ([[[ThemeManager themeManager] effectiveTheme] isEqualToString:ThemeStyleSepia]) {
-        disclosureBorder = [UIImage imageNamed:@"disclosure_border_sepia"];
-    } else if ([[[ThemeManager themeManager] effectiveTheme] isEqualToString:ThemeStyleMedium]) {
-        disclosureBorder = [UIImage imageNamed:@"disclosure_border_medium"];
-    } else if ([[[ThemeManager themeManager] effectiveTheme] isEqualToString:ThemeStyleDark]) {
+    if ([[[ThemeManager themeManager] effectiveTheme] isEqualToString:ThemeStyleDark]) {
         disclosureBorder = [UIImage imageNamed:@"disclosure_border_dark"];
     }
 

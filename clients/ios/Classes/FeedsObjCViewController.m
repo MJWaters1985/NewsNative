@@ -401,7 +401,6 @@ static BOOL NBBoolPreferenceValue(id value) {
     longpress.delegate = self;
     [self.feedTitlesTable addGestureRecognizer:longpress];
     
-    [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.feedTitlesTable];
     
     [self updateTheme];
     [self layoutHeaderCounts:0];
@@ -2415,12 +2414,6 @@ static BOOL NBBoolPreferenceValue(id value) {
     [self resetupGestures];
 }
 
-- (void)updateThemeBrightness {
-    if ([[ThemeManager themeManager] autoChangeTheme]) {
-        [[ThemeManager themeManager] updateTheme];
-    }
-}
-
 - (void)updateThemeStyle {
     [[ThemeManager themeManager] updateTheme];
 }
@@ -2498,13 +2491,7 @@ static BOOL NBBoolPreferenceValue(id value) {
         [self.appDelegate reloadFeedsView:YES];
     } else if ([identifier isEqual:@"feed_list_font_size"]) {
         [self resizeFontSize];
-    } else if ([identifier isEqual:@"theme_auto_brightness"]) {
-        [self updateThemeBrightness];
     } else if ([identifier isEqual:@"theme_style"]) {
-        [self updateThemeStyle];
-    } else if ([identifier isEqual:@"theme_light"] || [identifier isEqual:@"theme_dark"]) {
-        [self updateThemeStyle];
-    } else if ([identifier isEqual:@"theme_auto_toggle"]) {
         [self updateThemeStyle];
     } else if ([identifier isEqual:self.appDelegate.storiesCollection.storyTitlesPositionKey]) {
         [self.appDelegate.detailViewController updateLayoutWithReload:YES fetchFeeds:YES];

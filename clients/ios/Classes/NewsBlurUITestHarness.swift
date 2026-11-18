@@ -50,8 +50,6 @@ final class NewsBlurUITestHarness {
             if ["light", "sepia", "medium", "dark"].contains(theme) {
                 var domain = UserDefaults.standard.volatileDomain(forName: UserDefaults.argumentDomain)
                 domain["theme_style"] = ["medium", "dark"].contains(theme) ? "dark" : "light"
-                domain["theme_light"] = theme
-                domain["theme_dark"] = theme
                 UserDefaults.standard.setVolatileDomain(domain, forName: UserDefaults.argumentDomain)
             }
         }
