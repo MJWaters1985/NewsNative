@@ -1,5 +1,4 @@
 import XCTest
-import MetalKit
 import ImageIO
 import Combine
 import SwiftUI
@@ -111,22 +110,50 @@ import SwiftUI
         XCTAssertTrue(OnboardingViewController.shouldShow(forUsername: username + "-another-account"))
     }
 
-    func test_loginRetainsAnimatedMetalBackground() throws {
+    func test_loginBackgroundFollowsLightAndDarkLikeTheLaunchScreen() throws {
+        // OnboardingTests.swift: LaunchScreen.xib and the sign-in screen share the system grouped background, so the
+        // hand-off from launch to sign-in matches in either appearance.
         let controller = OnboardingAccountViewController()
         controller.loadViewIfNeeded()
-        controller.view.frame = CGRect(x: 0, y: 0, width: 390, height: 844)
-        controller.viewWillAppear(false)
-        controller.view.layoutIfNeeded()
-        func metalView(in view: UIView) -> MTKView? {
-            if let metal = view as? MTKView { return metal }
-            return view.subviews.lazy.compactMap { metalView(in: $0) }.first
+        let background = try XCTUnwrap(controller.view.backgroundColor)
+        for style in [UIUserInterfaceStyle.light, .dark] {
+            let traits = UITraitCollection(userInterfaceStyle: style)
+            XCTAssertEqual(background.resolvedColor(with: traits), UIColor.systemGroupedBackground.resolvedColor(with: traits),
+                           "The sign-in background must match the launch screen in \(style == .dark ? "dark" : "light") mode")
         }
-        let background = try XCTUnwrap(metalView(in: controller.view), "The login redesign must preserve the original animated background.")
-        XCTAssertNotNil(background.device)
-        XCTAssertNotNil(background.delegate)
-        XCTAssertFalse(background.isPaused)
-        controller.viewDidDisappear(false)
-        XCTAssertTrue(background.isPaused, "The login animation must stop when the screen closes.")
+    }
+
+    func test_signInAndPasswordResetUseTheServerTypedOnTheForm() async throws {
+        // OnboardingTests.swift: NewsNative signs in to any NewsBlur-compatible server, so the typed address must
+        // reach the login request and the password reset link without restarting the app.
+        let app = try XCTUnwrap(NewsBlurAppDelegate.shared())
+        let previous = UserDefaults.standard.object(forKey: "custom_domain")
+        // OnboardingTests.swift: other suites can leave a test-only server override behind; it outranks the setting.
+        app.setCustomDomainForTesting(nil)
+        defer {
+            app.setCustomDomainForTesting(nil)
+            if let previous { UserDefaults.standard.set(previous, forKey: "custom_domain") }
+            else { UserDefaults.standard.removeObject(forKey: "custom_domain") }
+            app.applyCustomServer(previous as? String ?? "")
+        }
+        var hosts: [String] = []
+        network { request in
+            hosts.append(request.url?.host ?? "")
+            return (400, ["message": "Bad credentials"])
+        }
+        let model = OnboardingAccountModel()
+        model.server = "reader.example.com"
+        XCTAssertEqual(model.serverURL, "https://reader.example.com")
+        model.username = "reader"
+        model.password = "secret"
+        await submitAccount(model)
+        XCTAssertEqual(hosts, ["reader.example.com"])
+        XCTAssertEqual(app.url, "https://reader.example.com")
+
+        model.server = "   "
+        XCTAssertEqual(model.serverURL, NewsBlurAppDelegate.defaultServerURL())
+        model.server = "not a server"
+        XCTAssertNil(model.serverURL, "An invalid address must hide the reset link instead of opening the wrong server")
     }
 
     func test_olderPartialFeedResponseCannotReplaceLatestRefresh() {
@@ -167,6 +194,8 @@ import SwiftUI
     }
 
     func test_newAppleSignupDoesNotRequireAnotherPersonalInformationForm() async throws {
+        try XCTSkipUnless(OnboardingAccountModel.allowsAccountCreation,
+                          "OnboardingAccountViewController.swift sets account creation aside; this covers the creation flow.")
         var completionBody: [String: String] = [:]
         var authenticated: [(String, Bool)] = []
         network { request in
@@ -220,6 +249,8 @@ import SwiftUI
     }
 
     func test_automaticAppleUsernameCollisionRetriesWithReplacementTicket() async throws {
+        try XCTSkipUnless(OnboardingAccountModel.allowsAccountCreation,
+                          "OnboardingAccountViewController.swift sets account creation aside; this covers the creation flow.")
         var bodies: [[String: String]] = []
         var authenticated = false
         network { request in
@@ -245,6 +276,8 @@ import SwiftUI
     }
 
     func test_automaticAppleUsernameFailuresNeverRequireAnotherFormOrRetryForever() async throws {
+        try XCTSkipUnless(OnboardingAccountModel.allowsAccountCreation,
+                          "OnboardingAccountViewController.swift sets account creation aside; this covers the creation flow.")
         for collision in [true, false] {
             var requests = 0
             network { request in
@@ -347,6 +380,8 @@ import SwiftUI
     }
 
     func test_socialExplicitLinkPreservesIdentityAndRetriesWithReplacementTicket() async throws {
+        try XCTSkipUnless(OnboardingAccountModel.allowsAccountCreation,
+                          "OnboardingAccountViewController.swift sets account creation aside; this covers the creation flow.")
         for provider in ["google"] {
             var bodies: [[String: String]] = []
             network { request in
@@ -446,6 +481,8 @@ import SwiftUI
     }
 
     func test_socialExplicitUsernameChoiceResetsAfterReturnCancelAndRestart() async throws {
+        try XCTSkipUnless(OnboardingAccountModel.allowsAccountCreation,
+                          "OnboardingAccountViewController.swift sets account creation aside; this covers the creation flow.")
         network { request in
             if request.url?.path == "/api/social/start" { return (200, ["state": "provider-state"]) }
             return (400, ["code": -1, "username_required": true, "ticket": "choose-username-ticket"])
@@ -472,7 +509,26 @@ import SwiftUI
         XCTAssertFalse(model.canChooseUsername)
     }
 
+    func test_disabledAccountCreationStopsWhenTheServerWouldCreateAnAccount() async throws {
+        // OnboardingTests.swift: with account creation set aside, a provider identity that matches no account must
+        // end with a message instead of the username step that would create one.
+        try XCTSkipIf(OnboardingAccountModel.allowsAccountCreation, "Account creation is enabled.")
+        network { request in
+            if request.url?.path == "/api/social/start" { return (200, ["state": "provider-state"]) }
+            return (400, ["username_required": true, "ticket": "choose-username-ticket"])
+        }
+        let model = OnboardingAccountModel()
+        _ = try await model.prepareSocial("google")
+        try await model.complete(ticket: "provider-ticket")
+        XCTAssertFalse(model.needsUsername)
+        XCTAssertFalse(model.needsLink)
+        XCTAssertNotNil(model.message)
+        XCTAssertFalse(model.signup)
+    }
+
     func test_socialLinkRetryCanRevokeUsernameChoice() async throws {
+        try XCTSkipUnless(OnboardingAccountModel.allowsAccountCreation,
+                          "OnboardingAccountViewController.swift sets account creation aside; this covers the creation flow.")
         var completions = 0
         network { request in
             if request.url?.path == "/api/social/start" { return (200, ["state": "provider-state"]) }
@@ -524,6 +580,8 @@ import SwiftUI
     }
 
     func test_socialUsernameCollisionCanReturnToSignupWithRetainedTicket() async throws {
+        try XCTSkipUnless(OnboardingAccountModel.allowsAccountCreation,
+                          "OnboardingAccountViewController.swift sets account creation aside; this covers the creation flow.")
         for provider in ["google"] {
             var bodies: [[String: String]] = []
             network { request in

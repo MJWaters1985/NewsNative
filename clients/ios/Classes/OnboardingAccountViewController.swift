@@ -10,7 +10,7 @@ import SwiftUI
     override func loadView() {
         let host = UIHostingController(rootView: OnboardingAccountView(model: account))
         view = UIView()
-        setupLoginBackground()
+        view.backgroundColor = .systemGroupedBackground
         host.view.backgroundColor = .clear
         addChild(host)
         view.addSubview(host.view)
@@ -24,15 +24,15 @@ import SwiftUI
     }
     override func viewDidLoad() {}
     override func viewWillAppear(_ animated: Bool) {
-        setLoginBackgroundActive(true)
         account.lastUsed = UserDefaults.standard.string(forKey: "last_auth_method")
-        if !account.needsUsername && !account.needsLink { account.signup = account.lastUsed == nil }
+        if !account.needsUsername && !account.needsLink {
+            account.signup = OnboardingAccountModel.allowsAccountCreation && account.lastUsed == nil
+        }
     }
     override func viewDidAppear(_ animated: Bool) {
         if pendingAppleRevocationNotice { showAppleRevocationNoticeWhenVisible() }
     }
     override func viewDidLayoutSubviews() { super.viewDidLayoutSubviews() }
-    override func viewDidDisappear(_ animated: Bool) { setLoginBackgroundActive(false) }
 
     func showAppleRevocationNoticeWhenVisible() {
         guard viewIfLoaded?.window != nil else {
@@ -52,8 +52,18 @@ import SwiftUI
 }
 
 @MainActor final class OnboardingAccountModel: NSObject, ObservableObject, ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding, ASWebAuthenticationPresentationContextProviding {
-    @Published var signup = UserDefaults.standard.string(forKey: "last_auth_method") == nil
+    // OnboardingAccountViewController.swift: NewsNative only signs in to existing accounts for now. Turning this on
+    // restores the email sign-up mode, its toggle, and new accounts from Apple or Google sign-in.
+    static let allowsAccountCreation = false
+    // OnboardingAccountViewController.swift: Apple and Google sign-in are set aside. The server only accepts Apple
+    // identity tokens for its own app IDs, and Google's consent screen names the server's product, so NewsNative
+    // signs in with a username or email and password until those flows are set up for this app.
+    static let allowsSocialSignIn = false
+
+    @Published var signup = OnboardingAccountModel.allowsAccountCreation && UserDefaults.standard.string(forKey: "last_auth_method") == nil
     @Published var email = ""
+    // OnboardingAccountViewController.swift signs in to any NewsBlur-compatible server; blank uses the default.
+    @Published var server = UserDefaults.standard.string(forKey: "custom_domain") ?? ""
     @Published var username = ""
     @Published var password = ""
     @Published var lastUsed = UserDefaults.standard.string(forKey: "last_auth_method")
@@ -82,6 +92,13 @@ import SwiftUI
         super.init()
     }
 
+    // OnboardingAccountViewController.swift: the server address the form points at, or nil while it is invalid.
+    var serverURL: String? {
+        let trimmed = server.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmed.isEmpty { return NewsBlurAppDelegate.defaultServerURL() }
+        return NewsBlurAppDelegate.normalizedServerURL(trimmed)
+    }
+
     func emailSignIn() {
         guard !busy else { return }
         busy = true
@@ -89,6 +106,10 @@ import SwiftUI
         Task {
             defer { busy = false }
             do {
+                if !(needsUsername || needsLink) {
+                    guard serverURL != nil else { throw OnboardingAPI.error("Invalid server address.") }
+                    NewsBlurAppDelegate.shared()?.applyCustomServer(server)
+                }
                 if needsUsername || needsLink { try await complete() }
                 else {
                     guard !username.isEmpty, !password.isEmpty, !signup || !email.isEmpty else {
@@ -104,7 +125,7 @@ import SwiftUI
     }
 
     func social(_ name: String) {
-        guard !busy else { return }
+        guard !busy, Self.allowsSocialSignIn || deletionSession != nil else { return }
         busy = true
         message = nil
         Task {
@@ -237,7 +258,7 @@ import SwiftUI
 
     private func complete() async throws {
         try deletionSession?.validate()
-        let automaticAppleSignup = provider == "apple" && deletionSession == nil && !needsLink
+        let automaticAppleSignup = Self.allowsAccountCreation && provider == "apple" && deletionSession == nil && !needsLink
         var result: [String: Any] = [:]
         for attempt in 0..<3 {
             if automaticAppleSignup && automaticAppleUsername == nil {
@@ -272,6 +293,12 @@ import SwiftUI
             }
             self.ticket = ""
             onReauthenticated?(token)
+            return
+        }
+        if !Self.allowsAccountCreation && result["username_required"] as? Bool == true {
+            // OnboardingAccountViewController.swift: a username request means the server would create a new account.
+            cancelContinuation()
+            message = NBLocalization.text("No account uses this sign-in. Sign in with an existing account.")
             return
         }
         if result["link_required"] as? Bool == true || result["username_required"] as? Bool == true {
@@ -532,13 +559,15 @@ private struct AccountDeletionView: View {
 struct OnboardingAccountView: View {
     @State private var language = NBLocalization.language
     @ObservedObject var model: OnboardingAccountModel
-    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
-    private let gold = Color(red: 251 / 255, green: 219 / 255, blue: 155 / 255)
+    @Environment(\.colorScheme) private var colorScheme
+    @State private var showingProjectInformation = false
     private var continuation: Bool { model.needsUsername || model.needsLink }
+    // OnboardingAccountViewController.swift: native grouped styling that follows the app's Auto, Light or Dark
+    // theme and matches LaunchScreen.xib's system grouped background.
     var body: some View {
         GeometryReader { geometry in
             ScrollView {
-                VStack(spacing: 22) {
+                VStack(spacing: 24) {
                     Picker(NBLocalization.text("Language"), selection: $language) {
                         Text(NBLocalization.automaticLabel).tag("auto")
                         ForEach(NBLocalization.languages, id: \.0) { code, name in
@@ -546,29 +575,22 @@ struct OnboardingAccountView: View {
                         }
                     }
                     .pickerStyle(.menu)
-                    .tint(gold)
                     .onChange(of: language) { _, value in NBLocalization.apply(value, pending: true) }
                     .disabled(model.busy)
-                    VStack(spacing: 10) {
-                        Image(uiImage: UIImage(named: "logo_512.png") ?? UIImage(systemName: "sun.max.fill")!)
-                            .resizable().scaledToFit().frame(width: 120, height: 120)
-                            .shadow(color: gold.opacity(0.4), radius: 30)
+                    VStack(spacing: 12) {
+                        Image(uiImage: UIImage(named: "logo_512.png") ?? UIImage(systemName: "newspaper")!)
+                            .resizable().scaledToFit().frame(width: 112, height: 112)
                             .accessibilityHidden(true)
-                        Text(verbatim: "NewsBlur")
-                            .font(.custom("GothamNarrow-Medium", size: 38, relativeTo: .largeTitle))
-                            .shadow(color: .black.opacity(0.5), radius: 2, y: 1)
-                        Text(NBLocalization.text("A personal news reader bringing\npeople together to talk about the world."))
-                            .font(.custom("ChronicleSSm-BookItalic", size: 16, relativeTo: .subheadline))
-                            .multilineTextAlignment(.center).foregroundColor(gold)
-                            .shadow(color: .black.opacity(0.3), radius: 0, y: 1)
-                    }.padding(.top, 16)
-                    VStack(alignment: .leading, spacing: 16) {
+                        Text(verbatim: "NewsNative")
+                            .font(.largeTitle.bold())
+                    }.padding(.top, 12)
+                    VStack(alignment: .leading, spacing: 14) {
                         Text(continuation ? (model.needsLink ? NBLocalization.text("Connect your account") : NBLocalization.text("Choose your username")) : (model.signup ? NBLocalization.text("Create an account") : NBLocalization.text("Welcome back")))
-                            .font(.custom("GothamNarrow-Medium", size: 24, relativeTo: .title2))
-                        if !continuation {
+                            .font(.title2.bold())
+                        if !continuation && OnboardingAccountModel.allowsSocialSignIn {
                             VStack(alignment: .trailing, spacing: 6) {
                                 SignInWithAppleButton(.signIn, onRequest: { _ in }, onCompletion: { _ in })
-                                    .signInWithAppleButtonStyle(.white).frame(height: 50)
+                                    .signInWithAppleButtonStyle(colorScheme == .dark ? .white : .black).frame(height: 50)
                                     .allowsHitTesting(false)
                                     .accessibilityHidden(true)
                                     .overlay { Button { model.social("apple") } label: { Color.clear.contentShape(Rectangle()) }.accessibilityLabel(NBLocalization.text("Sign in with Apple")) }
@@ -577,30 +599,41 @@ struct OnboardingAccountView: View {
                             VStack(alignment: .trailing, spacing: 6) {
                                 Button { model.social("google") } label: {
                                     HStack(spacing: 12) { Image("google-signin").resizable().frame(width: 20, height: 20); Text(NBLocalization.text("Sign in with Google")).font(.system(size: 17, weight: .medium)) }.frame(maxWidth: .infinity).frame(height: 50)
-                                        .foregroundColor(.black).background(.white).clipShape(RoundedRectangle(cornerRadius: 7))
+                                        .foregroundStyle(.primary).background(Color(.tertiarySystemFill)).clipShape(RoundedRectangle(cornerRadius: 12))
                                 }
                                 if model.lastUsed == "google" { badge }
                             }
-                            HStack { Rectangle().frame(height: 1); Text(NBLocalization.text("or")).font(.caption); Rectangle().frame(height: 1) }.foregroundColor(.white.opacity(0.35))
+                            HStack { Rectangle().frame(height: 0.5); Text(NBLocalization.text("or")).font(.caption); Rectangle().frame(height: 0.5) }.foregroundStyle(.secondary)
+                        }
+                        if !continuation {
+                            field(NBLocalization.text("Server URL"), text: $model.server)
+                                .keyboardType(.URL).textContentType(.URL)
+                                .accessibilityIdentifier("onboarding.server")
                         }
                         if model.signup && !continuation {
                             field("Email", text: $model.email).keyboardType(.emailAddress).textContentType(.emailAddress)
                         }
                         if model.needsLink {
                             Text(NBLocalization.text("Enter your existing NewsBlur username or email and NewsBlur password."))
-                                .font(.subheadline)
+                                .font(.subheadline).foregroundStyle(.secondary)
                         }
                         field(model.needsUsername || (model.signup && !continuation) ? "Username" : "Username or email", text: $model.username).textContentType(.username)
                         if !model.needsUsername {
                             SecureField(model.needsLink ? "NewsBlur password" : "Password", text: $model.password,
-                                        prompt: Text(model.needsLink ? NBLocalization.text("NewsBlur password") : NBLocalization.text("Password")).foregroundColor(.white.opacity(0.65))).textContentType(model.signup && !continuation ? .newPassword : .password)
-                                .padding(15).background(.white.opacity(0.12)).clipShape(RoundedRectangle(cornerRadius: 12))
+                                        prompt: Text(model.needsLink ? NBLocalization.text("NewsBlur password") : NBLocalization.text("Password")))
+                                .textContentType(model.signup && !continuation ? .newPassword : .password)
+                                .padding(14).background(Color(.tertiarySystemFill)).clipShape(RoundedRectangle(cornerRadius: 12))
                         }
                         if !continuation && model.lastUsed == "email" { HStack { Spacer(); badge } }
-                        if let message = model.message { Text(message).font(.subheadline).foregroundColor(Color(red: 1, green: 0.84, blue: 0.60)).fixedSize(horizontal: false, vertical: true) }
-                        Button(continuation ? NBLocalization.text("Continue") : model.signup ? NBLocalization.text("Create account") : NBLocalization.text("Sign in")) { model.emailSignIn() }
-                            .buttonStyle(OnboardingAccountButtonStyle())
-                        if model.busy { ProgressView("Signing in…").tint(.white).frame(maxWidth: .infinity) }
+                        if let message = model.message {
+                            Text(message).font(.subheadline).foregroundStyle(.red).fixedSize(horizontal: false, vertical: true)
+                        }
+                        Button { model.emailSignIn() } label: {
+                            Text(continuation ? NBLocalization.text("Continue") : model.signup ? NBLocalization.text("Create account") : NBLocalization.text("Sign in"))
+                                .font(.headline).frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.borderedProminent).controlSize(.large)
+                        if model.busy { ProgressView("Signing in…").frame(maxWidth: .infinity) }
                         if model.needsUsername {
                             Button(NBLocalization.text("Connect an existing account")) { model.connectExistingAccount() }
                                 .accessibilityIdentifier("onboarding.connect-existing-account")
@@ -610,53 +643,134 @@ struct OnboardingAccountView: View {
                                 .accessibilityIdentifier("onboarding.create-new-account")
                         }
                         if continuation { Button(NBLocalization.text("Use another sign-in method")) { model.cancelContinuation() } }
-                        if model.needsLink || (!continuation && !model.signup) {
-                            Link(NBLocalization.text("Forgot your password?"), destination: URL(string: (NewsBlurAppDelegate.shared()?.url ?? "https://www.newsblur.com") + "/profile/forgot_password")!)
-                        }
-                    }.padding(22)
-                        .background {
-                            if reduceTransparency { Color(red: 0.12, green: 0.16, blue: 0.16) }
-                            else { OnboardingAccountGlass() }
-                        }
-                        .clipShape(RoundedRectangle(cornerRadius: 20))
-                        .overlay(RoundedRectangle(cornerRadius: 20).strokeBorder(.white.opacity(0.15), lineWidth: 0.5))
+                        HStack {
+                            // OnboardingAccountViewController.swift sends password resets to the server typed above.
+                            if model.needsLink || (!continuation && !model.signup),
+                               let server = model.serverURL, let resetURL = URL(string: server + "/profile/forgot_password") {
+                                Link(NBLocalization.text("Forgot Password"), destination: resetURL)
+                            }
+                            Spacer()
+                            Button(NBLocalization.text("More Information")) { showingProjectInformation = true }
+                                .accessibilityIdentifier("onboarding.more-information")
+                        }.font(.subheadline)
+                    }.padding(20)
+                        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 20))
                         .disabled(model.busy)
-                    if !continuation {
+                    if !continuation && OnboardingAccountModel.allowsAccountCreation {
                         Button(model.signup ? NBLocalization.text("Already have an account? Sign in") : NBLocalization.text("New to NewsBlur? Create an account")) {
                             model.signup.toggle(); model.message = nil
                         }.disabled(model.busy)
                     }
                 }.padding(24).frame(maxWidth: 520).frame(maxWidth: .infinity, minHeight: geometry.size.height)
             }
-        }.font(.custom("WhitneySSm-Book", size: 16, relativeTo: .body)).foregroundColor(.white).tint(gold).preferredColorScheme(.dark)
+        }.background(Color(.systemGroupedBackground).ignoresSafeArea())
+        .sheet(isPresented: $showingProjectInformation) { ProjectInformationView() }
     }
-    private var badge: some View { Text(NBLocalization.text("Last used")).font(.caption.weight(.semibold)).padding(.horizontal, 8).padding(.vertical, 3).background(.white.opacity(0.15)).clipShape(Capsule()) }
+    private var badge: some View { Text(NBLocalization.text("Last used")).font(.caption.weight(.semibold)).padding(.horizontal, 8).padding(.vertical, 3).background(Color(.tertiarySystemFill)).clipShape(Capsule()) }
     private func field(_ title: String, text: Binding<String>) -> some View {
-        TextField(title, text: text, prompt: Text(title).foregroundColor(.white.opacity(0.65))).textInputAutocapitalization(.never).autocorrectionDisabled()
-            .padding(15).background(.white.opacity(0.12)).clipShape(RoundedRectangle(cornerRadius: 12))
+        TextField(title, text: text, prompt: Text(title)).textInputAutocapitalization(.never).autocorrectionDisabled()
+            .padding(14).background(Color(.tertiarySystemFill)).clipShape(RoundedRectangle(cornerRadius: 12))
     }
 }
 
-// OnboardingAccountViewController.swift preserves the original UIKit glass treatment.
-private struct OnboardingAccountGlass: UIViewRepresentable {
-    func makeUIView(context: Context) -> UIVisualEffectView {
-        UIVisualEffectView(effect: UIBlurEffect(style: .dark))
+// OnboardingAccountViewController.swift explains NewsNative's relationship to NewsBlur and carries the copyright
+// and license notices from clients/ios/LICENSE.md, which NewsBlur's MIT License requires in copies of the software.
+struct ProjectInformationView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    static let license = """
+        The MIT License
+
+        Copyright (c) 2026 Mike Waters
+        Copyright (c) 2009 Samuel Clay, NewsBlur <samuel@newsblur.com>.
+
+        Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated \
+        documentation files (the "Software"), to deal in the Software without restriction, including without limitation \
+        the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and \
+        to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+        The above copyright notice and this permission notice shall be included in all copies or substantial portions \
+        of the Software.
+
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED \
+        TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL \
+        THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF \
+        CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER \
+        DEALINGS IN THE SOFTWARE.
+        """
+
+    // OnboardingAccountViewController.swift lists the bundled libraries in Other Sources/ with their copyright holders.
+    static let components: [(name: String, notice: String)] = [
+        ("AFNetworking", "Copyright (c) 2011–2016 Alamofire Software Foundation. MIT License."),
+        ("ARChromeActivity", "Copyright (c) 2012 Alex Robinson. MIT License."),
+        ("ABTableViewCell", "Copyright (c) 2008 Loren Brichter. MIT License."),
+        ("FMDB", "Copyright (c) 2008–2014 Flying Meat Inc. MIT License."),
+        ("Google Toolbox for Mac (NSString+HTML)", "Copyright 2006–2008 Google Inc. Apache License 2.0."),
+        ("JNWThrottledBlock", "Copyright (c) Jonathan Willing. MIT License."),
+        ("MBProgressHUD", "Copyright (c) 2009–2016 Matej Bukovinski. MIT License."),
+        ("MCSwipeTableViewCell", "Copyright (c) 2013 Mad Castle. MIT License."),
+        ("NSString+HTML", "Copyright (c) 2010 Michael Waterfall. MIT License."),
+        ("1Password App Extension", "Copyright (c) 2014–2020 AgileBits Inc. MIT License."),
+        ("PINCache", "Copyright (c) Pinterest, Inc. Apache License 2.0."),
+        ("Reachability", "Copyright (c) 2011 Tony Million. BSD License."),
+        ("SAConfettiView", "Copyright (c) Sudeep Agarwal. MIT License."),
+        ("SBJson", "Copyright (c) 2009–2011 Stig Brautaset. BSD License."),
+        ("SloppySwiper", "Copyright (c) Arkadiusz Holko. MIT License."),
+        ("THCircularProgressView", "Copyright (c) 2013 Tiago Henriques. MIT License."),
+        ("TUSafariActivity", "Copyright (c) 2012 ThinkUltimate. BSD License."),
+    ]
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    section(NBLocalization.text("An independent project"),
+                            NBLocalization.text("NewsNative is an independent app made by Mike Waters. It is not affiliated with, endorsed, or supported by NewsBlur, Inc. or Samuel Clay."))
+                    section(NBLocalization.text("Derived from NewsBlur"),
+                            NBLocalization.text("NewsNative is built from the open-source NewsBlur iOS app (github.com/samuelclay/NewsBlur), which Samuel Clay publishes under the MIT License. It has been modified to use native iOS styling and design."))
+                    section(NBLocalization.text("Compatible with NewsBlur"),
+                            NBLocalization.text("Sign in with an existing account on a NewsBlur server, either newsblur.com or a self-hosted installation. Your account, subscriptions and stories are stored and served by the server you choose. NewsNative does not operate a server of its own, and support for your account comes from that server's operator."))
+                    section(NBLocalization.text("Name and icon"),
+                            NBLocalization.text("The NewsNative name, app icon and logo are © 2026 Mike Waters, all rights reserved. They are not covered by the MIT License, so modified versions of this app must use a different name and icon."))
+                    section(NBLocalization.text("Trademarks"),
+                            NBLocalization.text("NewsBlur is the name of a service and app by NewsBlur, Inc. It appears in NewsNative only to describe compatibility."))
+                    section(NBLocalization.text("Copyright"),
+                            "NewsNative © 2026 Mike Waters.\nNewsBlur © 2009 Samuel Clay, NewsBlur.")
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(NBLocalization.text("License")).font(.headline)
+                        Text(NBLocalization.text("NewsNative's source code is released under the MIT License, the same license as the NewsBlur code it is built from."))
+                            .font(.body).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
+                        Text(verbatim: Self.license)
+                            .font(.footnote.monospaced()).foregroundStyle(.secondary).textSelection(.enabled)
+                            .padding(12).frame(maxWidth: .infinity, alignment: .leading)
+                            .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12))
+                    }
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(NBLocalization.text("Open-source components")).font(.headline)
+                        ForEach(Self.components, id: \.name) { component in
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(verbatim: component.name).font(.subheadline.weight(.semibold))
+                                Text(verbatim: component.notice).font(.footnote).foregroundStyle(.secondary)
+                            }
+                        }
+                    }
+                }.padding(20).frame(maxWidth: 640, alignment: .leading).frame(maxWidth: .infinity)
+            }
+            .background(Color(.systemGroupedBackground).ignoresSafeArea())
+            .navigationTitle(NBLocalization.text("About NewsNative"))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(NBLocalization.text("Done")) { dismiss() }
+                }
+            }
+        }
     }
-    func updateUIView(_ view: UIVisualEffectView, context: Context) {}
-}
 
-private struct OnboardingAccountButtonStyle: ButtonStyle {
-    @Environment(\.isEnabled) private var isEnabled
-
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .font(.custom("GothamNarrow-Medium", size: 17, relativeTo: .headline))
-            .foregroundColor(.white)
-            .frame(maxWidth: .infinity).padding(.vertical, 16)
-            .background(LinearGradient(colors: [Color(red: 217 / 255, green: 166 / 255, blue: 33 / 255),
-                                                Color(red: 184 / 255, green: 137 / 255, blue: 11 / 255)],
-                                       startPoint: .top, endPoint: .bottom))
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            .opacity(isEnabled ? (configuration.isPressed ? 0.8 : 1) : 0.5)
+    private func section(_ title: String, _ body: String) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title).font(.headline)
+            Text(body).font(.body).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
+        }
     }
 }
