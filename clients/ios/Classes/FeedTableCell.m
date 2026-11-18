@@ -62,6 +62,8 @@ static UIFont *textFont = nil;
 #else
         [self registerForTraitChanges:@[UITraitLayoutDirection.class] withAction:@selector(setNeedsDisplay)];
 #endif
+        // FeedTableCell.m redraws its system colors when the light or dark appearance changes.
+        [cellContent registerForTraitChanges:@[UITraitUserInterfaceStyle.class] withAction:@selector(setNeedsDisplay)];
     }
 
     return self;
@@ -211,17 +213,18 @@ static UIFont *textFont = nil;
     // FeedTableCell.m lets the shared window material continue through every sidebar row.
     backgroundColor = UIColor.clearColor;
 #else
-    backgroundColor = cell.isSocial ? UIColorFromLightSepiaMediumDarkRGB(0xD8E3DB, 0xE0D8D0, 0x3A3A3C, 0x2C2C2E) :
-                      cell.isSearch ? UIColorFromLightSepiaMediumDarkRGB(0xDBDFE6, 0xE0D8D0, 0x3A3A3C, 0x2C2C2E) :
-                      cell.isSaved ? UIColorFromLightSepiaMediumDarkRGB(0xDFDCD6, 0xE0D8D0, 0x3A3A3C, 0x2C2C2E) :
-                      UIColorFromLightSepiaMediumDarkRGB(0xF7F8F5, 0xF8ECD8, 0x48484A, 0x000000);
+    // FeedTableCell.m: shared, search and saved rows sit on the secondary background to set them apart.
+    backgroundColor = (cell.isSocial || cell.isSearch || cell.isSaved) ? UIColor.secondarySystemBackgroundColor : UIColor.systemBackgroundColor;
 #endif
     self.backgroundColor = backgroundColor;
     cell.backgroundColor = backgroundColor;
+    // FeedTableCell.m fills the opaque row itself; a background set during drawing misses this pass.
+    CGContextSetFillColorWithColor(context, backgroundColor.CGColor);
+    CGContextFillRect(context, r);
     
     if (isHighlighted) {
-        // FeedTableCell.m matches the composited Sepia folder highlight in FolderTitleView.m.
-        UIColor *highlightColor = UIColorFromLightSepiaMediumDarkRGB(0xFFFFD2, 0xF5D1A2, 0x304050, 0x000022);
+        // FeedTableCell.m uses the system selected-row gray.
+        UIColor *highlightColor = UIColor.systemGray4Color;
         
         CGContextSetFillColorWithColor(context, highlightColor.CGColor);
         UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:r cornerRadius:8];
@@ -243,16 +246,14 @@ static UIFont *textFont = nil;
                      rightToLeft:rightToLeft];
     }
     
-    UIColor *textColor = isHighlighted ?
-                         UIColorFromRGB(NEWSBLUR_BLACK_COLOR):
-                         UIColorFromRGB(0x3A3A3A);
+    UIColor *textColor = UIColor.labelColor;
     UIFont *font;
     UIFontDescriptor *fontDescriptor = [cell fontDescriptorUsingPreferredSize:UIFontTextStyleFootnote];
     if (cell.negativeCount || cell.neutralCount || cell.positiveCount) {
-        UIFontDescriptor *boldFontDescriptor = [fontDescriptor fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
-        font = [UIFont fontWithName:@"WhitneySSm-Medium" size:boldFontDescriptor.pointSize];
+        // FeedTableCell.m: the system font, semibold while the feed has unread stories.
+        font = [UIFont systemFontOfSize:fontDescriptor.pointSize weight:UIFontWeightSemibold];
     } else {
-        font = [UIFont fontWithName:@"WhitneySSm-Book" size:fontDescriptor.pointSize];
+        font = [UIFont systemFontOfSize:fontDescriptor.pointSize];
     }
     NSInteger titleOffsetY = ((r.size.height - font.pointSize) / 2) - 1;
     NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];

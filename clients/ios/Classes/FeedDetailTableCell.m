@@ -388,7 +388,7 @@ static UIFont *indicatorFont = nil;
         BOOL isComfortable = ![spacing isEqualToString:@"compact"];
         CGFloat comfortMargin = isComfortable ? 4 : 0;
         UIColor *backgroundColor = isHighlighted ?
-            UIColorFromLightSepiaMediumDarkRGB(0xFFFDEF, 0xEEE0CE, 0x303A40, 0x303030) :
+            [ThemeManager.shared resolvedColor:UIColor.systemGray5Color] :
             ThemeManager.shared.storyListBackgroundColor;
         UIColor *clusterBackgroundColor = isHighlighted ?
             UIColorFromLightSepiaMediumDarkRGB(0xEEF5FD, 0xE7D8C6, 0x38424B, 0x1A1F23) :
@@ -641,7 +641,7 @@ static UIFont *indicatorFont = nil;
             UIColorFromLightSepiaMediumDarkRGB(0xEAF3FC, 0xF1E6D7, 0x30363E, 0x232830);
     } else {
         backgroundColor = isHighlighted ?
-            UIColorFromLightSepiaMediumDarkRGB(0xFFFDEF, 0xEEE0CE, 0x303A40, 0x303030) :
+            [ThemeManager.shared resolvedColor:UIColor.systemGray5Color] :
             ThemeManager.shared.storyListBackgroundColor;
     }
     [backgroundColor set];

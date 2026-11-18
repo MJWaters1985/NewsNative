@@ -568,8 +568,11 @@ final class Test_Localization: XCTestCase {
     }
 
     private func isCountGreen(_ image: UIImage, x: Int, y: Int) -> Bool {
-        // UnreadCountView.m fills focus counts with 0x6EA74A.
-        isColor(image, x: x, y: y, red: 0x6E, green: 0xA7, blue: 0x4A)
+        // UnreadCountView.m fills focus counts with the system green for the current appearance.
+        var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
+        UIColor.systemGreen.resolvedColor(with: .current).getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+        return isColor(image, x: x, y: y, red: Int((red * 255).rounded()), green: Int((green * 255).rounded()),
+                       blue: Int((blue * 255).rounded()))
     }
 
     private func isColor(_ image: UIImage, x: Int, y: Int, red: Int, green: Int, blue: Int) -> Bool {

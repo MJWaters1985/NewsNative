@@ -89,7 +89,7 @@ static NSString *NBAccessibilitySlug(NSString *value) {
     self.backgroundColor = UIColor.clearColor;
     CGContextClearRect(context, rect);
 #else
-    [UIColorFromLightSepiaMediumDarkRGB(0xF7F8F5, 0xF3E2CB, 0x48484A, 0x38383A) set];
+    [UIColor.systemBackgroundColor set];
     CGContextFillRect(context, rect);
 #endif
     
@@ -166,11 +166,12 @@ static NSString *NBAccessibilitySlug(NSString *value) {
     
     // Folder title
 #if !TARGET_OS_MACCATALYST
-    UIColor *backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xEAECE6, 0xEBDDCC, 0x3A3A3C, 0x2C2C2E);
+    // FolderTitleView.m draws headings on the plain list background, like a native sidebar.
+    UIColor *backgroundColor = UIColor.systemBackgroundColor;
 #endif
-    UIColor *textColor = UIColorFromLightSepiaMediumDarkRGB(0x4C4D4A, 0x5C4A3D, 0xE0E0E0, 0xE8E8E8);
+    UIColor *textColor = UIColor.labelColor;
     UIFontDescriptor *boldFontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
-    UIFont *font = [UIFont fontWithName:@"WhitneySSm-Medium" size:boldFontDescriptor.pointSize];
+    UIFont *font = [UIFont systemFontOfSize:boldFontDescriptor.pointSize weight:UIFontWeightSemibold];
     NSInteger titleOffsetY = ((rect.size.height - font.pointSize) / 2) - 1;
     NSString *folderTitle;
     BOOL isUserFolderName = NO;
@@ -208,7 +209,6 @@ static NSString *NBAccessibilitySlug(NSString *value) {
         folderTitle = folderDisplayName;
         isUserFolderName = YES;
 #if !TARGET_OS_MACCATALYST
-        backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xF0F2ED, 0xF3E2CB, 0x414143, 0x323234);
 #endif
     }
 
@@ -217,8 +217,6 @@ static NSString *NBAccessibilitySlug(NSString *value) {
     CGContextFillRect(context, [self nb_directionalRect:rect within:headerBounds]);
 #endif
 
-    UIColor *shadowColor = UIColorFromLightSepiaMediumDarkRGB(0xF0F2E9, 0xEBDDCC, 0x2C2C2E, 0x1C1C1E);
-    CGContextSetShadowWithColor(context, CGSizeMake(0, 1), 0, [shadowColor CGColor]);
 
     NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
     paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -278,11 +276,11 @@ static NSString *NBAccessibilitySlug(NSString *value) {
     if (!appDelegate.hasNoSites) {
         NSInteger disclosureHeight = 29;
         UIButton *disclosureButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        // FolderTitleView.m points the collapsed disclosure arrow toward the reading direction.
-        UIImage *collapsedImage = [UIImage imageNamed:@"disclosure.png"];
-        if (self.nb_isRightToLeft) {
-            collapsedImage = [collapsedImage imageWithHorizontallyFlippedOrientation];
-        }
+        // FolderTitleView.m uses SF Symbol chevrons; chevron.forward follows the reading direction.
+        UIImageSymbolConfiguration *chevronConfiguration = [UIImageSymbolConfiguration configurationWithPointSize:13 weight:UIImageSymbolWeightSemibold];
+        UIImage *collapsedImage = [UIImage systemImageNamed:@"chevron.forward" withConfiguration:chevronConfiguration];
+        UIImage *expandedImage = [UIImage systemImageNamed:@"chevron.down" withConfiguration:chevronConfiguration];
+        disclosureButton.tintColor = UIColor.tertiaryLabelColor;
         UIImage *disclosureImage = collapsedImage;
         [disclosureButton setImage:disclosureImage forState:UIControlStateNormal];
         disclosureButton.frame = [self nb_directionalRect:CGRectMake(customView.frame.size.width - 32, CGRectGetMidY(rect)-disclosureHeight/2-1, disclosureHeight, disclosureHeight) within:customView.bounds];
@@ -291,33 +289,22 @@ static NSString *NBAccessibilitySlug(NSString *value) {
         if (section == NewsBlurTopSectionAllStories) {
             BOOL anyExpanded = [appDelegate.feedsViewController anyFolderExpanded];
             UIImage *disclosureImage = anyExpanded ?
-                [UIImage imageNamed:@"disclosure_down.png"] :
+                expandedImage :
                 collapsedImage;
             [disclosureButton setImage:disclosureImage forState:UIControlStateNormal];
 
             disclosureButton.tag = section;
             [disclosureButton addTarget:appDelegate.feedsViewController action:@selector(didToggleAllFolders:) forControlEvents:UIControlEventTouchUpInside];
 
-            UIImage *disclosureBorder = [UIImage imageNamed:@"disclosure_border"];
-            if ([[[ThemeManager themeManager] effectiveTheme] isEqualToString:ThemeStyleDark]) {
-                disclosureBorder = [UIImage imageNamed:@"disclosure_border_dark"];
-            }
-            [disclosureBorder drawInRect:[self nb_directionalRect:CGRectMake(rect.origin.x + customView.frame.size.width - 32, CGRectGetMidY(rect)-disclosureHeight/2 - 1, disclosureHeight, disclosureHeight) within:headerBounds]];
         // Add collapse button to regular folders
         } else if (section != NewsBlurTopSectionDashboard && section != NewsBlurTopSectionDiscoverSites && section != NewsBlurTopSectionInfrequentSiteStories && ![folderName isEqual:@"daily_briefing"] && ![folderName isEqual:@"read_stories"] && ![folderName isEqual:@"interactions"] && ![folderName isEqual:@"river_global"] && ![folderName hasPrefix:@"trending:"] && ![folderName isEqual:@"widget_stories"] && ![folderName isEqual:@"try_feed"]) {
             if (!isFolderCollapsed) {
-                UIImage *disclosureImage = [UIImage imageNamed:@"disclosure_down.png"];
-                [disclosureButton setImage:disclosureImage forState:UIControlStateNormal];
+                [disclosureButton setImage:expandedImage forState:UIControlStateNormal];
             }
 
             disclosureButton.tag = section;
             [disclosureButton addTarget:appDelegate.feedsViewController action:@selector(didCollapseFolder:) forControlEvents:UIControlEventTouchUpInside];
 
-            UIImage *disclosureBorder = [UIImage imageNamed:@"disclosure_border"];
-            if ([[[ThemeManager themeManager] effectiveTheme] isEqualToString:ThemeStyleDark]) {
-                disclosureBorder = [UIImage imageNamed:@"disclosure_border_dark"];
-            }
-            [disclosureBorder drawInRect:[self nb_directionalRect:CGRectMake(rect.origin.x + customView.frame.size.width - 32, CGRectGetMidY(rect)-disclosureHeight/2 - 1, disclosureHeight, disclosureHeight) within:headerBounds]];
         } else {
             // Dashboard/Infrequent/other special sections don't get a button
             [disclosureButton setUserInteractionEnabled:NO];

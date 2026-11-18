@@ -3197,13 +3197,8 @@ static BOOL NBBoolPreferenceValue(id value) {
                                     scrollPosition:UITableViewScrollPositionNone];
     } else if (self.currentSection >= 0) {
         FolderTitleView *title = self.folderTitleViews[@(self.currentSection)];
-        UIColor *color = UIColorFromLightSepiaMediumDarkRGB(0xFFFFD2, 0xF7E9D8, 0x304050, 0x000022);
-        CGFloat hue;
-        CGFloat saturation;
-        CGFloat brightness;
-        CGFloat alpha;
-        [color getHue:&hue saturation:&saturation brightness:&brightness alpha:&alpha];
-        color = [UIColor colorWithHue:hue saturation:1 brightness:1 alpha:alpha];
+        // FeedsObjCViewController.m marks the selected folder with the translucent system selection fill.
+        UIColor *color = [ThemeManager.shared resolvedColor:UIColor.systemFillColor];
         
         title.selectionColor = color;
         title.invisibleHeaderButton.backgroundColor = color;

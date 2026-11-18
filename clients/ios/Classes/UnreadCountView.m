@@ -23,7 +23,7 @@ const int COUNT_HEIGHT = 18;
 
 + (void) initialize {
     if (self == [UnreadCountView class]) {
-        indicatorFont = [UIFont boldSystemFontOfSize:12];
+        indicatorFont = [UIFont monospacedDigitSystemFontOfSize:12 weight:UIFontWeightSemibold];
     }
 }
 
@@ -70,34 +70,19 @@ const int COUNT_HEIGHT = 18;
         // UnreadCountView.m moves the counts to the left edge in a right-to-left feed list.
         rr = [NBLocalization directionalRect:rr within:r rightToLeft:rightToLeft];
         
-        if (blueCount) {
-            [UIColorFromFixedRGB(0x11448B) set];
-        } else {
-            [UIColorFromFixedRGB(0x6EA74A) set];
-        }
-        [UIView drawRoundRectangleInRect:rr withRadius:4];
-        
-        
+        // UnreadCountView.m draws native capsule badges: blue for saved, green for focus stories.
+        [(blueCount ? UIColor.systemBlueColor : UIColor.systemGreenColor) setFill];
+        [[UIBezierPath bezierPathWithRoundedRect:rr cornerRadius:rr.size.height / 2] fill];
+
         NSString *psStr = [NSString stringWithFormat:@"%ld", (long)ps];
         CGSize size = [psStr sizeWithAttributes:@{NSFontAttributeName: indicatorFont}];
         float x_pos = (rr.size.width - size.width) / 2;
         float y_pos = (rr.size.height - size.height) / 2;
-        
-        UIColor *psColor;
-        if (blueCount) {
-            psColor = UIColorFromFixedRGB(NEWSBLUR_BLACK_COLOR);
-        } else {
-            psColor = UIColorFromFixedRGB(0x4E872A);
-        }
-        [psStr
-         drawAtPoint:CGPointMake(rr.origin.x + x_pos, rr.origin.y + y_pos + 1)
-         withAttributes:@{NSFontAttributeName: indicatorFont,
-                          NSForegroundColorAttributeName: psColor}];
-        
+
         [psStr
          drawAtPoint:CGPointMake(rr.origin.x + x_pos, rr.origin.y + y_pos)
          withAttributes:@{NSFontAttributeName: indicatorFont,
-                          NSForegroundColorAttributeName: UIColorFromFixedRGB(NEWSBLUR_WHITE_COLOR)}];
+                          NSForegroundColorAttributeName: UIColor.whiteColor}];
     }
     
     if (nt > 0 && appDelegate.selectedIntelligence <= 0) {        
@@ -119,23 +104,19 @@ const int COUNT_HEIGHT = 18;
         }
         rr = [NBLocalization directionalRect:rr within:r rightToLeft:rightToLeft];
         
-        [UIColorFromLightDarkRGB(0xB3B6AD, 0xA3A69D) set];
-        [UIView drawRoundRectangleInRect:rr withRadius:4];        
-        
+        // UnreadCountView.m: unread counts use a neutral system fill with secondary text.
+        [UIColor.tertiarySystemFillColor setFill];
+        [[UIBezierPath bezierPathWithRoundedRect:rr cornerRadius:rr.size.height / 2] fill];
+
         NSString *ntStr = [NSString stringWithFormat:@"%ld", (long)nt];
         CGSize size = [ntStr sizeWithAttributes:@{NSFontAttributeName: indicatorFont}];
         float x_pos = (rr.size.width - size.width) / 2;
         float y_pos = (rr.size.height - size.height) / 2;
-        
-        [ntStr
-         drawAtPoint:CGPointMake(rr.origin.x + x_pos, rr.origin.y + y_pos + 1)
-         withAttributes:@{NSFontAttributeName: indicatorFont,
-                          NSForegroundColorAttributeName:UIColorFromLightSepiaMediumDarkRGB(0x93968D, 0x93968D, 0x93968D, 0x93968D)}];
-        
+
         [ntStr
          drawAtPoint:CGPointMake(rr.origin.x + x_pos, rr.origin.y + y_pos)
          withAttributes:@{NSFontAttributeName: indicatorFont,
-                          NSForegroundColorAttributeName:UIColorFromLightSepiaMediumDarkRGB(0xFFFFFF, 0xFAF5ED, 0x606060, 0x000000)}];
+                          NSForegroundColorAttributeName: UIColor.secondaryLabelColor}];
     }
 }
 
