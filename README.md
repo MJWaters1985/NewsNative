@@ -36,6 +36,12 @@ NewsNative is an independent app made by Mike Waters. It is not affiliated with,
 
 NewsNative is built from the open-source NewsBlur iOS app, which Samuel Clay publishes under the MIT License. It has been modified to use native iOS styling and design. NewsBlur is the name of a service and app by NewsBlur, Inc., and appears here only to describe compatibility.
 
+## Support
+
+NewsNative is a free, one-person project. Problems and ideas go in
+[GitHub issues](https://github.com/MJWaters1985/NewsNative/issues). If it saves you time, you can
+[buy me a coffee](https://buymeacoffee.com/mjwaters1985).
+
 ## License
 
 NewsNative's source code is released under the MIT License, the same license as the NewsBlur code it is built from. The NewsNative name, app icon and logo are © 2026 Mike Waters, all rights reserved, and are not covered by that license, so modified versions must use a different name and icon. See [`clients/ios/LICENSE.md`](clients/ios/LICENSE.md).

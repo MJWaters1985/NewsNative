@@ -61,22 +61,11 @@ import UIKit
     static var isForced: Bool { ProcessInfo.processInfo.arguments.contains(forceArgument) }
     static var startsInGrid: Bool { ProcessInfo.processInfo.arguments.contains(gridArgument) }
 
-    // LanguageChooserView.swift stays out of unit tests and the UI-test harness, which drive their own screens.
-    private static var isAutomatedTest: Bool {
-        ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil ||
-            ProcessInfo.processInfo.arguments.contains("-newsblur-ui-testing")
-    }
-
-    // LanguageChooserView.swift only asks people still on automatic detection. Someone who already picked a
-    // language never needs the dialog, so it is marked seen without showing.
+    // LanguageChooserView.swift never offers the one-time chooser in NewsNative: the sign-in screen
+    // (OnboardingAccountViewController.swift) already asks for a language, so neither the setup step nor the
+    // sheet after the feed list loads appears. Preferences and the Mac Language menu still change it.
     private static func shouldOffer() -> Bool {
-        if isForced { return true }
-        guard !isAutomatedTest, !seen else { return false }
-        guard NBLocalization.language == "auto" else {
-            seen = true
-            return false
-        }
-        return true
+        isForced
     }
 
     // OnboardingViewController.swift asks once, when setup opens, whether its first step is the language step.
