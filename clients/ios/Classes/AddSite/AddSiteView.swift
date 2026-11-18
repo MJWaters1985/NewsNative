@@ -88,7 +88,7 @@ private struct AddSiteColors {
 @available(iOS 15.0, *)
 struct AddSiteView: View {
     @ObservedObject var viewModel: AddSiteViewModel
-    @StateObject private var themeObserver = AskAIThemeObserver()
+    @StateObject private var themeObserver = ThemeObserver()
     var onDismiss: () -> Void
     var onEditingChanged: ((Bool) -> Void)?
     var onDiscover: ((DiscoverTab) -> Void)?

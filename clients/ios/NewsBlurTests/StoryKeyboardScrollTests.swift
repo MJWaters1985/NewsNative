@@ -221,7 +221,6 @@ import WebKit
         XCTAssertEqual(pages.nextUnreadCount, 1)
         XCTAssertEqual(pages.unreadToggleCount, 2)
         XCTAssertEqual(pages.originalCount, 2)
-        XCTAssertEqual(pages.trainerCount, 1)
         XCTAssertEqual(pages.textViewCount, 1)
         XCTAssertEqual(page.pageDownCount, 1)
         XCTAssertEqual(page.pageUpCount, 1)
@@ -297,7 +296,7 @@ import WebKit
     }
 
     private static let mirroredStoryShortcuts: [(String, UIKeyModifierFlags)] = [
-        ("j", []), ("k", []), ("n", []), ("u", []), ("m", []), ("o", []), ("v", []), ("t", []), ("\r", .shift),
+        ("j", []), ("k", []), ("n", []), ("u", []), ("m", []), ("o", []), ("v", []), ("\r", .shift),
         (" ", []), (" ", .shift), ("c", []), ("s", .shift),
     ]
 
@@ -488,7 +487,6 @@ import WebKit
     var nextUnreadCount = 0
     var unreadToggleCount = 0
     var originalCount = 0
-    var trainerCount = 0
     var textViewCount = 0
     override func loadView() { view = UIView(frame: CGRect(x: 400, y: 0, width: 400, height: 600)) }
     override func viewDidLoad() {}
@@ -503,7 +501,6 @@ import WebKit
     override func doNextUnreadStory(_ sender: Any!) { nextUnreadCount += 1 }
     override func toggleStoryUnread(_ sender: Any!) { unreadToggleCount += 1 }
     override func showOriginalSubview(_ sender: Any!) { originalCount += 1 }
-    override func openStoryTrainerFromKeyboard(_ sender: Any!) { trainerCount += 1 }
     override func toggleTextView(_ sender: Any!) { textViewCount += 1 }
 }
 

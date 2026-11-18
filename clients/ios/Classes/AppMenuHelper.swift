@@ -100,12 +100,6 @@ class AppMenuHelper: NSObject {
             ]),
             
             UIMenu(title: "", options: .displayInline, children: [
-                UICommand(title: NBLocalization.text("Premium"),
-                          image: UIImage(systemName: "crown"),
-                          action: #selector(BaseViewController.showPremium(_:))),
-            ]),
-            
-            UIMenu(title: "", options: .displayInline, children: [
                 UIKeyCommand(title: NBLocalization.text("Log Out"),
                              image: UIImage(systemName: "rectangle.portrait.and.arrow.right"),
                              action: #selector(BaseViewController.showLogout(_:)),

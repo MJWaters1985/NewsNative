@@ -179,7 +179,6 @@
 - (IBAction)autoscrollFaster:(UIButton *)sender;
 
 - (IBAction)openSendToDialog:(id)sender;
-- (void)openStoryTrainerFromKeyboard:(id)sender;
 - (IBAction)doNextUnreadStory:(id)sender;
 - (IBAction)doPreviousStory:(id)sender;
 - (void)changeToNextPage:(id)sender;

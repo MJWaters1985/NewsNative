@@ -44,7 +44,7 @@ import Foundation
     private var compiledRegexes: [String: NSRegularExpression] = [:]
     private var invalidPatterns: Set<String> = []
     /// A pattern that runs out of time on one story isn't searched again this pass, so a pattern that backtracks
-    /// costs the main thread one TrainerRegexMatcher.drawingBudget rather than one per loaded story. The server
+    /// costs the main thread one ClassifierRegexMatcher.drawingBudget rather than one per loaded story. The server
     /// gives each search twice that, so the app can't tell whether it matches and keeps the server's score.
     private var timedOutSearches: Set<RegexSearch> = []
 
@@ -189,13 +189,13 @@ import Foundation
     /// Regexes are case insensitive, like the server's safe_regex_match. The app can't tell whether a pattern matches
     /// when the search runs out of time, or when NSRegularExpression rejects it: apps/analyzer/views.py only saves
     /// patterns Python's re compiles, and some of those, like a (?P<name>...) group, aren't valid ICU. A search gets
-    /// whatever is left of the pass's budget when that's less than TrainerRegexMatcher.drawingBudget.
+    /// whatever is left of the pass's budget when that's less than ClassifierRegexMatcher.drawingBudget.
     private func regexScore(for key: String, in text: String) -> Int? {
         score(for: key, in: text) { pattern in
             let search = RegexSearch(classifierKey: key, pattern: pattern)
             let remaining = remainingBudget
             guard remaining > 0, !timedOutSearches.contains(search), let regex = regex(for: pattern) else { return nil }
-            switch TrainerRegexMatcher.outcome(of: regex, in: text, budget: min(TrainerRegexMatcher.drawingBudget, remaining)) {
+            switch ClassifierRegexMatcher.outcome(of: regex, in: text, budget: min(ClassifierRegexMatcher.drawingBudget, remaining)) {
             case .matches:
                 return true
             case .noMatch:

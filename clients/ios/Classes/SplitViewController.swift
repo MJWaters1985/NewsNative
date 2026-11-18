@@ -188,8 +188,6 @@ class SplitViewController: UISplitViewController {
 #endif
         feedsDividerView.updateTheme()
         setNeedsStatusBarAppearanceUpdate()
-        // SplitViewController.swift carries theme changes to the Listen mini player and sheets.
-        ListenStoryBridge.themeDidChange()
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {

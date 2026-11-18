@@ -1003,12 +1003,11 @@ private final class ReadFadeAppDelegate: NewsBlurAppDelegate {
         let parent = UIView(frame: CGRect(x: 0, y: 0, width: 320, height: 600))
         let toolbar = StoryToolbar()
         toolbar.setup(in: parent)
-        toolbar.listenButton.isHidden = false
         XCTAssertNil(toolbar.backButton.layer.animation(forKey: "readerEntrance"))
         let window = motionWindow(containing: [parent])
         defer { window.isHidden = true }
         parent.layoutIfNeeded()
-        let controls = [toolbar.backButton, toolbar.listenButton, toolbar.settingsButton, toolbar.browserButton]
+        let controls = [toolbar.backButton, toolbar.settingsButton, toolbar.browserButton]
         for control in controls {
             XCTAssertNotNil(control.layer.animation(forKey: "readerEntrance"))
             control.layer.removeAllAnimations()
@@ -1016,10 +1015,10 @@ private final class ReadFadeAppDelegate: NewsBlurAppDelegate {
         toolbar.setNeedsLayout()
         toolbar.layoutIfNeeded()
         XCTAssertTrue(controls.allSatisfy { $0.layer.animationKeys()?.isEmpty ?? true })
-        toolbar.listenButton.accessibilityLabel = "Pause listening"
+        toolbar.browserButton.accessibilityLabel = "Show original story in Safari"
         toolbar.setNeedsLayout()
         toolbar.layoutIfNeeded()
-        XCTAssertNotNil(toolbar.listenButton.layer.animation(forKey: "readerControlChange"))
+        XCTAssertNotNil(toolbar.browserButton.layer.animation(forKey: "readerControlChange"))
         XCTAssertNil(toolbar.backButton.layer.animation(forKey: "readerEntrance"))
         XCTAssertNil(toolbar.settingsButton.layer.animation(forKey: "readerControlChange"))
     }

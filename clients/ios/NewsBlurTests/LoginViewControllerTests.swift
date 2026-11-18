@@ -1301,31 +1301,6 @@ final class DetailViewControllerTests: XCTestCase {
         }
     }
 
-    func test_keyboardTrainerUsesTheVisibleReaderSettingsAnchor() {
-        for vertical in [true, false] {
-            let app = DuoTrainerAnchorApp()
-            let detail = DetailViewController()
-            detail.appDelegate = app
-            app.detailViewController = detail
-            let pages = DuoTrainerAnchorPages(nibName: nil, bundle: nil)
-            pages.appDelegate = app
-            pages.simulatedVerticalToolbar = vertical
-            detail.storyPagesViewController = pages
-            let customSettings = UIBarButtonItem(customView: UIButton())
-            let nativeSettings = UIBarButtonItem(title: "Story settings", style: .plain, target: nil, action: nil)
-            pages.fontSettingsButton = customSettings
-            // LoginViewControllerTests.swift supplies the native item without mounting the entire reader.
-            pages.setValue(nativeSettings, forKey: "verticalSettingsButton")
-            let source = BaseViewController()
-            source.appDelegate = app
-
-            source.showTrain(nil)
-
-            XCTAssertTrue(app.trainerAnchor === (vertical ? nativeSettings : customSettings),
-                          "Keyboard training must anchor to the same visible settings control as the reader")
-        }
-    }
-
     func test_expandedPhoneUsesTwoReaderColumnsRegardlessOfAspectRatio() {
         let defaults = UserDefaults.standard
         let original = defaults.object(forKey: "split_behavior")
@@ -2975,13 +2950,6 @@ final class DetailViewControllerTests: XCTestCase {
 @MainActor private final class DuoTrainerAnchorPages: StoryPagesViewController {
     var simulatedVerticalToolbar = false
     override var usesVerticalReaderToolbar: Bool { simulatedVerticalToolbar }
-}
-
-@MainActor private final class DuoTrainerAnchorApp: NewsBlurAppDelegate {
-    var trainerAnchor: AnyObject?
-    override func openTrainStory(_ sender: Any!) {
-        trainerAnchor = sender as AnyObject?
-    }
 }
 
 @MainActor private final class DuoFeedSelectionApp: NewsBlurAppDelegate {

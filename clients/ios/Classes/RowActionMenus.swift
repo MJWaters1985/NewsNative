@@ -50,9 +50,6 @@ import UIKit
         case "open_send_to":
             app.activeStory = story.dictionary
             app.showSend(to: controller, sender: controller.view)
-        case "train_story":
-            app.activeStory = story.dictionary
-            app.openTrainStory(controller.view)
         case "ask":
             app.activeStory = story.dictionary
             app.showMarkOlderNewerReadMenu(with: controller.storiesCollection, story: story.dictionary,
@@ -93,17 +90,10 @@ import UIKit
                 ]
             }
         }
-        var saving = [action("save", story.isSaved ? NBLocalization.text("Unsave story") : NBLocalization.text("Save story"), story.isSaved ? "bookmark.slash" : "bookmark") {
+        let saving = [action("save", story.isSaved ? NBLocalization.text("Unsave story") : NBLocalization.text("Save story"), story.isSaved ? "bookmark.slash" : "bookmark") {
             collection.toggleStorySaved(dictionary)
             controller.reload()
         }]
-        if ListenStoryBridge.offersQueue(forStory: dictionary) {
-            // RowActionMenus.swift adds the pressed story to Listen's Up Next without opening it (Listen/ListenQueue.swift).
-            let queued = ListenStoryBridge.isQueued(dictionary)
-            saving.append(action("up-next", ListenStoryBridge.queueMenuTitle(forStory: dictionary), queued ? "text.badge.minus" : "text.badge.plus") {
-                ListenStoryBridge.toggleQueue(forStory: dictionary)
-            })
-        }
         var sharing: [RowMenuAction] = []
         if let permalink = dictionary["story_permalink"] as? String, let url = URL(string: permalink) {
             sharing = [
@@ -136,18 +126,6 @@ import UIKit
            let id = dictionary["story_feed_id"], let feed = app.getFeed(String(describing: id)), !feed.isEmpty {
             tools.append(action("open-feed", NBLocalization.text("Open feed"), "dot.radiowaves.left.and.right") {
                 app.loadFeed(String(describing: id), withStory: nil, animated: true)
-            })
-        }
-        if NewsNativeFeatures.training {
-            tools.append(action("train", NBLocalization.text("Train intelligence…"), "slider.horizontal.3") {
-                app.activeStory = dictionary
-                app.openTrainStory(source)
-            })
-        }
-        let defaults = UserDefaults.standard
-        if NewsNativeFeatures.askAI && (defaults.object(forKey: "show_ask_ai") == nil || defaults.bool(forKey: "show_ask_ai")) {
-            tools.append(action("ask-ai", NBLocalization.text("Ask AI…"), "sparkles") {
-                app.openAskAIDialog(dictionary)
             })
         }
         return [reading, saving, sharing, tools].filter { !$0.isEmpty }
@@ -194,10 +172,6 @@ extension FeedsViewController: UIContextMenuInteractionDelegate {
             tools = [
                 action("statistics", NBLocalization.text("Statistics"), "chart.bar") { app.openStatistics(withFeed: feedID, sender: source) }
             ]
-            // RowActionMenus.swift: Related sites come from AI embeddings, set aside in NewsNativeFeatures.swift.
-            if NewsNativeFeatures.aiFeatures {
-                tools.append(action("related", NBLocalization.text("Related sites"), "sparkles") { app.openDiscoverFeedsDialog(fromSettingsButton: feedID, sourceView: source) })
-            }
             organize.append(action("rename", NBLocalization.text("Rename site…"), "pencil") { [weak self] in
                 self?.renameMenuTarget(title: title, path: "/reader/rename_feed", parameters: ["feed_id": feedID], nameKey: "feed_title")
             })

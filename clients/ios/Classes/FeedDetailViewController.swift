@@ -1149,10 +1149,6 @@ extension FeedDetailViewController: FeedDetailInteraction {
             appDelegate.storyPagesViewController.traverseBottomConstraint.constant = gap
         }
     }
-
-    func openPremiumDialog() {
-        appDelegate.showPremiumDialog()
-    }
 }
 
 private let dailyBriefingBuiltInSectionKeys = [

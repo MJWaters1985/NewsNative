@@ -24,8 +24,6 @@ class StoryToolbar: UIView {
     weak var delegate: StoryToolbarDelegate?
 
     let backButton = UIButton(type: .system)
-    /// StoryToolbar.swift: Listen/ListenToolbarButton.swift keeps this button's symbol, tint and visibility current.
-    let listenButton = UIButton(type: .system)
     let settingsButton = UIButton(type: .system)
     let browserButton = UIButton(type: .system)
 
@@ -37,7 +35,7 @@ class StoryToolbar: UIView {
     private let backChevron = UIImageView()
     private let backLabel = UILabel()
     private let separator = UIView()
-    /// Listen, settings and browser, so a hidden Listen button closes its gap.
+    /// Settings and browser.
     private let rightStack = UIStackView()
 
     private var buttonFont: UIFont {
@@ -67,7 +65,7 @@ class StoryToolbar: UIView {
     }
 
     func updateMotion() {
-        ReaderMotion.controls([backButton, listenButton, settingsButton, browserButton], in: self)
+        ReaderMotion.controls([backButton, settingsButton, browserButton], in: self)
     }
 
     override func layoutSubviews() {
@@ -120,14 +118,6 @@ class StoryToolbar: UIView {
         rightStack.spacing = 4
         rightStack.translatesAutoresizingMaskIntoConstraints = false
         addSubview(rightStack)
-
-        // Listen button: StoryPagesObjCViewController.m wires it to toggleListen: and hands it to ListenToolbarButton.
-        listenButton.setImage(UIImage(systemName: "headphones"), for: .normal)
-        listenButton.translatesAutoresizingMaskIntoConstraints = false
-        listenButton.accessibilityLabel = NBLocalization.text("Listen")
-        listenButton.accessibilityIdentifier = "story-reader-listen"
-        listenButton.isHidden = !ListenToolbarButton.isShown
-        rightStack.addArrangedSubview(listenButton)
 
         // Settings (gear) button
         let settingsImage = Utilities.imageNamed("settings", sized: 24)?
@@ -184,11 +174,9 @@ class StoryToolbar: UIView {
             backLabel.centerYAnchor.constraint(equalTo: backButton.centerYAnchor),
             backLabel.trailingAnchor.constraint(lessThanOrEqualTo: backButton.trailingAnchor),
 
-            // Right buttons: Listen, settings, browser
+            // Right buttons: settings, browser
             rightStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
             rightStack.centerYAnchor.constraint(equalTo: centerYAnchor),
-            listenButton.widthAnchor.constraint(equalToConstant: 44),
-            listenButton.heightAnchor.constraint(equalToConstant: 44),
             settingsButton.widthAnchor.constraint(equalToConstant: 44),
             settingsButton.heightAnchor.constraint(equalToConstant: 44),
             browserButton.widthAnchor.constraint(equalToConstant: 44),
@@ -215,7 +203,6 @@ class StoryToolbar: UIView {
         backLabel.textColor = tint
         settingsButton.tintColor = tint
         browserButton.tintColor = tint
-        // StoryToolbar.swift leaves listenButton's tint to ListenToolbarButton, which colors the story being read.
 
         let sepColor = tm.color(fromLightRGB: 0xCED0CC, sepiaRGB: 0xD4C8B8, mediumRGB: 0x555555, darkRGB: 0x3A3A3A)
         separator.backgroundColor = sepColor

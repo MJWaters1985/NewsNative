@@ -25,23 +25,17 @@ struct FeedDetailLoadingView: View {
                 }
 
                 if feedDetailInteraction.isPremiumRestriction {
-                    Text(NBLocalization.text("Reading by folder is only available to"))
+                    // FeedDetailLoadingView.swift states the server's limit without offering an upgrade.
+                    Text(NBLocalization.text("Reading by folder isn't available for this account."))
                         .font(.system(size: 14))
-                        .foregroundColor(Color.themed([0x0c0c0c]))
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
                         .padding(.top)
-                    Text(NBLocalization.text("premium subscribers"))
-                        .font(.system(size: 14))
-                        .foregroundColor(Color.themed([0x2030C0]))
                 }
             }
             .padding(cache.isGrid ? 0 : 20)
             .modifier(ReaderEntrance(session: cache.motionSession, key: "end-of-stories"))
             .transition(.opacity.combined(with: .offset(y: 10)))
-            .onTapGesture {
-                if feedDetailInteraction.isPremiumRestriction {
-                    feedDetailInteraction.openPremiumDialog()
-                }
-            }
         } else if cache.isGrid {
             RoundedRectangle(cornerRadius: 10)
                 .fill(animate ? Color.themed([0x5C89C9, 0x666666]) : Color.themed([0xE1EBFF, 0x222222]))

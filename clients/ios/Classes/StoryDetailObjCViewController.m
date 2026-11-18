@@ -243,21 +243,14 @@
         [self.webView evaluateJavaScript:[NSString stringWithFormat:@"newsblurOpenImageAt(%f, %f, %f, %f, %f)",
                                          pt.x, pt.y, offset.x, offset.y, self.webView.bounds.size.width] completionHandler:^(id openedImage, NSError *error) {
             if ([openedImage isKindOfClass:NSNumber.class] && [openedImage boolValue]) return;
-            if (![self isKindOfClass:StoryDetailViewController.class]) {
-                [self continueTapAtPoint:pt];
-                return;
-            }
-            // Listen/ListenStoryBridge.swift jumps playback to a tapped paragraph of the story being read aloud.
-            [(StoryDetailViewController *)self listenHandleTapAt:pt completion:^(BOOL handled) {
-                if (!handled) [self continueTapAtPoint:pt];
-            }];
+            [self continueTapAtPoint:pt];
         }];
     }
 }
 
 - (void)continueTapAtPoint:(CGPoint)pt {
     [self.webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'tagName');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *tagName, NSError *error) {
-        // Special case to handle the story title, Train, Save, and Share buttons.
+        // Special case to handle the story title, Save, and Share buttons.
         if ([self isTag:tagName equalTo:@"DIV"]) {
             [self.webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'id');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *identifier, NSError *error) {
                 [self.webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'outerHTML');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *outerHTML, NSError *error) {
@@ -370,7 +363,6 @@
     
     if (!appDelegate.showingSafariViewController &&
         appDelegate.feedsNavigationController.visibleViewController != (UIViewController *)appDelegate.shareViewController &&
-        appDelegate.feedsNavigationController.visibleViewController != (UIViewController *)appDelegate.trainerViewController &&
         appDelegate.feedsNavigationController.visibleViewController != (UIViewController *)appDelegate.originalStoryViewController) {
         [self clearStory];
     }
@@ -533,10 +525,6 @@
     [contentController removeScriptMessageHandlerForName:@"newsblurStoryImage"];
     [contentController addScriptMessageHandler:[[StoryReadyMessageHandler alloc] initWithPage:self]
                                          name:@"newsblurStoryImage"];
-    // Listen/ListenMediaStoryBridge.swift plays the story's audio cards in the app's player.
-    [contentController removeScriptMessageHandlerForName:@"newsblurStoryMedia"];
-    [contentController addScriptMessageHandler:[[StoryReadyMessageHandler alloc] initWithPage:self]
-                                         name:@"newsblurStoryMedia"];
     // Use HTTPS baseURL so YouTube embeds get a valid Referer header (fixes Error 153).
     // CSS/JS are inlined directly in the HTML to avoid custom scheme issues.
     static NSURL *baseURL;
@@ -934,9 +922,6 @@
     NSString *markJS = [assetCache textForResource:@"mark" ofType:@"js"];
     NSString *storyDetailJS = [assetCache textForResource:@"storyDetailView" ofType:@"js"];
     NSString *fastTouchJS = [assetCache textForResource:@"fastTouch" ofType:@"js"];
-    // Listen/ListenMediaStoryBridge.swift: labels and state for the audio cards storyDetailView.js draws. It goes
-    // ahead of the bundled scripts so those stay one unchanged run (StoryDetailAssetPerformanceTests.swift).
-    NSString *mediaConfigJS = [ListenMediaStoryBridge configScriptForStory:self.activeStory];
 
     // set up layout values based on iPad/iPhone
     headerString = [NSString stringWithFormat:@
@@ -949,9 +934,8 @@
                     "<script>%@</script>"
                     "<script>%@</script>"
                     "<script>%@</script>"
-                    "<script>%@</script>"
                     "<script>%@</script>",
-                    mediaConfigJS, zeptoJS, fitvidJS, markJS, storyDetailJS, fastTouchJS];
+                    zeptoJS, fitvidJS, markJS, storyDetailJS, fastTouchJS];
     
     sharingHtmlString = [self getSideOptions];
 
@@ -1578,9 +1562,9 @@
                                  objectForKey:@"authors"]
                                 objectForKey:author] intValue];
             NSString *authorIcon = [self scoreIconHtml:authorScore];
-            storyAuthor = [NSString stringWithFormat:@"<span class=\"NB-middot\">&middot;</span><a href=\"http://ios.newsblur.com/classify-author/%@\" "
-                           "class=\"NB-story-author %@\" id=\"NB-story-author\"><div class=\"NB-highlight\"></div>%@%@</a>",
-                           author,
+            // StoryDetailObjCViewController.m shows the author's score from the server; NewsNative doesn't train it.
+            storyAuthor = [NSString stringWithFormat:@"<span class=\"NB-middot\">&middot;</span><span "
+                           "class=\"NB-story-author %@\" id=\"NB-story-author\">%@%@</span>",
                            authorScore > 0 ? @"NB-story-author-positive" : authorScore < 0 ? @"NB-story-author-negative" : @"",
                            author,
                            authorIcon];
@@ -1596,9 +1580,8 @@
                                   objectForKey:@"tags"]
                                  objectForKey:tag] intValue];
                 NSString *tagIcon = [self scoreIconHtml:tagScore];
-                NSString *tagHtml = [NSString stringWithFormat:@"<a href=\"http://ios.newsblur.com/classify-tag/%@\" "
-                                     "class=\"NB-story-tag %@\"><div class=\"NB-highlight\"></div>%@%@</a>",
-                                     tag,
+                NSString *tagHtml = [NSString stringWithFormat:@"<span "
+                                     "class=\"NB-story-tag %@\">%@%@</span>",
                                      tagScore > 0 ? @"NB-story-tag-positive" : tagScore < 0 ? @"NB-story-tag-negative" : @"",
                                      tag,
                                      tagIcon];
@@ -1681,8 +1664,8 @@
         NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionCaseInsensitive error:&error];
         if (!error && regex) {
             int regexScore = [[titleRegexClassifiers objectForKey:pattern] intValue];
-            // TrainerRegexInput.swift stops a pattern that backtracks past its budget, leaving the title unmarked.
-            NSArray<NSTextCheckingResult *> *matches = [TrainerRegexMatcher matchesOf:regex in:storyTitle budget:TrainerRegexMatcher.drawingBudget] ?: @[];
+            // ClassifierRegexMatcher.swift stops a pattern that backtracks past its budget, leaving the title unmarked.
+            NSArray<NSTextCheckingResult *> *matches = [ClassifierRegexMatcher matchesOf:regex in:storyTitle budget:ClassifierRegexMatcher.drawingBudget] ?: @[];
             NSString *regexIcon = [self scoreIconHtml:regexScore];
             // Apply replacements in reverse order to preserve indices
             for (NSTextCheckingResult *match in [matches reverseObjectEnumerator]) {
@@ -1723,8 +1706,8 @@
                 NSError *error = nil;
                 NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionCaseInsensitive error:&error];
                 if (!error && regex) {
-                    // TrainerRegexInput.swift stops a pattern that backtracks past its budget, so it shows no URL match.
-                    NSTextCheckingResult *result = [TrainerRegexMatcher firstMatchOf:regex in:storyPermalink budget:TrainerRegexMatcher.drawingBudget];
+                    // ClassifierRegexMatcher.swift stops a pattern that backtracks past its budget, so it shows no URL match.
+                    NSTextCheckingResult *result = [ClassifierRegexMatcher firstMatchOf:regex in:storyPermalink budget:ClassifierRegexMatcher.drawingBudget];
                     if (result) {
                         matchScore = [[urlRegexClassifiers objectForKey:pattern] intValue];
                         matchedText = [storyPermalink substringWithRange:result.range];
@@ -1765,9 +1748,6 @@
         }
     }
 
-    // StoryDetailObjCViewController.m shows matched natural language prompts like the web's story header (AIClassifiers.swift).
-    NSString *storyAIClassifiers = [StoryAIClassifierPills headerHTMLFor:[self.activeStory objectForKey:@"prompt_classifiers"]];
-
     NSString *storyToggleChanges = [self.activeStory[@"has_modifications"] boolValue] ? [NSString stringWithFormat:@"<a href=\"http://ios.newsblur.com/togglechanges\" "
                                                                            "class=\"NB-story-toggle-changes\" id=\"NB-story-toggle-changes\">%@</a><span class=\"NB-middot\">&middot;</span>", [(self.activeStory[@"story_changes"] != nil ? [NBLocalization text:@"Hide Changes"] : [NBLocalization text:@"Show Changes"]) stringByEncodingHTMLEntities]] : @"";
     
@@ -1787,7 +1767,6 @@
                              "%@"
                              "%@"
                              "%@"
-                             "%@"
                              "</div></div>",
                              [self contentDirectionAttribute],
                              storyUnread,
@@ -1798,7 +1777,6 @@
                              storyAuthor,
                              storyTags,
                              storyUrlMatch,
-                             storyAIClassifiers,
                              storyStarred,
                              storyUserTags];
     return storyHeader;
@@ -1822,12 +1800,9 @@
     BOOL isShared = [[self.activeStory objectForKey:@"shared"] boolValue];
 
     // StoryDetailObjCViewController.m shows each story button unless it's hidden in preferences; the choices sync
-    // through the server's show_sideoption_* preferences (Listen/ListenPreferences.swift).
-    BOOL showTrain = [ListenStoryBridge showsStoryButton:@"train"];
-    BOOL showShare = [ListenStoryBridge showsStoryButton:@"share"];
-    BOOL showSave = [ListenStoryBridge showsStoryButton:@"save"];
-    BOOL showAskAI = [ListenStoryBridge showsStoryButton:@"ask_ai"];
-    BOOL showListen = [ListenStoryBridge showsStoryButton:@"listen"];
+    // through the server's show_sideoption_* preferences (StoryButtonPreferences.swift).
+    BOOL showShare = [StoryButtonPreferences showsStoryButton:@"share"];
+    BOOL showSave = [StoryButtonPreferences showsStoryButton:@"save"];
 
     // StoryDetailObjCViewController.m escapes the translated button labels for the story document. Each label is an
     // explicit NBLocalization call so localization/manage.py extracts it.
@@ -1836,15 +1811,6 @@
     };
 
     NSMutableArray<NSString *> *buttons = [NSMutableArray array];
-    if (showTrain) {
-        [buttons addObject:[NSString stringWithFormat:@
-                            "  <div class='NB-share-button NB-train-button NB-button'>"
-                            "    <a href=\"http://ios.newsblur.com/train\"><div>"
-                            "      <span class=\"NB-sideoption-text\">%@</span>"
-                            "      <span class=\"NB-icon\"></span>"
-                            "    </div></a>"
-                            "  </div>", label([NBLocalization text:@"Train"])]];
-    }
     if (showShare) {
         [buttons addObject:[NSString stringWithFormat:@
                             "  <div class='NB-share-button NB-share-share-button NB-button %@'>"
@@ -1867,31 +1833,16 @@
                             isSaved ? @"NB-button-active" : @"",
                             isSaved ? label([NBLocalization text:@"Saved"]) : label([NBLocalization text:@"Save"])]];
     }
-    if (showAskAI) {
-        [buttons addObject:[NSString stringWithFormat:@
-                            "  <div class='NB-share-button NB-ask-ai-button NB-button'>"
-                            "    <a href=\"http://ios.newsblur.com/ask-ai\"><div>"
-                            "      <span class=\"NB-sideoption-text\">%@</span>"
-                            "      <span class=\"NB-icon\"></span>"
-                            "    </div></a>"
-                            "  </div>", label([NBLocalization text:@"Ask AI"])]];
-    }
-    if (showListen) {
-        [buttons addObject:[ListenStoryBridge listenButtonHTMLForStory:self.activeStory]];
-    }
-
     if (!buttons.count) {
         return @"";
     }
 
-    // storyDetailView.css wraps five buttons into rows of three and two on a portrait iPhone.
     NSString *sideOptions = [NSString stringWithFormat:@
-                             "<div class='NB-sideoptions%@'>"
+                             "<div class='NB-sideoptions'>"
                              "<div class='NB-share-header'></div>"
                              "<div class='NB-share-wrapper'><div class='NB-share-inner-wrapper'>"
                              "%@"
                              "</div></div></div>",
-                             buttons.count == 5 ? @" NB-sideoptions-five" : @"",
                              [buttons componentsJoinedByString:@""]];
 
     return sideOptions;
@@ -2888,39 +2839,6 @@
             [self openShareDialog];
             decisionHandler(WKNavigationActionPolicyCancel);
             return;
-        } else if ([action isEqualToString:@"ask-ai"] && [urlComponents count] > 5) {
-            [self openAskAIDialog:[[urlComponents objectAtIndex:2] intValue]
-                      yCoordinate:[[urlComponents objectAtIndex:3] intValue]
-                            width:[[urlComponents objectAtIndex:4] intValue]
-                           height:[[urlComponents objectAtIndex:5] intValue]];
-            decisionHandler(WKNavigationActionPolicyCancel);
-            return;
-        } else if ([action isEqualToString:@"ask-ai"]) {
-            [appDelegate openAskAIDialog:self.activeStory];
-            decisionHandler(WKNavigationActionPolicyCancel);
-            return;
-        } else if ([action isEqualToString:@"listen"]) {
-            // StoryDetailObjCViewController.m starts, pauses or resumes reading this story aloud (Listen/ListenPlayer.swift).
-            [ListenStoryBridge toggleListenForStory:self.activeStory];
-            decisionHandler(WKNavigationActionPolicyCancel);
-            return;
-        } else if ([action isEqualToString:@"listen-queue"]) {
-            // StoryDetailObjCViewController.m: the + beside Listen adds this story to Up Next, or takes it back off.
-            [ListenStoryBridge toggleQueueForStory:self.activeStory];
-            decisionHandler(WKNavigationActionPolicyCancel);
-            return;
-        } else if ([action isEqualToString:@"train"] && [urlComponents count] > 5) {
-            [self openTrainingDialog:[[urlComponents objectAtIndex:2] intValue]
-                         yCoordinate:[[urlComponents objectAtIndex:3] intValue]
-                               width:[[urlComponents objectAtIndex:4] intValue]
-                              height:[[urlComponents objectAtIndex:5] intValue]];
-            decisionHandler(WKNavigationActionPolicyCancel);
-            return;
-        } else if ([action isEqualToString:@"train"]) {
-            // StoryDetailObjCViewController.m still opens the trainer if a header pill's tap arrives without coordinates.
-            [self openTrainingDialog:0 yCoordinate:0 width:0 height:0];
-            decisionHandler(WKNavigationActionPolicyCancel);
-            return;
         } else if ([action isEqualToString:@"save"]) {
             BOOL isSaved = [appDelegate.storiesCollection toggleStorySaved:self.activeStory];
             if (isSaved) {
@@ -2936,16 +2854,6 @@
                          yCoordinate:[[urlComponents objectAtIndex:4] intValue]
                                width:[[urlComponents objectAtIndex:5] intValue]
                               height:[[urlComponents objectAtIndex:6] intValue]];
-            decisionHandler(WKNavigationActionPolicyCancel);
-            return;
-        } else if ([action isEqualToString:@"classify-author"]) {
-            NSString *author = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]];
-            [self.appDelegate toggleAuthorClassifier:author feedId:feedId];
-            decisionHandler(WKNavigationActionPolicyCancel);
-            return;
-        } else if ([action isEqualToString:@"classify-tag"]) {
-            NSString *tag = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]];
-            [self.appDelegate toggleTagClassifier:tag feedId:feedId];
             decisionHandler(WKNavigationActionPolicyCancel);
             return;
         } else if ([action isEqualToString:@"open-cluster-story"]) {
@@ -2964,10 +2872,6 @@
             if (targetFeedId.length && storyHash.length && [self.appDelegate isSubscribedFeedIdForStoryClusters:targetFeedId]) {
                 [self.appDelegate loadFeed:targetFeedId withStory:storyHash storyTitle:storyTitle animated:NO];
             }
-            decisionHandler(WKNavigationActionPolicyCancel);
-            return;
-        } else if ([action isEqualToString:@"premium"]) {
-            [self.appDelegate showPremiumDialog];
             decisionHandler(WKNavigationActionPolicyCancel);
             return;
         } else if ([action isEqualToString:@"show-profile"] && [urlComponents count] > 6) {
@@ -3291,10 +3195,6 @@
     [self changeWebViewWidth];
     [self scrollToLastPosition:YES];
     [self applyClassifierHighlights];
-    if ([self isKindOfClass:StoryDetailViewController.class]) {
-        // Listen/ListenStoryBridge.swift maps the story's paragraphs for follow-along when it's being read aloud.
-        [(StoryDetailViewController *)self listenStoryDidLoad];
-    }
     [self finishPreparingStoryPresentation];
 }
 
@@ -3700,30 +3600,6 @@
                     sourceRect:[NSValue valueWithCGRect:frame]];
 }
 
-- (void)openTrainingDialog:(int)x yCoordinate:(int)y width:(int)width height:(int)height {
-    CGRect frame = CGRectZero;
-    if (!self.isPhoneOrCompact) {
-        // only adjust for the bar if user is scrolling
-        if (appDelegate.storiesCollection.isRiverView ||
-            appDelegate.storiesCollection.isSocialView ||
-            appDelegate.storiesCollection.isSavedView ||
-            appDelegate.storiesCollection.isWidgetView ||
-            appDelegate.storiesCollection.isReadView) {
-            if (self.webView.scrollView.contentOffset.y == -20) {
-                y = y + 20;
-            }
-        } else {
-            if (self.webView.scrollView.contentOffset.y == -9) {
-                y = y + 9;
-            }
-        }
-        
-        frame = CGRectMake(x, y, width, height);
-    }
-    //    NSLog(@"Open trainer: %@ (%d/%d/%d/%d)", NSStringFromCGRect(frame), x, y, width, height);
-    [appDelegate openTrainStory:[NSValue valueWithCGRect:frame]];
-}
-
 - (void)openUserTagsDialog:(int)x yCoordinate:(int)y width:(int)width height:(int)height {
     CGRect frame = CGRectZero;
     // only adjust for the bar if user is scrolling
@@ -3743,29 +3619,6 @@
     frame = CGRectMake(x, y, width, height);
 
     [appDelegate openUserTagsStory:[NSValue valueWithCGRect:frame]];
-}
-
-- (void)openAskAIDialog:(int)x yCoordinate:(int)y width:(int)width height:(int)height {
-    CGRect frame = CGRectZero;
-    if (!self.isPhoneOrCompact) {
-        // only adjust for the bar if user is scrolling
-        if (appDelegate.storiesCollection.isRiverView ||
-            appDelegate.storiesCollection.isSocialView ||
-            appDelegate.storiesCollection.isSavedView ||
-            appDelegate.storiesCollection.isWidgetView ||
-            appDelegate.storiesCollection.isReadView) {
-            if (self.webView.scrollView.contentOffset.y == -20) {
-                y = y + 20;
-            }
-        } else {
-            if (self.webView.scrollView.contentOffset.y == -9) {
-                y = y + 9;
-            }
-        }
-
-        frame = CGRectMake(x, y, width, height);
-    }
-    [appDelegate openAskAIDialog:self.activeStory sourceRect:[NSValue valueWithCGRect:frame]];
 }
 
 - (BOOL)isTag:(NSString *)tagName equalTo:(NSString *)tagValue {

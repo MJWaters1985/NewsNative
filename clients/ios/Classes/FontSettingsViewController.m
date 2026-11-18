@@ -24,16 +24,6 @@
 
 #define kMenuOptionHeight 48
 
-- (BOOL)isAskAIEnabled {
-    if (!NewsNativeFeatures.askAI) return NO;
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    // Default to YES if the key doesn't exist
-    if ([userPreferences objectForKey:@"show_ask_ai"] == nil) {
-        return YES;
-    }
-    return [userPreferences boolForKey:@"show_ask_ai"];
-}
-
 - (BOOL)isGoToFeedEnabled {
     BOOL isRiver = self.appDelegate.storiesCollection.isRiverView ||
                    self.appDelegate.storiesCollection.isSocialRiverView;
@@ -43,18 +33,14 @@
 
 // FontSettingsViewController.m groups actions independently of optional rows and phone-only controls.
 - (NSArray<NSArray<NSNumber *> *> *)menuGroups {
-    // FontSettingsViewController.m: action 3 trains the story when NewsNativeFeatures.swift allows training.
-    NSMutableArray *training = NewsNativeFeatures.training ? [NSMutableArray arrayWithObject:@3] : [NSMutableArray array];
-    if ([self isAskAIEnabled]) [training addObject:@5];
-    if ([self isGoToFeedEnabled]) [training addObject:@6];
-    [training addObject:@14];
+    // FontSettingsViewController.m: action 6 goes to the story's feed and 14 opens Keyboard Shortcuts.
+    NSMutableArray *tools = [NSMutableArray array];
+    if ([self isGoToFeedEnabled]) [tools addObject:@6];
+    [tools addObject:@14];
     NSInteger last = UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone ? 13 : 12;
     NSMutableArray *appearance = [NSMutableArray array];
     for (NSInteger row = 7; row <= last; row++) [appearance addObject:@(row)];
-    // FontSettingsViewController.m: action 15 adds the story to Listen's Up Next (Listen/ListenQueue.swift); 14 is Keyboard Shortcuts.
-    NSMutableArray *reading = [NSMutableArray arrayWithArray:@[@1, @0]];
-    if ([ListenStoryBridge offersQueueForStory:self.appDelegate.activeStory]) [reading addObject:@15];
-    return @[reading, @[@2, @4], training, appearance];
+    return @[@[@1, @0], @[@2, @4], tools, appearance];
 }
 
 - (NSInteger)actionAtIndexPath:(NSIndexPath *)indexPath {
@@ -370,25 +356,10 @@
         cell.textLabel.text = [NBLocalization text:@"Send to..."];
         cell.imageView.image = [Utilities templateImageNamed:@"sendto" sized:20];
         cell.imageView.tintColor = UIColorFromRGB(0xBD9146);
-    } else if (adjustedRow == 3) {
-        cell.textLabel.text = [NBLocalization text:@"Train this story"];
-        cell.imageView.image = [Utilities templateImageNamed:@"dialog-trainer" sized:20];
-        cell.imageView.tintColor = UIColorFromRGB(0x689ED7);
     } else if (adjustedRow == 4) {
         cell.textLabel.text = [NBLocalization text:@"Share on NewsBlur…"];
         cell.imageView.image = [Utilities templateImageNamed:@"share" sized:20];
         cell.imageView.tintColor = UIColorFromRGB(0x94968E);
-    } else if (adjustedRow == 5) {
-        cell.textLabel.text = [NBLocalization text:@"Ask AI"];
-        if (@available(iOS 13.0, *)) {
-            cell.imageView.image = [[UIImage systemImageNamed:@"sparkles"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        }
-        cell.imageView.tintColor = UIColorFromRGB(0x709E5D);
-    } else if (adjustedRow == 15) {
-        BOOL isQueued = [ListenStoryBridge isQueued:self.appDelegate.activeStory];
-        cell.textLabel.text = [ListenStoryBridge queueMenuTitleForStory:self.appDelegate.activeStory];
-        cell.imageView.image = [[UIImage systemImageNamed:isQueued ? @"text.badge.minus" : @"text.badge.plus"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        cell.imageView.tintColor = UIColorFromRGB(0x8C59D9);
     } else if (adjustedRow == 6) {
         cell.textLabel.text = [NBLocalization text:@"Go to feed"];
         cell.imageView.image = [[UIImage systemImageNamed:@"newspaper"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
@@ -428,19 +399,18 @@
     if (action == 14) {
         return MAX(kMenuOptionHeight, [MenuTableViewCell heightForTitle:[NBLocalization text:@"Keyboard Shortcuts"] width:tableView.bounds.size.width]);
     }
-    if (action == 15) {
-        NSString *queueTitle = [ListenStoryBridge queueMenuTitleForStory:self.appDelegate.activeStory];
-        return MAX(kMenuOptionHeight, [MenuTableViewCell heightForTitle:queueTitle width:tableView.bounds.size.width]);
-    }
     if (action >= 8) return kMenuOptionHeight;
-    NSArray *titles = @[[NBLocalization text:@"Unsave this story"], [NBLocalization text:@"Mark as unread"], [NBLocalization text:@"Send to…"], [NBLocalization text:@"Train this story"],
-                        [NBLocalization text:@"Share on NewsBlur…"], [NBLocalization text:@"Ask AI"], [NBLocalization text:@"Go to feed"], [NBLocalization text:@"Font…"]];
-    return MAX(kMenuOptionHeight, [MenuTableViewCell heightForTitle:titles[action] width:tableView.bounds.size.width]);
+    NSDictionary<NSNumber *, NSString *> *titles = @{@0: [NBLocalization text:@"Unsave this story"], @1: [NBLocalization text:@"Mark as unread"],
+                                                     @2: [NBLocalization text:@"Send to…"], @4: [NBLocalization text:@"Share on NewsBlur…"],
+                                                     @6: [NBLocalization text:@"Go to feed"], @7: [NBLocalization text:@"Font…"]};
+    NSString *title = titles[@(action)];
+    if (!title) return kMenuOptionHeight;
+    return MAX(kMenuOptionHeight, [MenuTableViewCell heightForTitle:title width:tableView.bounds.size.width]);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     NSInteger adjustedRow = [self actionAtIndexPath:indexPath];
-    if (adjustedRow >= 8 && adjustedRow != 14 && adjustedRow != 15) {
+    if (adjustedRow >= 8 && adjustedRow != 14) {
         return nil;
     }
     return indexPath;
@@ -452,8 +422,8 @@
         [self.appDelegate showKeyboardShortcuts];
         return;
     }
-    if (adjustedRow != 7 && adjustedRow != 3) {
-        [self dismissViewControllerAnimated:adjustedRow != 4 && adjustedRow != 5 completion:nil];
+    if (adjustedRow != 7) {
+        [self dismissViewControllerAnimated:adjustedRow != 4 completion:nil];
     }
 
     if (adjustedRow == 0) {
@@ -466,18 +436,12 @@
         [self.appDelegate.storyPagesViewController refreshHeaders];
     } else if (adjustedRow == 2) {
         [self.appDelegate.storyPagesViewController openSendToDialog:self.appDelegate.storyPagesViewController.settingsPresentationBarButton];
-    } else if (adjustedRow == 3) {
-        [self.appDelegate openTrainStory:self.appDelegate.storyPagesViewController.settingsPresentationBarButton];
     } else if (adjustedRow == 4) {
         [self.appDelegate.storyPagesViewController.currentPage openShareDialog];
-    } else if (adjustedRow == 5) {
-        [self.appDelegate openAskAIDialog:self.appDelegate.activeStory];
     } else if (adjustedRow == 6) {
         [self goToFeed];
     } else if (adjustedRow == 7) {
         [self showFontList];
-    } else if (adjustedRow == 15) {
-        [ListenStoryBridge toggleQueueForStory:self.appDelegate.activeStory];
     }
 }
 

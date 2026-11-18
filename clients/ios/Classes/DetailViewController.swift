@@ -119,7 +119,6 @@ class DetailViewController: BaseViewController {
     @objc func resetDiscoveryForAccountChange() {
         finishDuoSourceEntrance()
         expandedFeedsReveal = nil
-        appDelegate.trainerViewController?.resetForAccountChange()
         duoFullscreenRequested = false
         hasPendingDuoFullscreenRestoration = false
         appDelegate.splitViewController?.updateDuoEmptyReaderProtection(for: self)
@@ -704,9 +703,6 @@ class DetailViewController: BaseViewController {
         hasPendingDuoFullscreenRestoration = false
         isUpdatingDuoFullscreenSidebar = true
         defer { isUpdatingDuoFullscreenSidebar = false }
-        if presentation != .fullscreen {
-            appDelegate.trainerViewController?.captureRetainedStoryContext()
-        }
         fullscreenSidebarPresentationState = presentation
         restoreReaderBesideStoryTitles()
         if presentation == .storyTitles {

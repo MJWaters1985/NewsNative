@@ -61,7 +61,7 @@ import Foundation
         // GesturePreferences.swift preserves the legacy setting's actual rightward gesture despite its old name.
         if explicit("feed_title_swipe_right") == nil,
            let action = explicit("feed_swipe_left") as? String {
-            defaults.set(feedActions.contains(action) ? action : "trainer", forKey: "feed_title_swipe_right")
+            defaults.set(feedActions.contains(action) ? action : "statistics", forKey: "feed_title_swipe_right")
         }
         defaults.removeObject(forKey: "enable_feed_cell_swipe")
         defaults.removeObject(forKey: "feed_swipe_left")

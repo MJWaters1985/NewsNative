@@ -227,7 +227,6 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
         [self addReaderShortcutWithInput:@"m" modifierFlags:0 readerAction:@selector(toggleStoryUnread:) discoverabilityTitle:@"Toggle Read/Unread"];
         [self addReaderShortcutWithInput:@"o" modifierFlags:0 readerAction:@selector(showOriginalSubview:) discoverabilityTitle:@"Open in Browser"];
         [self addReaderShortcutWithInput:@"v" modifierFlags:0 readerAction:@selector(showOriginalSubview:) discoverabilityTitle:@"Open in Browser"];
-        [self addReaderShortcutWithInput:@"t" modifierFlags:0 readerAction:@selector(openStoryTrainerFromKeyboard:) discoverabilityTitle:@"Open Story Trainer"];
         [self addReaderShortcutWithInput:@"\r" modifierFlags:UIKeyModifierShift readerAction:@selector(toggleTextView:) discoverabilityTitle:@"Text View"];
         [self addReaderShortcutWithInput:@" " modifierFlags:0 readerAction:@selector(scrollPageDown:) discoverabilityTitle:@"Page Down"];
         [self addReaderShortcutWithInput:@" " modifierFlags:UIKeyModifierShift readerAction:@selector(scrollPageUp:) discoverabilityTitle:@"Page Up"];
@@ -402,22 +401,6 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
     } else if (action == @selector(showFindFriends:)) {
         // BaseViewController.m: social reading is set aside in NewsNativeFeatures.swift.
         return NewsNativeFeatures.socialFeatures && [super canPerformAction:action withSender:sender];
-    } else if (action == @selector(openTrainSite) ||
-               action == @selector(openTrainSite:) ||
-               action == @selector(showTrain:)) {
-        // BaseViewController.m: training is set aside in NewsNativeFeatures.swift.
-        return NO;
-    } else if (action == @selector(toggleListen:) ||
-               action == @selector(toggleListenPlayback:) ||
-               action == @selector(toggleListenQueue:)) {
-        if (!NewsNativeFeatures.listen) return NO;
-        if (action == @selector(toggleListen:)) {
-            // BaseViewController.m offers Listen (Y) for the story on screen, but not while typing or in a dialog.
-            return self.isStoryShown && [self readerKeyboardContextAvailable];
-        } else if (action == @selector(toggleListenPlayback:)) {
-            return ListenStoryBridge.isPlayerActive || self.isStoryShown;
-        }
-        return self.isStoryShown && [ListenStoryBridge offersQueueForStory:self.appDelegate.storyPagesViewController.currentPage.activeStory];
     } else if (action == @selector(openNotifications:) ||
         action == @selector(openStatistics:) ||
         action == @selector(moveSite:) ||
@@ -509,12 +492,6 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
         } else {
             command.title = [NBLocalization text:@"Delete Site…"];
         }
-    } else if (command.action == @selector(toggleListen:)) {
-        command.title = [ListenStoryBridge menuTitleForStory:self.appDelegate.storyPagesViewController.currentPage.activeStory];
-    } else if (command.action == @selector(toggleListenQueue:)) {
-        NSDictionary *story = self.appDelegate.storyPagesViewController.currentPage.activeStory;
-        command.title = [ListenStoryBridge queueMenuTitleForStory:story];
-        command.image = [UIImage systemImageNamed:[ListenStoryBridge isQueued:story] ? @"text.badge.minus" : @"text.badge.plus"];
     } else if (command.action == @selector(toggleStorySaved:)) {
         BOOL isRead = [[self.appDelegate.activeStory objectForKey:@"starred"] boolValue];
         if (isRead) {
@@ -564,10 +541,6 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
 
 - (IBAction)showFindFriends:(id)sender {
     [self.appDelegate showFindFriends];
-}
-
-- (IBAction)showPremium:(id)sender {
-    [self.appDelegate showPremiumDialog];
 }
 
 - (IBAction)showManageAccount:(id)sender {
@@ -809,10 +782,6 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
     [[NSUserDefaults standardUserDefaults] setObject:string forKey:@"default_mark_read_filter"];
 }
 
-- (IBAction)openTrainSite:(id)sender {
-    [self.appDelegate.feedDetailViewController openTrainSite];
-}
-
 - (IBAction)openNotifications:(id)sender {
     [self.appDelegate.feedDetailViewController openNotifications:sender];
 }
@@ -869,34 +838,8 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
     [appDelegate showSendTo:self sender:sender];
 }
 
-- (IBAction)showTrain:(id)sender {
-    [self.appDelegate.storyPagesViewController openStoryTrainerFromKeyboard:sender];
-}
-
 - (IBAction)showShare:(id)sender {
     [self.appDelegate.storyPagesViewController.currentPage openShareDialog];
-}
-
-- (IBAction)toggleListen:(id)sender {
-    if (!NewsNativeFeatures.listen) return;
-    // BaseViewController.m starts or pauses reading the story on screen aloud (Listen/ListenPlayer.swift).
-    [ListenStoryBridge toggleListenForStory:self.appDelegate.storyPagesViewController.currentPage.activeStory];
-}
-
-- (IBAction)toggleListenQueue:(id)sender {
-    if (!NewsNativeFeatures.listen) return;
-    // BaseViewController.m: the Story menu's Add to Up Next for the story on screen (Listen/ListenQueue.swift).
-    [ListenStoryBridge toggleQueueForStory:self.appDelegate.storyPagesViewController.currentPage.activeStory];
-}
-
-- (IBAction)toggleListenPlayback:(id)sender {
-    if (!NewsNativeFeatures.listen) return;
-    // BaseViewController.m: the Mac toolbar's play/pause controls whatever is playing, else starts the story on screen.
-    if (ListenStoryBridge.isPlayerActive) {
-        [ListenStoryBridge togglePlayback];
-    } else {
-        [self toggleListen:sender];
-    }
 }
 
 - (IBAction)nextUnreadStory:(id)sender {

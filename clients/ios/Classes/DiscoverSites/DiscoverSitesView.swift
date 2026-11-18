@@ -11,7 +11,7 @@ import SwiftUI
 @available(iOS 15.0, *)
 struct DiscoverSitesView: View {
     @ObservedObject var viewModel: DiscoverSitesViewModel
-    @StateObject private var themeObserver = AskAIThemeObserver()
+    @StateObject private var themeObserver = ThemeObserver()
     let pager: DiscoverSourcesPagerController
 
     var body: some View {
@@ -69,7 +69,7 @@ private struct DiscoverSourcesPager: UIViewControllerRepresentable {
 struct DiscoverSourcePageView: View {
     let tab: DiscoverTab
     @ObservedObject var viewModel: DiscoverSitesViewModel
-    @StateObject private var themeObserver = AskAIThemeObserver()
+    @StateObject private var themeObserver = ThemeObserver()
     var onTryFeed: ((DiscoverPopularFeed) -> Void)?
     var onOpenStory: ((DiscoverPopularFeed, DiscoverStory) -> Void)?
     var onAddFeed: ((DiscoverPopularFeed) -> Void)?

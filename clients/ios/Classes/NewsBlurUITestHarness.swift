@@ -81,7 +81,7 @@ final class NewsBlurUITestHarness {
             installReaderFixtureNetwork(on: appDelegate)
             ReaderUITestFixtures.prepareAppState(for: appDelegate)
             appDelegate.replaceUnreadCounts(forTesting: ReaderUITestFixtures.unreadCountRows())
-        case "preferences", "usage-billing":
+        case "preferences":
             installReaderFixtureNetwork(on: appDelegate)
             ReaderUITestFixtures.prepareAppState(for: appDelegate)
             appDelegate.replaceUnreadCounts(forTesting: ReaderUITestFixtures.unreadCountRows())
@@ -109,24 +109,6 @@ final class NewsBlurUITestHarness {
         let onboardingConfiguration = URLSessionConfiguration.ephemeral
         onboardingConfiguration.protocolClasses = [DiscoverSitesUITestURLProtocol.self]
         OnboardingAPI.session = URLSession(configuration: onboardingConfiguration)
-        DiscoverFeedsViewController.viewModelFactory = { feedId, feedIds in
-            let configuration = URLSessionConfiguration.ephemeral
-            configuration.protocolClasses = [DiscoverSitesUITestURLProtocol.self]
-            let session = URLSession(configuration: configuration)
-            if let feedIds {
-                return DiscoverFeedsViewModel(feedIds: feedIds, session: session,
-                                              baseURL: ReaderUITestFixtures.baseURL.absoluteString)
-            }
-            return DiscoverFeedsViewModel(feedId: feedId ?? ReaderUITestFixtures.swiftFeedId,
-                                          session: session, baseURL: ReaderUITestFixtures.baseURL.absoluteString)
-        }
-        DiscoverFeedsViewController.cardActionsFactory = {
-            let configuration = URLSessionConfiguration.ephemeral
-            configuration.protocolClasses = [DiscoverSitesUITestURLProtocol.self]
-            return DiscoverSitesViewModel(appEnvironment: AddSiteUITestEnvironment(),
-                                          session: URLSession(configuration: configuration))
-        }
-
         switch requestedScreen {
         case "onboarding", "onboarding-account", "account-deletion", "account-deletion-confirm", "account-deletion-notice":
             didScheduleScenario = true
@@ -153,9 +135,6 @@ final class NewsBlurUITestHarness {
         case "preferences":
             didScheduleScenario = true
             configurePreferences(on: appDelegate, remainingRetries: 20)
-        case "usage-billing":
-            didScheduleScenario = true
-            configureUsageBilling(on: appDelegate, remainingRetries: 200)
         case let screen? where readerScenario(for: screen) != nil:
             didScheduleScenario = true
             configureReader(
@@ -364,74 +343,6 @@ final class NewsBlurUITestHarness {
         }
     }
 
-    /// NewsBlurUITestHarness.swift opens UsageBillingView.swift over the fixture account once its profile has loaded.
-    private static func configureUsageBilling(on appDelegate: NewsBlurAppDelegate, remainingRetries: Int) {
-        guard remainingRetries > 0 else { return }
-        loadFixtureFeedList(on: appDelegate)
-        guard didFinishReaderFeedLoad, appDelegate.splitViewController?.viewIfLoaded?.window != nil else {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                configureUsageBilling(on: appDelegate, remainingRetries: remainingRetries - 1)
-            }
-            return
-        }
-        appDelegate.feedsViewController.loadWorkItem?.cancel()
-        // UsageBillingFeature.swift holds billing out of the release; this scenario exists to show the billing screen.
-        UsageBillingFeature.isEnabled = true
-        appDelegate.showUsageBillingDialog()
-    }
-
-    /// NewsBlurUITestHarness.swift opens the story trainer once the AI classifier fixture story is on screen.
-    private static func openStoryTrainerWhenReady(on appDelegate: NewsBlurAppDelegate, deadline: TimeInterval) {
-        let page = appDelegate.storyPagesViewController?.currentPage
-        if appDelegate.activeStory?["story_hash"] as? String == "ui-story-swift-1",
-           page?.readyForPresentation == true, page?.viewIfLoaded?.window != nil {
-            appDelegate.openTrainStory(appDelegate.storyPagesViewController.settingsPresentationBarButton)
-            if ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-ai-draft") {
-                // NewsBlurUITestHarness.swift answers these prompt tests from its fixture server, never a real AI provider.
-                let prompts = appDelegate.trainerViewController.aiPrompts
-                prompts.setDraft("Apple earnings coverage", for: .content)
-                prompts.setDraft("Charts and graphs", for: .image)
-                prompts.runTest(.content, storyHash: "ui-story-swift-1", feedId: ReaderUITestFixtures.swiftFeedId)
-                prompts.runTest(.image, storyHash: "ui-story-swift-1", feedId: ReaderUITestFixtures.swiftFeedId)
-            }
-            return
-        }
-        guard ProcessInfo.processInfo.systemUptime < deadline else { return }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-            openStoryTrainerWhenReady(on: appDelegate, deadline: deadline)
-        }
-    }
-
-    /// NewsBlurUITestHarness.swift presses the podcast fixture's audio card once its story is on screen, with a DOM
-    /// click so the card's script and the newsblurStoryMedia bridge run as they do for a tap, and opens Now Playing
-    /// with -newsblur-ui-test-now-playing.
-    private static func playPodcastWhenReady(on appDelegate: NewsBlurAppDelegate, deadline: TimeInterval) {
-        let page = appDelegate.storyPagesViewController?.currentPage
-        if appDelegate.activeStory?["story_hash"] as? String == "ui-story-swift-1",
-           page?.readyForPresentation == true, let webView = page?.webView, webView.window != nil {
-            webView.evaluateJavaScript("document.querySelector('.NB-media-card-play').click()")
-            let arguments = ProcessInfo.processInfo.arguments
-            if let index = arguments.firstIndex(of: "-newsblur-ui-test-podcast-show"), index + 1 < arguments.count {
-                // NewsBlurUITestHarness.swift pages to another episode's story while the first one plays, to show
-                // its card's Up Next pills.
-                let location = appDelegate.storiesCollection.location(ofStoryId: arguments[index + 1])
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    appDelegate.storyPagesViewController?.changePage(location, animated: false)
-                }
-            }
-            if ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-now-playing") {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    ListenPresenter.presentNowPlaying()
-                }
-            }
-            return
-        }
-        guard ProcessInfo.processInfo.systemUptime < deadline else { return }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-            playPodcastWhenReady(on: appDelegate, deadline: deadline)
-        }
-    }
-
     private static func configureReader(
         on appDelegate: NewsBlurAppDelegate,
         scenario: ReaderScenario,
@@ -562,12 +473,6 @@ final class NewsBlurUITestHarness {
             appDelegate.feedsViewController.selectFeed(ReaderUITestFixtures.swiftFeedId, inFolder: CookingMarketingFixtures.enabled ? "Cooking" : "Tech ▸ Swift")
         case .swiftStoryOne:
             appDelegate.loadFeed(ReaderUITestFixtures.swiftFeedId, withStory: CookingMarketingFixtures.enabled ? "cooking-pasta-1" : "ui-story-swift-1", animated: false)
-            if ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-open-trainer") {
-                openStoryTrainerWhenReady(on: appDelegate, deadline: ProcessInfo.processInfo.systemUptime + 60)
-            }
-            if ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-podcast-play") {
-                playPodcastWhenReady(on: appDelegate, deadline: ProcessInfo.processInfo.systemUptime + 60)
-            }
 #if DEBUG && targetEnvironment(simulator)
             if CookingMarketingFixtures.enabled && ProcessInfo.processInfo.arguments.contains("-newsblur-marketing-fullscreen") {
                 prepareMarketingFullscreenReader(on: appDelegate, deadline: ProcessInfo.processInfo.systemUptime + 60)

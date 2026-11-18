@@ -15,7 +15,6 @@
 #import "FMDatabase.h"
 #import "NewsBlurAppDelegate.h"
 #import "ThemeManager.h"
-#import "PremiumManager.h"
 #import "StoriesCollection.h"
 #import "BaseViewController.h"
 #import "MenuViewController.h"

@@ -1250,23 +1250,20 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     }
     [self configureAdaptiveStoryToolbar];
     [self restorePendingNotificationViewport];
-    // FeedDetailObjCViewController.m also leaves room for the Listen mini player when it covers this list
-    // (Listen/ListenMiniPlayer.swift).
-    CGFloat listenInset = [ListenStoryBridge miniPlayerInsetForView:self.storyTitlesTable];
     // FeedDetailObjCViewController.m leaves room to scroll the final row above the experimental glass bar.
     if (!self.storyTitlesHeaderBar.headerContainer.hidden &&
         (self.storyTitlesHeaderBar.usesSystemVerticalBar ? self.storyTitlesHeaderBar.isSearchActive : self.storyTitlesHeaderBar.usesFloatingBottomBar)) {
         CGRect bar = [self.storyTitlesHeaderBar.headerContainer convertRect:self.storyTitlesHeaderBar.headerContainer.bounds toView:self.storyTitlesTable];
-        CGFloat bottom = MAX(0, CGRectGetMaxY(self.storyTitlesTable.bounds) - CGRectGetMinY(bar)) + listenInset;
+        CGFloat bottom = MAX(0, CGRectGetMaxY(self.storyTitlesTable.bounds) - CGRectGetMinY(bar));
         UIEdgeInsets inset = self.storyTitlesTable.contentInset;
         inset.bottom = bottom;
         if (!UIEdgeInsetsEqualToEdgeInsets(self.storyTitlesTable.contentInset, inset)) {
             self.storyTitlesTable.contentInset = inset;
             self.storyTitlesTable.verticalScrollIndicatorInsets = inset;
         }
-    } else if (self.storyTitlesTable.contentInset.bottom != listenInset) {
+    } else if (self.storyTitlesTable.contentInset.bottom != 0) {
         UIEdgeInsets inset = self.storyTitlesTable.contentInset;
-        inset.bottom = listenInset;
+        inset.bottom = 0;
         self.storyTitlesTable.contentInset = inset;
         self.storyTitlesTable.verticalScrollIndicatorInsets = inset;
     }
@@ -3537,29 +3534,8 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     if (!storiesCollection.storyCount) {
         if ([results objectForKey:@"message"] && ![[results objectForKey:@"message"] isKindOfClass:[NSNull class]]) {
             if (!appDelegate.isPremium && storiesCollection.searchQuery != nil) {
-                NSString *premiumText = @"Search is only available to\npremium subscribers";
-                NSDictionary *attribs = @{NSForegroundColorAttributeName: UIColorFromRGB(0x808080),
-                                          NSFontAttributeName: [UIFont systemFontOfSize:18],
-                };
-                NSMutableAttributedString *attributedText = [[NSMutableAttributedString alloc]
-                                                             initWithString:premiumText attributes:attribs];
-                
-                NSRange blueRange = [premiumText rangeOfString:@"premium subscribers"];
-                [attributedText setAttributes:@{NSForegroundColorAttributeName: UIColorFromRGB(0x2030C0),
-                                                NSFontAttributeName: [UIFont systemFontOfSize:18],
-                                              }
-                                        range:blueRange];
-                
-                self.messageLabel.attributedText = attributedText;
-                
-                UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc]
-                                                                initWithTarget:self action:@selector(openPremiumDialog:)];
-                tapGestureRecognizer.numberOfTapsRequired = 1;
-                for (UIGestureRecognizer *recognizer in self.messageLabel.gestureRecognizers) {
-                    [self.messageLabel removeGestureRecognizer:recognizer];
-                }
-                [self.messageLabel addGestureRecognizer:tapGestureRecognizer];
-                self.messageLabel.userInteractionEnabled = YES;
+                // FeedDetailObjCViewController.m states the server's limit without offering an upgrade.
+                self.messageLabel.text = [NBLocalization text:@"Search isn't available for this account."];
             } else {
                 self.messageLabel.text = [results objectForKey:@"message"];
             }
@@ -3599,10 +3575,6 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     
     [self hideFetchingBanner];
 
-}
-
-- (IBAction)openPremiumDialog:(id)sender {
-    [appDelegate showPremiumDialog];
 }
 
 #pragma mark -
@@ -4291,28 +4263,12 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         if (premiumRestriction) {
             UILabel *premiumLabel = [[UILabel alloc] init];
             premiumLabel.translatesAutoresizingMaskIntoConstraints = NO;
-            NSString *premiumText = @"Reading by folder is only available to\npremium subscribers";
-            NSDictionary *attribs = @{NSForegroundColorAttributeName: UIColorFromRGB(0x0c0c0c),
-                                      NSFontAttributeName: [UIFont systemFontOfSize:14],
-                                      };
-            NSMutableAttributedString *attributedText = [[NSMutableAttributedString alloc]
-                                                         initWithString:premiumText attributes:attribs];
-            
-            NSRange blueRange = [premiumText rangeOfString:@"premium subscribers"];
-            [attributedText setAttributes:@{NSForegroundColorAttributeName: UIColorFromRGB(0x2030C0),
-                                            NSFontAttributeName: [UIFont systemFontOfSize:14],
-                                            }
-                                    range:blueRange];
-            
-            premiumLabel.attributedText = attributedText;
+            // FeedDetailObjCViewController.m states the server's limit without offering an upgrade.
+            premiumLabel.text = [NBLocalization text:@"Reading by folder isn't available for this account."];
+            premiumLabel.font = [UIFont systemFontOfSize:14];
+            premiumLabel.textColor = UIColor.secondaryLabelColor;
             premiumLabel.numberOfLines = 2;
             premiumLabel.textAlignment = NSTextAlignmentCenter;
-            premiumLabel.userInteractionEnabled = YES;
-
-            UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc]
-                                                            initWithTarget:self action:@selector(openPremiumDialog:)];
-            tapGestureRecognizer.numberOfTapsRequired = 1;
-            [premiumLabel addGestureRecognizer:tapGestureRecognizer];
 
             [cell.contentView addSubview:premiumLabel];
             [cell.contentView addConstraint:[NSLayoutConstraint constraintWithItem:premiumLabel
@@ -5252,10 +5208,6 @@ leadingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
         [appDelegate.detailViewController dismissFullscreenSidebarOverlayAfterStorySelection];
         [appDelegate.detailViewController restoreStoryKeyboardFocusIfNeeded];
         //[collectionView selectItemAtIndexPath:self.selectedIndexPath animated:YES scrollPosition:UICollectionViewScrollPositionTop];
-    } else if (location == storiesCollection.storyLocationsCount) {
-        if (!appDelegate.isPremium && storiesCollection.isRiverView && !storiesCollection.isDailyBriefing) {
-            [appDelegate showPremiumDialog];
-        }
     }
 }
 
@@ -6258,9 +6210,6 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     } else if ([longPressStoryTitle isEqualToString:@"save_story"]) {
         [storiesCollection toggleStorySaved:story];
         [self reloadIndexPath:indexPath withRowAnimation:UITableViewRowAnimationFade];
-    } else if ([longPressStoryTitle isEqualToString:@"train_story"]) {
-        appDelegate.activeStory = story;
-        [appDelegate openTrainStory:cell];
     }
 }
 
@@ -6283,12 +6232,6 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     [items addObject:[self itemWithTitle:[NBLocalization text:@"Send This Story To..."] iconName:@"menu_icn_mail.png" handler:^{
         [self.appDelegate showSendTo:self sender:cell];
     }]];
-    
-    if (NewsNativeFeatures.training) {
-        [items addObject:[self itemWithTitle:[NBLocalization text:@"Train This Story"] iconName:@"menu_icn_train.png" handler:^{
-            [self.appDelegate openTrainStory:cell];
-        }]];
-    }
     
     [self.appDelegate showMarkOlderNewerReadMenuWithStoriesCollection:self.storiesCollection story:story sourceView:self.storyTitlesTable sourceRect:rect extraItems:items completionHandler:^(BOOL marked) {
         [self.storyTitlesTable reloadData];
@@ -6544,12 +6487,6 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     }
     
     if (!appDelegate.storiesCollection.isRiverView && !infrequent && !saved && !read && !social && !widget && !dashboard) {
-        if (NewsNativeFeatures.training) {
-            [viewController addTitle:[NBLocalization text:@"Train this site"] iconName:@"menu_icn_train.png" selectionShouldDismiss:YES handler:^{
-                [self openTrainSite];
-            }];
-        }
-        
         if ([appDelegate.storiesCollection.activeFeed[@"ng"] integerValue] > 0) {
             NSString *title =  appDelegate.storiesCollection.showHiddenStories ? [NBLocalization text:@"Hide hidden stories"] : [NBLocalization text:@"Show hidden stories"];
             
@@ -6566,21 +6503,6 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         [viewController addTitle:[NBLocalization text:@"Insta-fetch stories"] iconName:@"menu_icn_fetch.png" selectionShouldDismiss:YES handler:^{
             [self instafetchFeed];
         }];
-
-        [viewController addTitle:[NBLocalization text:@"Discover related sites"] iconName:@"discover" iconColor:UIColorFromRGB(0x95968F) selectionShouldDismiss:YES handler:^{
-            NSString *feedId = [NSString stringWithFormat:@"%@",
-                [self.appDelegate.storiesCollection.activeFeed objectForKey:@"id"]];
-            [self.appDelegate openDiscoverFeedsDialogFromSettingsButton:feedId];
-        }];
-    }
-
-    if (appDelegate.storiesCollection.isRiverView && !everything && !infrequent && !saved && !read && !social && !widget && !dashboard) {
-        NSArray *folderFeedIds = appDelegate.storiesCollection.activeFolderFeeds;
-        if (folderFeedIds.count > 0) {
-            [viewController addTitle:[NBLocalization text:@"Discover related sites"] iconName:@"discover" iconColor:UIColorFromRGB(0x95968F) selectionShouldDismiss:YES handler:^{
-                [self.appDelegate openDiscoverFeedsDialogFromSettingsButtonWithFeedIds:folderFeedIds];
-            }];
-        }
     }
 
     [viewController startNewSection];
@@ -6829,37 +6751,12 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     if ([sender isKindOfClass:[UIBarButtonItem class]]) {
         if (storiesCollection.isDailyBriefing) {
             [(FeedDetailViewController *)self openDailyBriefingSettingsFromBarButton:sender];
-        } else if (@available(iOS 15.0, *)) {
-            DiscoverFeedsViewController *discover = nil;
-            if (!storiesCollection.isRiverView && storiesCollection.activeFeed) {
-                discover = [[DiscoverFeedsViewController alloc] initWithFeedId:[NSString stringWithFormat:@"%@", storiesCollection.activeFeed[@"id"]]];
-            } else if (storiesCollection.activeFolderFeeds.count > 0) {
-                NSMutableArray<NSString *> *feedIds = [NSMutableArray array];
-                for (id feedId in storiesCollection.activeFolderFeeds) {
-                    [feedIds addObject:[NSString stringWithFormat:@"%@", feedId]];
-                }
-                discover = [[DiscoverFeedsViewController alloc] initWithFeedIds:feedIds];
-            }
-            if (discover) {
-                [appDelegate showPopoverWithViewController:discover contentSize:CGSizeMake(500, 550) barButtonItem:sender];
-            }
         }
         return;
     }
 
     if (storiesCollection.isDailyBriefing) {
         [(FeedDetailViewController *)self openDailyBriefingSettingsFrom:pillView];
-        return;
-    }
-
-    if (!storiesCollection.isRiverView && storiesCollection.activeFeed) {
-        NSString *feedId = [NSString stringWithFormat:@"%@", [storiesCollection.activeFeed objectForKey:@"id"]];
-        [appDelegate openDiscoverFeedsDialogFromSettingsButton:feedId sourceView:pillView];
-    } else if (storiesCollection.isRiverView) {
-        NSArray *folderFeedIds = storiesCollection.activeFolderFeeds;
-        if (folderFeedIds.count > 0) {
-            [appDelegate openDiscoverFeedsDialogFromSettingsButtonWithFeedIds:folderFeedIds sourceView:pillView];
-        }
     }
 }
 
@@ -7366,9 +7263,6 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     [menuNavigationController showViewController:viewController sender:self];
 }
 
-- (IBAction)openTrainSite {
-    [appDelegate openTrainSite];
-}
 
 - (void)toggleHiddenStories {
     appDelegate.storiesCollection.showHiddenStories = !appDelegate.storiesCollection.showHiddenStories;

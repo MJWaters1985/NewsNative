@@ -1,11 +1,3 @@
-//
-//  DiscoverFeedsModels.swift
-//  NewsBlur
-//
-//  Created by Claude on 2025-02-11.
-//  Copyright 2025 NewsBlur. All rights reserved.
-//
-
 import Foundation
 
 struct DiscoverStory: Identifiable {
@@ -45,7 +37,7 @@ struct DiscoverStory: Identifiable {
     private static func previewText(from html: String) -> String {
         guard !html.isEmpty else { return "" }
 
-        // DiscoverFeedsModels.swift bounds preview parsing and reuses NSString+HTML's non-rendering scanner.
+        // DiscoverStory.swift bounds preview parsing and reuses NSString+HTML's non-rendering scanner.
         let visibleHTML = String(html.prefix(12_000))
             .replacingOccurrences(of: "(?is)<(script|style)\\b[^>]*>.*?(?:</\\1\\s*>|\\z)",
                                   with: " ", options: .regularExpression)

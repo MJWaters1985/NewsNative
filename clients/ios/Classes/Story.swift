@@ -335,7 +335,7 @@ import SwiftUI
     }
 
     /// Saved regex searches, kept so redrawing the story trainer doesn't run a slow pattern again.
-    private var regexOutcomes: [RegexSearch: TrainerRegexMatcher.Outcome] = [:]
+    private var regexOutcomes: [RegexSearch: ClassifierRegexMatcher.Outcome] = [:]
 
     /// The story trainer lists a saved regex unless it clearly doesn't match. One that runs out of time
     /// in TrainerRegexInput.swift's matcher stays listed, since it may match and the reader may be here to remove it.
@@ -344,7 +344,7 @@ import SwiftUI
         if let outcome = regexOutcomes[search] {
             return outcome != .noMatch
         }
-        guard let outcome = TrainerRegexMatcher.outcome(of: pattern, in: text, budget: TrainerRegexMatcher.drawingBudget) else {
+        guard let outcome = ClassifierRegexMatcher.outcome(of: pattern, in: text, budget: ClassifierRegexMatcher.drawingBudget) else {
             return false
         }
         regexOutcomes[search] = outcome

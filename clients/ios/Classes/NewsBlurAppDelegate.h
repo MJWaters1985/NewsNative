@@ -37,7 +37,6 @@
 @class LoginViewController;
 @class AddSiteViewController;
 @class MoveSiteViewController;
-@class TrainerViewController;
 @class NotificationsViewController;
 @class UserTagsViewController;
 @class OriginalStoryViewController;
@@ -47,8 +46,6 @@
 @class UnreadCounts;
 @class StoriesCollection;
 @class PINCache;
-@class PremiumManager;
-@class PremiumViewController;
 @class WKWebView;
 @class BGAppRefreshTask;
 @class FeedIconPreparationRequest;
@@ -62,9 +59,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
     UINavigationController *modalNavigationController;
     UINavigationController *shareNavigationController;
     UINavigationController *userProfileNavigationController;
-    UINavigationController *trainNavigationController;
     UINavigationController *notificationsNavigationController;
-    UINavigationController *premiumNavigationController;
     DetailViewController *detailViewController;
     
     FirstTimeUserViewController *firstTimeUserViewController;
@@ -82,13 +77,11 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
     LoginViewController *loginViewController;
     AddSiteViewController *addSiteViewController;
     MoveSiteViewController *moveSiteViewController;
-    TrainerViewController *trainerViewController;
     NotificationsViewController *notificationsViewController;
     UserTagsViewController *userTagsViewController;
     OriginalStoryViewController *originalStoryViewController;
     UINavigationController *originalStoryViewNavController;
     UserProfileViewController *userProfileViewController;
-    PremiumViewController *premiumViewController;
 
     AFHTTPSessionManager *networkManager;
 
@@ -168,9 +161,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 @property (nonatomic) IBOutlet UINavigationController *detailNavigationController;
 @property (nonatomic) UINavigationController *modalNavigationController;
 @property (nonatomic) UINavigationController *shareNavigationController;
-@property (nonatomic) UINavigationController *trainNavigationController;
 @property (nonatomic) UINavigationController *notificationsNavigationController;
-@property (nonatomic) UINavigationController *premiumNavigationController;
 @property (nonatomic) UINavigationController *userProfileNavigationController;
 @property (nonatomic) UINavigationController *originalStoryViewNavController;
 @property (nonatomic) IBOutlet DetailViewController *detailViewController;
@@ -185,15 +176,12 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 @property (nonatomic, strong) UINavigationController *addSiteNavigationController;
 @property (nonatomic) IBOutlet AddSiteViewController *addSiteViewController;
 @property (nonatomic) IBOutlet MoveSiteViewController *moveSiteViewController;
-@property (nonatomic) IBOutlet TrainerViewController *trainerViewController;
 @property (nonatomic) IBOutlet NotificationsViewController *notificationsViewController;
 @property (nonatomic) IBOutlet UserTagsViewController *userTagsViewController;
 @property (nonatomic) IBOutlet OriginalStoryViewController *originalStoryViewController;
 @property (nonatomic) IBOutlet ShareViewController *shareViewController;
 @property (nonatomic) IBOutlet FontSettingsViewController *fontSettingsViewController;
 @property (nonatomic) IBOutlet UserProfileViewController *userProfileViewController;
-@property (nonatomic,  strong) PremiumManager *premiumManager;
-@property (nonatomic) IBOutlet PremiumViewController *premiumViewController;
 @property (nonatomic, strong) UINavigationController *fontSettingsNavigationController;
 @property (nonatomic, strong) MarkReadMenuViewController *markReadMenuViewController;
 @property (nonatomic, strong) FeedChooserViewController *feedChooserViewController;
@@ -338,9 +326,6 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)showOrganizeSites;
 - (void)showWidgetSites;
 - (void)showDashboardSites:(NSString *)selectedRiverId;
-- (void)showPremiumDialog;
-- (void)showPremiumDialogForPro;
-- (void)showUsageBillingDialog;
 - (void)updateSplitBehavior:(BOOL)refresh;
 - (void)addSplitControlToMenuController:(MenuViewController *)menuViewController;
 - (void)showPreferences;
@@ -351,22 +336,11 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)showColumn:(UISplitViewControllerColumn)column debugInfo:(NSString *)debugInfo animated:(BOOL)animated;
 
 - (void)showMoveSite;
-- (void)openTrainSite;
 - (void)openNotificationsWithFeed:(NSString *)feedId;
 - (void)openNotificationsWithFeed:(NSString *)feedId sender:(id)sender;
 - (void)updateNotifications:(NSDictionary *)params feed:(NSString *)feedId;
 - (void)checkForFeedNotifications;
 - (void)openStatisticsWithFeed:(NSString *)feedId sender:(id)sender;
-- (void)openTrainSiteWithFeedLoaded:(BOOL)feedLoaded from:(id)sender;
-- (void)openTrainStory:(id)sender;
-- (void)openAskAIDialog:(NSDictionary *)story;
-- (void)openAskAIDialog:(NSDictionary *)story sourceRect:(NSValue *)sourceRectValue;
-- (void)openDiscoverFeedsDialog:(NSString *)feedId;
-- (void)openDiscoverFeedsDialogFromSettingsButton:(NSString *)feedId;
-- (void)openDiscoverFeedsDialogFromSettingsButton:(NSString *)feedId sourceView:(UIView *)sourceView;
-- (void)openDiscoverFeedsDialogWithFeedIds:(NSArray *)feedIds;
-- (void)openDiscoverFeedsDialogFromSettingsButtonWithFeedIds:(NSArray *)feedIds;
-- (void)openDiscoverFeedsDialogFromSettingsButtonWithFeedIds:(NSArray *)feedIds sourceView:(UIView *)sourceView;
 - (void)openAddSiteWithFeedAddress:(NSString *)feedAddress;
 - (void)openDiscoverSitesView;
 - (void)cleanUpTryFeed;
@@ -545,38 +519,6 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (UIImage *)getCachedUserAvatar:(NSString *)userId;
 - (UIImage *)defaultUserAvatar;
 
-- (void)toggleAuthorClassifier:(NSString *)author feedId:(NSString *)feedId;
-- (void)toggleAuthorClassifier:(NSString *)author feedId:(NSString *)feedId scope:(NSString *)scope folderName:(NSString *)folderName;
-- (void)toggleAuthorClassifier:(NSString *)author feedId:(NSString *)feedId score:(NSInteger)score scope:(NSString *)scope folderName:(NSString *)folderName;
-- (void)toggleAuthorRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId;
-- (void)toggleAuthorRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId scope:(NSString *)scope folderName:(NSString *)folderName;
-- (void)toggleAuthorRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId score:(NSInteger)score scope:(NSString *)scope folderName:(NSString *)folderName;
-- (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId;
-- (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId scope:(NSString *)scope folderName:(NSString *)folderName;
-- (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId score:(NSInteger)score scope:(NSString *)scope folderName:(NSString *)folderName;
-- (void)toggleTitleClassifier:(NSString *)title feedId:(NSString *)feedId score:(NSInteger)score;
-- (void)toggleTitleClassifier:(NSString *)title feedId:(NSString *)feedId score:(NSInteger)score scope:(NSString *)scope folderName:(NSString *)folderName;
-- (void)toggleTitleRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId;
-- (void)toggleTitleRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId scope:(NSString *)scope folderName:(NSString *)folderName;
-- (void)toggleTitleRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId score:(NSInteger)score scope:(NSString *)scope folderName:(NSString *)folderName;
-- (void)toggleTextClassifier:(NSString *)text feedId:(NSString *)feedId;
-- (void)toggleTextClassifier:(NSString *)text feedId:(NSString *)feedId scope:(NSString *)scope folderName:(NSString *)folderName;
-- (void)toggleTextClassifier:(NSString *)text feedId:(NSString *)feedId score:(NSInteger)score scope:(NSString *)scope folderName:(NSString *)folderName;
-- (void)toggleTextRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId;
-- (void)toggleTextRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId scope:(NSString *)scope folderName:(NSString *)folderName;
-- (void)toggleTextRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId score:(NSInteger)score scope:(NSString *)scope folderName:(NSString *)folderName;
-- (void)toggleUrlClassifier:(NSString *)url feedId:(NSString *)feedId;
-- (void)toggleUrlClassifier:(NSString *)url feedId:(NSString *)feedId scope:(NSString *)scope folderName:(NSString *)folderName;
-- (void)toggleUrlClassifier:(NSString *)url feedId:(NSString *)feedId score:(NSInteger)score scope:(NSString *)scope folderName:(NSString *)folderName;
-- (void)toggleUrlRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId;
-- (void)toggleUrlRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId scope:(NSString *)scope folderName:(NSString *)folderName;
-- (void)toggleUrlRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId score:(NSInteger)score scope:(NSString *)scope folderName:(NSString *)folderName;
-- (void)toggleFeedClassifier:(NSString *)feedId;
-- (void)savePromptClassifier:(NSString *)prompt feedId:(NSString *)feedId score:(NSInteger)score includeImages:(BOOL)includeImages scope:(NSString *)scope folderName:(NSString *)folderName;
-- (void)changeClassifierScope:(NSString *)classifierType value:(NSString *)value
-                       feedId:(NSString *)feedId score:(NSInteger)score
-                     oldScope:(NSString *)oldScope oldFolderName:(NSString *)oldFolderName
-                        scope:(NSString *)scope folderName:(NSString *)folderName;
 
 - (NSInteger)databaseSchemaVersion:(FMDatabase *)db;
 - (void)createDatabaseConnection;

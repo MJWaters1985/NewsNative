@@ -28,7 +28,6 @@
 #import "NBBarButtonItem.h"
 #import "UISearchBar+Field.h"
 #import "StoriesCollection.h"
-#import "PremiumManager.h"
 #import "MenuViewController.h"
 #import "NewsBlur-Swift.h"
 
@@ -894,8 +893,7 @@ static BOOL NBBoolPreferenceValue(id value) {
     }
     if (usesVerticalToolbar || usesSplitRail) {
         // FeedsObjCViewController.m manually reserves only the bottom safe area because this table disables automatic adjustment.
-        CGFloat bottomInset = MAX(0, self.view.safeAreaInsets.bottom) +
-            [ListenStoryBridge miniPlayerInsetForView:self.feedTitlesTable];
+        CGFloat bottomInset = MAX(0, self.view.safeAreaInsets.bottom);
         UIEdgeInsets inset = self.feedTitlesTable.contentInset;
         if (inset.bottom != bottomInset) {
             inset.bottom = bottomInset;
@@ -937,9 +935,7 @@ static BOOL NBBoolPreferenceValue(id value) {
 #endif
     self.toolbarBottomConstraint.constant = -toolbarBottomGap;
     CGFloat toolbarHeight = CGRectGetHeight(self.feedViewToolbar.frame);
-    // FeedsObjCViewController.m also clears the Listen mini player (Listen/ListenMiniPlayer.swift) when it covers this list.
-    CGFloat totalBottomInset = MAX(toolbarHeight + toolbarBottomGap, safeAreaBottom) +
-        [ListenStoryBridge miniPlayerInsetForView:self.feedTitlesTable];
+    CGFloat totalBottomInset = MAX(toolbarHeight + toolbarBottomGap, safeAreaBottom);
 
     UIEdgeInsets currentInset = self.feedTitlesTable.contentInset;
     if (currentInset.bottom != totalBottomInset) {
@@ -1668,8 +1664,8 @@ static BOOL NBBoolPreferenceValue(id value) {
     appDelegate.dictSocialProfile = [results objectForKey:@"social_profile"];
     appDelegate.dictUserProfile = [results objectForKey:@"user_profile"];
     [self syncStoryClusteringDefaultsFromUserProfile:appDelegate.dictUserProfile];
-    // Listen/ListenPreferences.swift adopts the synced Listen and story button preferences.
-    [ListenStoryBridge syncFromUserProfile:appDelegate.dictUserProfile];
+    // StoryButtonPreferences.swift adopts the synced story button preferences.
+    [StoryButtonPreferences syncFromUserProfile:appDelegate.dictUserProfile];
     appDelegate.dictSocialServices = [results objectForKey:@"social_services"];
     appDelegate.userActivitiesArray = [results objectForKey:@"activities"];
     
@@ -1681,10 +1677,6 @@ static BOOL NBBoolPreferenceValue(id value) {
     id premiumExpire = [appDelegate.dictUserProfile objectForKey:@"premium_expire"];
     if (premiumExpire && ![premiumExpire isKindOfClass:[NSNull class]] && premiumExpire != 0) {
         appDelegate.premiumExpire = [premiumExpire integerValue];
-    }
-    
-    if (!appDelegate.premiumManager) {
-        appDelegate.premiumManager = [PremiumManager new];
     }
     
     // Set up dictSocialFeeds
@@ -2115,25 +2107,6 @@ static BOOL NBBoolPreferenceValue(id value) {
     
     [viewController startNewSection];
 
-    if (appDelegate.isPremium && appDelegate.isPremiumArchive) {
-        [viewController addFeedListTitle:[NBLocalization text:@"Premium Archive"] iconName:@"feed-menu-subscription" selectionShouldDismiss:YES handler:^{
-            [self.appDelegate showPremiumDialog];
-        }];
-    } else if (!appDelegate.isPremium) {
-        [viewController addFeedListTitle:[NBLocalization text:@"Upgrade to Premium"] iconName:@"feed-menu-subscription" selectionShouldDismiss:YES handler:^{
-            [self.appDelegate showPremiumDialog];
-        }];
-    }
-
-    // FeedsObjCViewController.m offers natural language classifier billing beside the subscription (UsageBillingView.swift),
-    // unless UsageBillingFeature.swift holds it out of this release.
-    if (UsageBillingFeature.isEnabled) {
-        [viewController addFeedListTitle:[NBLocalization text:@"Usage Billing"] iconName:@"icons8-prompt-100" selectionShouldDismiss:YES handler:^{
-            [self.appDelegate showUsageBillingDialog];
-        }];
-    }
-    
-    [viewController startNewSection];
 
     [viewController addFeedListTitle:[NBLocalization text:@"Logout"] iconName:@"feed-menu-logout" selectionShouldDismiss:YES handler:^{
         [self.appDelegate confirmLogout];
@@ -2563,8 +2536,8 @@ static BOOL NBBoolPreferenceValue(id value) {
         identifier = notification.userInfo.allKeys.firstObject;
     }
     
-    // Listen/ListenPreferences.swift sends Listen and story button preferences to the server.
-    if ([ListenStoryBridge preferenceDidChange:identifier]) return;
+    // StoryButtonPreferences.swift sends story button preferences to the server.
+    if ([StoryButtonPreferences preferenceDidChange:identifier]) return;
 
     if ([identifier isEqualToString:@"split_behavior"]) {
         [self.appDelegate updateSplitBehavior:YES];
@@ -2654,13 +2627,6 @@ static BOOL NBBoolPreferenceValue(id value) {
     } else if ([key isEqualToString:@"delete_account"]) {
         [self.appDelegate.feedsNavigationController dismissViewControllerAnimated:YES completion:^{
             [AccountDeletionController presentFromController:self.appDelegate.splitViewController];
-        }];
-    } else if ([key isEqualToString:@"listen_voice"]) {
-        UIViewController *presenter = [self.appDelegate.feedsNavigationController presentedViewController];
-        [ListenStoryBridge presentVoiceSettingsFrom:presenter];
-    } else if ([key isEqualToString:@"app_icon"]) {
-        [self.appDelegate.feedsNavigationController dismissViewControllerAnimated:YES completion:^{
-            [self.appDelegate showPremiumDialog];
         }];
     }
 }
@@ -3958,13 +3924,7 @@ heightForHeaderInSection:(NSInteger)section {
             appDelegate.activeUserProfileName = [NSString stringWithFormat:@"%@", [feed objectForKey:@"username"]];
             [appDelegate showUserProfileModal:cell];
         } else {
-            if ([swipe isEqualToString:@"statistics"]) {
-                [appDelegate openStatisticsWithFeed:feedId sender:cell];
-            } else {
-                // Train
-                appDelegate.storiesCollection.activeFeed = [appDelegate.dictFeeds objectForKey:feedId];
-                [appDelegate openTrainSiteWithFeedLoaded:NO from:cell];
-            }
+            [appDelegate openStatisticsWithFeed:feedId sender:cell];
         }
     } else {
         // Mark read

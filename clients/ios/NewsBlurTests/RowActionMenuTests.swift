@@ -766,7 +766,6 @@ import UIKit
     var fixturePages: StoryPagesViewController?
     var presentedAnchor: AnyObject?
     override var storyPagesViewController: StoryPagesViewController! { fixturePages }
-    override func openTrainStory(_ sender: Any!) { presentedAnchor = sender as AnyObject? }
     override func showSend(to controller: UIViewController!, sender: Any!) {
         presentedAnchor = sender as AnyObject?
     }
@@ -807,10 +806,8 @@ import UIKit
 }
 
 @MainActor private final class RowMenuTestApp: NewsBlurAppDelegate {
-    var askedStory: [AnyHashable: Any]?
     var sharedStory: [AnyHashable: Any]?
     var shareType: String?
-    override func openAskAIDialog(_ story: [AnyHashable: Any]!) { askedStory = story }
     override func showShareView(_ type: String!, setUserId userId: String!, setUsername username: String!, setReplyId commentIndex: String!) {
         shareType = type
         sharedStory = activeStory

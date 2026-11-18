@@ -27,7 +27,6 @@ import SwiftUI
     func unread(story: Story)
     func hid(story: Story)
     func scrolled(story: Story, offset: CGFloat?)
-    func openPremiumDialog()
 }
 
 /// A list or grid layout of story cards for the feed detail view.
