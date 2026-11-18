@@ -50,13 +50,6 @@ public enum StoryAutoCollapseBehavior: String {
     case feeds
 }
 
-@objc public enum DailyBriefingPresentationState: Int {
-    case loading
-    case settings
-    case empty
-    case stories
-}
-
 @objc public enum FeedSelectionPresentation: Int {
     case loadFeedDetail
     case showFeedsListThenLoadFeedDetail
@@ -322,89 +315,6 @@ public enum StoryAutoCollapseBehavior: String {
     }
 }
 
-@objcMembers public final class DailyBriefingPresentationDecision: NSObject {
-    public class func presentationState(
-        hasLoadedPreferences: Bool,
-        preferencesEnabled: Bool,
-        isLoadingInitialData: Bool,
-        hasStories: Bool
-    ) -> DailyBriefingPresentationState {
-        if !hasLoadedPreferences || (isLoadingInitialData && !hasStories) {
-            return .loading
-        }
-
-        if !preferencesEnabled {
-            return .settings
-        }
-
-        return hasStories ? .stories : .empty
-    }
-
-    public class func shouldFetchStories(
-        page: Int,
-        hasLoadedPreferences: Bool,
-        preferencesEnabled: Bool
-    ) -> Bool {
-        if page <= 1 {
-            return true
-        }
-
-        return hasLoadedPreferences && preferencesEnabled
-    }
-}
-
-@objcMembers public final class DailyBriefingLinkDecision: NSObject {
-    @objc(storyHashForURL:isDailyBriefing:)
-    public class func storyHash(for url: NSURL?, isDailyBriefing: Bool) -> String? {
-        guard isDailyBriefing, let url = url as URL? else {
-            return nil
-        }
-
-        guard url.path.contains("/briefing") else {
-            return nil
-        }
-
-        guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
-            return nil
-        }
-
-        return components.queryItems?.first(where: { $0.name == "story" })?.value
-    }
-}
-
-@objcMembers public final class DailyBriefingStartupDecision: NSObject {
-    @objc(pendingStoryHashForStoryHash:)
-    public class func pendingStoryHash(for storyHash: String?) -> String? {
-        storyHash ?? ""
-    }
-
-    @objc(startupFolderWithPendingStoryHash:pendingFolder:)
-    public class func startupFolder(
-        pendingStoryHash: String?,
-        pendingFolder: String?
-    ) -> String? {
-        if pendingStoryHash != nil {
-            return "daily_briefing"
-        }
-
-        return pendingFolder
-    }
-}
-
-@objcMembers public final class DailyBriefingPaginationDecision: NSObject {
-    public class func shouldPrefetchNextPage(
-        remainingOffset: CGFloat,
-        isDragging: Bool,
-        isDecelerating: Bool
-    ) -> Bool {
-        guard remainingOffset <= 500 else {
-            return false
-        }
-
-        return isDragging || isDecelerating
-    }
-}
-
 @objcMembers public final class FetchingBannerAccessoryLayoutDecision: NSObject {
     @objc(fixedAccessoryDimensionForOffline:)
     public class func fixedAccessoryDimension(isOffline: Bool) -> CGFloat {
@@ -417,101 +327,13 @@ public enum StoryAutoCollapseBehavior: String {
     }
 }
 
-public struct DailyBriefingListGroup: Equatable {
-    public let id: String
-    public let title: String
-    public let dateText: String
-    public let storyHashes: [String]
-
-    public init(id: String, title: String, dateText: String, storyHashes: [String]) {
-        self.id = id
-        self.title = title
-        self.dateText = dateText
-        self.storyHashes = storyHashes
-    }
-}
-
-public struct DailyBriefingListSection: Equatable {
-    public let id: String
-    public let title: String
-    public let dateText: String
-    public let rowLocations: [Int]
-    public let isCollapsed: Bool
-    public let isLoadingSection: Bool
-
-    public init(
-        id: String,
-        title: String,
-        dateText: String,
-        rowLocations: [Int],
-        isCollapsed: Bool,
-        isLoadingSection: Bool
-    ) {
-        self.id = id
-        self.title = title
-        self.dateText = dateText
-        self.rowLocations = rowLocations
-        self.isCollapsed = isCollapsed
-        self.isLoadingSection = isLoadingSection
-    }
-}
-
-public enum DailyBriefingSectionLayoutDecision {
-    public static func defaultCollapsedGroupIDs(for groupIDs: [String]) -> Set<String> {
-        Set(groupIDs.dropFirst())
-    }
-
-    public static func sections(
-        groups: [DailyBriefingListGroup],
-        storyLocationsByHash: [String: Int],
-        collapsedGroupIDs: Set<String>,
-        includesLoadingSection: Bool
-    ) -> [DailyBriefingListSection] {
-        var sections = groups.map { group in
-            DailyBriefingListSection(
-                id: group.id,
-                title: group.title,
-                dateText: group.dateText,
-                rowLocations: group.storyHashes.compactMap { storyLocationsByHash[$0] },
-                isCollapsed: collapsedGroupIDs.contains(group.id),
-                isLoadingSection: false
-            )
-        }
-
-        if includesLoadingSection {
-            sections.append(
-                DailyBriefingListSection(
-                    id: "__loading__",
-                    title: "",
-                    dateText: "",
-                    rowLocations: [],
-                    isCollapsed: false,
-                    isLoadingSection: true
-                )
-            )
-        }
-
-        return sections
-    }
-}
-
 @objcMembers public final class StoryRowLookupDecision: NSObject {
     public class func storyIndex(
         for location: Int,
-        isDailyBriefing: Bool,
-        allStoriesCount: Int,
         visibleStoryLocations: [NSNumber]
     ) -> NSNumber? {
         guard location >= 0 else {
             return nil
-        }
-
-        if isDailyBriefing {
-            guard location < allStoriesCount else {
-                return nil
-            }
-
-            return NSNumber(value: location)
         }
 
         guard visibleStoryLocations.indices.contains(location) else {
@@ -525,12 +347,11 @@ public enum DailyBriefingSectionLayoutDecision {
 @objcMembers public final class FeedRowLoadingDecision: NSObject {
     public class func shouldShowLoadingCell(
         isLegacyTable: Bool,
-        isDailyBriefing: Bool,
         hasRowDescriptor: Bool,
         storyLocation: Int,
         storyCount: Int
     ) -> Bool {
-        if isLegacyTable && !isDailyBriefing && !hasRowDescriptor {
+        if isLegacyTable && !hasRowDescriptor {
             return true
         }
 
@@ -545,14 +366,13 @@ public enum DailyBriefingSectionLayoutDecision {
 @objcMembers public final class FeedRowScrollReadDecision: NSObject {
     public class func targetStoryLocation(
         rowStoryLocation: NSNumber?,
-        isDailyBriefing: Bool,
         storyCount: Int
     ) -> NSNumber? {
         if let rowStoryLocation {
             return rowStoryLocation
         }
 
-        guard !isDailyBriefing, storyCount >= 0 else {
+        guard storyCount >= 0 else {
             return nil
         }
 
@@ -993,22 +813,6 @@ public enum StoryScrollReadDecision {
 
         let clampedAccumulator = max(0, min(fadeDistance, accumulator))
         return 1 - (clampedAccumulator / fadeDistance)
-    }
-}
-
-@objcMembers public final class DailyBriefingFolderPlacementDecision: NSObject {
-    @objc(orderedFoldersFromFolderNames:isEnabled:)
-    public class func orderedFolders(folderNames: [String], isEnabled: Bool) -> [String] {
-        let foldersWithoutBriefing = folderNames.filter { $0 != "daily_briefing" }
-        let _ = isEnabled
-
-        var orderedFolders = foldersWithoutBriefing
-        let insertionIndex = orderedFolders.firstIndex(of: "infrequent")
-            ?? orderedFolders.firstIndex(of: "everything")
-            ?? 0
-        orderedFolders.insert("daily_briefing", at: insertionIndex)
-
-        return orderedFolders
     }
 }
 

@@ -183,8 +183,6 @@ static NSString *NBAccessibilitySlug(NSString *value) {
         folderTitle = [NBLocalization text:@"Infrequent Site Stories"];
     } else if (section == NewsBlurTopSectionAllStories) {
         folderTitle = [NBLocalization text:@"All Site Stories"];
-    } else if ([folderName isEqual:@"daily_briefing"]) {
-        folderTitle = [NBLocalization text:@"Daily Briefing"];
     } else if ([folderName isEqual:@"widget_stories"]) {
         folderTitle = [NBLocalization text:@"Widget Site Stories"];
     } else if ([folderName isEqual:@"read_stories"]) {
@@ -297,7 +295,7 @@ static NSString *NBAccessibilitySlug(NSString *value) {
             [disclosureButton addTarget:appDelegate.feedsViewController action:@selector(didToggleAllFolders:) forControlEvents:UIControlEventTouchUpInside];
 
         // Add collapse button to regular folders
-        } else if (section != NewsBlurTopSectionDashboard && section != NewsBlurTopSectionDiscoverSites && section != NewsBlurTopSectionInfrequentSiteStories && ![folderName isEqual:@"daily_briefing"] && ![folderName isEqual:@"read_stories"] && ![folderName isEqual:@"interactions"] && ![folderName isEqual:@"river_global"] && ![folderName hasPrefix:@"trending:"] && ![folderName isEqual:@"widget_stories"] && ![folderName isEqual:@"try_feed"]) {
+        } else if (section != NewsBlurTopSectionDashboard && section != NewsBlurTopSectionDiscoverSites && section != NewsBlurTopSectionInfrequentSiteStories && ![folderName isEqual:@"read_stories"] && ![folderName isEqual:@"interactions"] && ![folderName isEqual:@"river_global"] && ![folderName hasPrefix:@"trending:"] && ![folderName isEqual:@"widget_stories"] && ![folderName isEqual:@"try_feed"]) {
             if (!isFolderCollapsed) {
                 [disclosureButton setImage:expandedImage forState:UIControlStateNormal];
             }
@@ -343,8 +341,6 @@ static NSString *NBAccessibilitySlug(NSString *value) {
             folderImageViewX = 7;
         }
         allowLongPress = YES;
-    } else if ([folderName isEqual:@"daily_briefing"]) {
-        folderImage = [UIImage imageNamed:@"briefing"];
         if (!appDelegate.isPhone) {
             folderImageViewX = 10;
         } else {

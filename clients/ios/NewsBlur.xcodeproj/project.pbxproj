@@ -13,7 +13,6 @@
 		06CB30FD8F4CA002CBB1CBFF /* CustomIconRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6133546989FF9DBBA772F71 /* CustomIconRenderer.swift */; };
 		07B1415392C062FCBFD79577 /* NewsBlurSocketClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B435C6C1F2F7C7B905BC328 /* NewsBlurSocketClient.swift */; };
 		0847BD1B7E062D26904F8A1A /* WhitneySSm-Bold-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3DFF1BFBBAC600ADC01A /* WhitneySSm-Bold-Bas.otf */; };
-		0F8A8E142FF74BADA0000077 /* NotificationNavigationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F8A8E142FF74BADA0000078 /* NotificationNavigationTests.swift */; };
 		117B8C9D0E1F2A3B4C5D6E7F /* AddSiteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB2C3D4E5F6A7B8C9D0E1F2A /* AddSiteView.swift */; };
 		1704EEE4254CB1AB008A3906 /* logo_emboss.png in Resources */ = {isa = PBXBuildFile; fileRef = 1704EEE3254CB1AB008A3906 /* logo_emboss.png */; };
 		170E3CCD24F8A3A2009CE819 /* FeedsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 170E3CCC24F8A3A2009CE819 /* FeedsViewController.swift */; };
@@ -850,7 +849,6 @@
 		1F0927750264F19490AA37A8 /* CustomIconRendererTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1957BBC9B048502B8B43FE49 /* CustomIconRendererTests.swift */; };
 		21C84B8328634A992018F409 /* PopularTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71A846FDD2AA6CED916AAA1E /* PopularTabView.swift */; };
 		228C9D0E1F2A3B4C5D6E7F80 /* AddSiteSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC3D4E5F6A7B8C9D0E1F2A3B /* AddSiteSheetViewController.swift */; };
-		268BE1B0D603F3C6A4418FEA /* WebFeedTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C56FEFC86230F6E5A4853DD3 /* WebFeedTabView.swift */; };
 		288765A50DF7441C002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765A40DF7441C002DB57D /* CoreGraphics.framework */; };
 		28D7ACF80DDB3853001CB0EB /* FeedsObjCViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 28D7ACF70DDB3853001CB0EB /* FeedsObjCViewController.m */; };
 		31B469EB96FDFC0B2326E681 /* SearchTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A48E4C9BFDC206CDC7D730 /* SearchTabView.swift */; };
@@ -1107,7 +1105,6 @@
 		E160F0571C9DAC2C00CB96DF /* UIViewController+HidePopover.m in Sources */ = {isa = PBXBuildFile; fileRef = E160F0561C9DAC2C00CB96DF /* UIViewController+HidePopover.m */; };
 		E1C44B0B200147ED002128AD /* StoryTitleAttributedString.m in Sources */ = {isa = PBXBuildFile; fileRef = E1C44B0A200147ED002128AD /* StoryTitleAttributedString.m */; };
 		E1D123FE1C66753D00434F40 /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = E1D123FD1C66753D00434F40 /* Localizable.stringsdict */; };
-		E81439B3673AE42C5B01F247 /* WebFeedTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C56FEFC86230F6E5A4853DD3 /* WebFeedTabView.swift */; };
 		E84AF7EDDAF220D7B543A717 /* NewslettersTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E420337AC619D7830BEBFB26 /* NewslettersTabView.swift */; };
 		E91620260916000100000001 /* FeedToolbarLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E91620260916000100000002 /* FeedToolbarLayoutTests.swift */; };
 		E91620260916000200000001 /* ShareStoryUpdateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E91620260916000200000002 /* ShareStoryUpdateTests.swift */; };
@@ -1161,7 +1158,6 @@
 		FF1A84CA306AA52A00D68616 /* FeedToolbarLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E91620260916000100000002 /* FeedToolbarLayoutTests.swift */; };
 		FF1A84CB306AA52A00D68616 /* AddSiteViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1C2D3E4F5061728394A0006 /* AddSiteViewModelTests.swift */; };
 		FF1A84CC306AA52A00D68616 /* AuthenticationResetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72AC992B011F4490943B6F21 /* AuthenticationResetTests.swift */; };
-		FF1A84CD306AA52A00D68616 /* NotificationNavigationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F8A8E142FF74BADA0000078 /* NotificationNavigationTests.swift */; };
 		FF1A84CE306AA52A00D68616 /* StoryListReloadTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 567499FE02F2A645A8DF21B8 /* StoryListReloadTests.swift */; };
 		FF1A84CF306AA52A00D68616 /* StoryReadStateAnimationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B11924FAD010202609100002 /* StoryReadStateAnimationTests.swift */; };
 		FF1A84D0306AA52A00D68616 /* MenuPreferenceSelectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B11924FAD010202609100032 /* MenuPreferenceSelectionTests.swift */; };
@@ -1648,7 +1644,6 @@
 		010EDEF91B2386B7003B79DE /* OnePasswordExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OnePasswordExtension.h; path = "Other Sources/OnePasswordExtension/OnePasswordExtension.h"; sourceTree = "<group>"; };
 		010EDEFB1B238722003B79DE /* 1Password.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = 1Password.xcassets; path = "Other Sources/OnePasswordExtension/1Password.xcassets"; sourceTree = "<group>"; };
 		0BA641879DDE49DEE45A226C /* SyncNotifierView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SyncNotifierView.swift; sourceTree = "<group>"; };
-		0F8A8E142FF74BADA0000078 /* NotificationNavigationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationNavigationTests.swift; sourceTree = "<group>"; };
 		1704EEE3254CB1AB008A3906 /* logo_emboss.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = logo_emboss.png; path = Resources/logo_emboss.png; sourceTree = SOURCE_ROOT; };
 		170E3CCC24F8A3A2009CE819 /* FeedsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedsViewController.swift; sourceTree = "<group>"; };
 		170E3CCE24F8A5D8009CE819 /* SplitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitViewController.swift; sourceTree = "<group>"; };
@@ -2082,7 +2077,6 @@
 		C0A0C701A9B84F5681000001 /* CompactPhoneNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompactPhoneNavigationController.swift; sourceTree = "<group>"; };
 		C0D3C0DE2F2A4A0100000001 /* StoryAutoCollapseDecision.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryAutoCollapseDecision.swift; sourceTree = "<group>"; };
 		C1A3E5F7092B4D6F8192A002 /* StoryFaviconPrefetchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryFaviconPrefetchTests.swift; sourceTree = "<group>"; };
-		C56FEFC86230F6E5A4853DD3 /* WebFeedTabView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WebFeedTabView.swift; sourceTree = "<group>"; };
 		CA1384000000000000000002 /* OfflineCacheCleanupTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineCacheCleanupTests.swift; sourceTree = "<group>"; };
 		CC3D4E5F6A7B8C9D0E1F2A3B /* AddSiteSheetViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddSiteSheetViewController.swift; sourceTree = "<group>"; };
 		D1E2F3A40516273849A00001 /* NewsBlurUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NewsBlurUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -2808,7 +2802,6 @@
 			isa = PBXGroup;
 			children = (
 				47A48E4C9BFDC206CDC7D730 /* SearchTabView.swift */,
-				C56FEFC86230F6E5A4853DD3 /* WebFeedTabView.swift */,
 				71A846FDD2AA6CED916AAA1E /* PopularTabView.swift */,
 				7FD14E5A058E2E3FF750AB32 /* YouTubeTabView.swift */,
 				72AC2EA8A4592C71DAFB528A /* RedditTabView.swift */,
@@ -3743,7 +3736,6 @@
 				B1C2D3E4F5061728394A0005 /* ReadTimeTrackerTests.swift */,
 				C0FFEE2B0000000000000001 /* ClassifierRegexMatcherTests.swift */,
 				72AC992B011F4490943B6F21 /* AuthenticationResetTests.swift */,
-				0F8A8E142FF74BADA0000078 /* NotificationNavigationTests.swift */,
 				567499FE02F2A645A8DF21B8 /* StoryListReloadTests.swift */,
 				B11924FAD010202609100002 /* StoryReadStateAnimationTests.swift */,
 				B11924FAD010202609100032 /* MenuPreferenceSelectionTests.swift */,
@@ -5671,7 +5663,6 @@
 				FBFD83AA22CBAE24A0DA4E32 /* DiscoverCategoryPillsView.swift in Sources */,
 				FDC609F18D82A1DE48D5BEB6 /* DiscoverFeedCardView.swift in Sources */,
 				31B469EB96FDFC0B2326E681 /* SearchTabView.swift in Sources */,
-				E81439B3673AE42C5B01F247 /* WebFeedTabView.swift in Sources */,
 				FACBFD8CDD7E522253DE1C07 /* PopularTabView.swift in Sources */,
 				84347F899F899B127AE9B9F5 /* YouTubeTabView.swift in Sources */,
 				49DF174C47FFBD2BC40D01DE /* RedditTabView.swift in Sources */,
@@ -5923,7 +5914,6 @@
 				DB275059F80D9D46607B511B /* DiscoverCategoryPillsView.swift in Sources */,
 				B94F58A7AE5AA0B2100756F1 /* DiscoverFeedCardView.swift in Sources */,
 				8B019815443085DA6B12A587 /* SearchTabView.swift in Sources */,
-				268BE1B0D603F3C6A4418FEA /* WebFeedTabView.swift in Sources */,
 				21C84B8328634A992018F409 /* PopularTabView.swift in Sources */,
 				A1A45A4B881E211614B013CC /* YouTubeTabView.swift in Sources */,
 				F57DA71FF55DA67AACE3B513 /* RedditTabView.swift in Sources */,
@@ -5970,7 +5960,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0F8A8E142FF74BADA0000077 /* NotificationNavigationTests.swift in Sources */,
 				6272E9F4868AFC518EC2DDDE /* StoryListReloadTests.swift in Sources */,
 				B11924FAD010202609100001 /* StoryReadStateAnimationTests.swift in Sources */,
 				B11924FAD010202609100031 /* MenuPreferenceSelectionTests.swift in Sources */,
@@ -6039,7 +6028,6 @@
 				FF1A84CA306AA52A00D68616 /* FeedToolbarLayoutTests.swift in Sources */,
 				FF1A84CB306AA52A00D68616 /* AddSiteViewModelTests.swift in Sources */,
 				FF1A84CC306AA52A00D68616 /* AuthenticationResetTests.swift in Sources */,
-				FF1A84CD306AA52A00D68616 /* NotificationNavigationTests.swift in Sources */,
 				FF1A84CE306AA52A00D68616 /* StoryListReloadTests.swift in Sources */,
 				FF1A84CF306AA52A00D68616 /* StoryReadStateAnimationTests.swift in Sources */,
 				FF1A84D0306AA52A00D68616 /* MenuPreferenceSelectionTests.swift in Sources */,

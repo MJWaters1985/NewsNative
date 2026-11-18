@@ -105,7 +105,7 @@ final class Test_DiscoverPanePresentation: XCTestCase {
 
     func test_tryFeedAppearsUnderDiscoveryWithoutMovingSidebarSections() throws {
         let (app, _, feeds, _) = fixture()
-        let folders = ["dashboard", "discover_sites", "daily_briefing", "infrequent", "everything", "Tech"]
+        let folders = ["dashboard", "discover_sites", "infrequent", "everything", "Tech"]
         app.dictFoldersArray = NSMutableArray(array: folders)
         app.dictFolders = ["Tech": ["42"]]
         app.dictFeeds = ["42": ["id": 42, "feed_title": "Subscribed site"]]
@@ -113,7 +113,7 @@ final class Test_DiscoverPanePresentation: XCTestCase {
         app.addTryFeed(toSidebar: ["id": 100, "feed_title": "Preview site"])
 
         XCTAssertEqual(app.dictFoldersArray as? [String], folders,
-                       "Preview must preserve the fixed Dashboard, Discover, Briefing, Infrequent, and All Stories sections")
+                       "Preview must preserve the fixed Dashboard, Discover, Infrequent, and All Stories sections")
         XCTAssertEqual(app.dictFolders["discover_sites"] as? [String], ["100"])
         XCTAssertEqual(feeds.currentRowAtIndexPath, IndexPath(row: 0, section: 1))
         XCTAssertEqual(feeds.tableView(UITableView(), numberOfRowsInSection: 1), 1)
@@ -904,7 +904,7 @@ final class DiscoverSitesViewModelTests: XCTestCase {
 
     private final class Environment: AddSiteViewModelAppEnvironment {
         var url: String? = "https://example.com"
-        var dictFoldersArray: Any? = ["Tech", "daily_briefing", "trending:good_reads", "everything"]
+        var dictFoldersArray: Any? = ["Tech", "trending:good_reads", "everything"]
     }
 
     private final class ResponseProtocol: URLProtocol {
@@ -1152,27 +1152,6 @@ final class DiscoverSitesViewModelTests: XCTestCase {
         XCTAssertEqual(viewModel.newslettersState.searchResults.first?.feedAddress, "https://example.substack.com/feed")
     }
 
-    func test_webFeedRejectedAnalysisStopsAndSurfacesError() async {
-        let viewModel = model()
-        ResponseProtocol.handler = { _ in (200, ["code": -1, "message": "Please enter a valid URL"] ) }
-        viewModel.analyzeWebFeed(url: "invalid")
-        await waitUntil { !viewModel.webFeedState.isAnalyzing }
-        XCTAssertTrue(viewModel.webFeedState.errorMessage?.contains("Please enter a valid URL") == true)
-        XCTAssertTrue(viewModel.webFeedState.variants.isEmpty)
-    }
-
-    func test_webFeedRSSDetectionRequiresExplicitSubscription() async {
-        let viewModel = model()
-        ResponseProtocol.handler = { request in
-            XCTAssertEqual(request.url?.path, "/webfeed/analyze")
-            return (200, ["code": 2, "feed_address": "https://example.com/rss"])
-        }
-        viewModel.analyzeWebFeed(url: "https://example.com/rss")
-        await waitUntil { !viewModel.webFeedState.isAnalyzing }
-        XCTAssertEqual(viewModel.webFeedState.detectedFeedURL, "https://example.com/rss")
-        XCTAssertFalse(viewModel.addedSuccess)
-    }
-
     func test_previewResolvesSourceURLToNumericFeedID() async throws {
         let viewModel = model()
         ResponseProtocol.handler = { request in
@@ -1201,53 +1180,6 @@ final class DiscoverSitesViewModelTests: XCTestCase {
         XCTAssertFalse(viewModel.youtubeState.hasSearched)
     }
 
-    func test_webFeedSubscriptionUsesAnalyzedURLAfterTextIsEdited() async {
-        let viewModel = model()
-        viewModel.webFeedState.analyzedURL = "https://example.com/analyzed"
-        viewModel.webFeedState.url = "https://example.com/edited"
-        viewModel.webFeedState.variants = [WebFeedVariant(index: 0, dict: ["title_xpath": "//h2"])]
-        viewModel.webFeedState.selectedVariantIndex = 0
-        ResponseProtocol.handler = { request in
-            let pairs = Self.body(request).split(separator: "&")
-            XCTAssertTrue(pairs.contains { $0.removingPercentEncoding == "url=https://example.com/analyzed" })
-            return (200, ["code": 1])
-        }
-        viewModel.subscribeWebFeed()
-        await waitUntil { !viewModel.webFeedState.isSubscribing }
-        XCTAssertTrue(viewModel.addedSuccess)
-        XCTAssertEqual(viewModel.addedFeedUrl, "https://example.com/analyzed")
-        XCTAssertTrue(viewModel.addedFeedURLs.contains("https://example.com/analyzed"))
-    }
-
-    func test_webFeedPollingResumesWhenReturningToTab() async {
-        let viewModel = model()
-        viewModel.webFeedState.isAnalyzing = true
-        viewModel.webFeedState.requestId = UUID().uuidString
-        ResponseProtocol.handler = { request in
-            XCTAssertEqual(request.url?.path, "/webfeed/status")
-            return (200, ["code": 1, "type": "complete", "variants_data": ["variants": [["label": "Articles", "title_xpath": "//h2"]]]])
-        }
-        viewModel.stopPolling()
-        viewModel.onTabSelected(.webFeed)
-        await waitUntil { !viewModel.webFeedState.isAnalyzing }
-        XCTAssertEqual(viewModel.webFeedState.variants.first?.label, "Articles")
-        XCTAssertNil(viewModel.webFeedState.errorMessage)
-        viewModel.stopPolling()
-    }
-
-    func test_webFeedRefinementSendsHint() async {
-        let viewModel = model()
-        ResponseProtocol.handler = { request in
-            XCTAssertTrue(Self.body(request).split(separator: "&").contains {
-                $0.removingPercentEncoding == "story_hint=Only articles & announcements"
-            })
-            return (200, ["code": -1, "message": "No matching articles"])
-        }
-        viewModel.analyzeWebFeed(url: "https://example.com", hint: "Only articles & announcements")
-        await waitUntil { !viewModel.webFeedState.isAnalyzing }
-        XCTAssertTrue(viewModel.webFeedState.errorMessage?.contains("No matching articles") == true)
-    }
-
     func test_googleNewsCatalogWorksWithoutNetwork() {
         let viewModel = model()
         ResponseProtocol.handler = { _ in
@@ -1259,43 +1191,6 @@ final class DiscoverSitesViewModelTests: XCTestCase {
         XCTAssertEqual(viewModel.googleNewsState.topics.first?.id, "WORLD")
         XCTAssertTrue(viewModel.googleNewsState.categories.contains { $0.name == "Technology" && $0.subcategories.contains("Artificial Intelligence") })
         XCTAssertTrue(viewModel.googleNewsState.isDataLoaded)
-    }
-
-    func test_webFeedAnalysisContractPreservesPreviewAndSubscriptionXPaths() async {
-        let viewModel = model()
-        viewModel.webFeedState.isAnalyzing = true
-        viewModel.webFeedState.requestId = UUID().uuidString
-        viewModel.webFeedState.analyzedURL = "https://example.com/articles"
-        let variant: [String: Any] = [
-            "label": "Articles", "story_container": "//article", "title": ".//h2/text()",
-            "link": ".//a/@href", "content": ".//p/text()", "image": ".//img/@src",
-            "author": ".//span[@class='author']/text()", "date": ".//time/@datetime",
-            "preview_stories": [["title": "First article", "link": "https://example.com/articles/first",
-                                 "content": "Article summary", "image": "https://example.com/first.jpg"]]
-        ]
-        ResponseProtocol.handler = { request in
-            if request.url?.path == "/webfeed/status" {
-                return (200, ["code": 1, "type": "complete", "variants_data": [
-                    "variants": [variant], "page_title": "Example articles", "html_hash": "hash"
-                ]])
-            }
-            XCTAssertEqual(request.url?.path, "/webfeed/subscribe")
-            let pairs = Self.body(request).split(separator: "&").compactMap { $0.removingPercentEncoding }
-            XCTAssertTrue(pairs.contains("story_container_xpath=//article"))
-            XCTAssertTrue(pairs.contains("title_xpath=.//h2/text()"))
-            XCTAssertTrue(pairs.contains("link_xpath=.//a/@href"))
-            XCTAssertTrue(pairs.contains("feed_title=Example articles"))
-            return (200, ["code": 1])
-        }
-        viewModel.onTabSelected(.webFeed)
-        await waitUntil { !viewModel.webFeedState.isAnalyzing }
-        XCTAssertEqual(viewModel.webFeedState.feedTitle, "Example articles")
-        XCTAssertEqual(viewModel.webFeedState.variants.first?.stories.first?.title, "First article")
-        XCTAssertEqual(viewModel.webFeedState.variants.first?.stories.first?.imageUrl, "https://example.com/first.jpg")
-        viewModel.subscribeWebFeed()
-        await waitUntil { !viewModel.webFeedState.isSubscribing }
-        XCTAssertTrue(viewModel.addedSuccess)
-        viewModel.stopPolling()
     }
 
     func test_addedFeedURLsRecordConfirmedSubscriptionsAndReset() async {

@@ -20,7 +20,6 @@ class DiscoverSitesViewModel: ObservableObject {
     @Published var selectedPreviewStoryID: String?
 
     @Published var searchState = SearchTabState()
-    @Published var webFeedState = WebFeedTabState()
     @Published var popularState = CategoryTabState()
     @Published var youtubeState = CategoryTabState()
     @Published var redditState = CategoryTabState()
@@ -40,10 +39,6 @@ class DiscoverSitesViewModel: ObservableObject {
     private var categoryRequests: [String: (token: UUID, parameters: [String: String])] = [:]
     private var searchRequests: [String: UUID] = [:]
     private var autocompleteRequest = UUID()
-    private var analysisStartedAt: Date?
-    private var pollingRequest: String?
-    private var pollingGeneration = UUID()
-    private var pollingSuspended = false
     private var lifecycleGeneration = UUID()
     @Published var isAdding = false
     @Published var isPreparingPreview = false
@@ -55,7 +50,6 @@ class DiscoverSitesViewModel: ObservableObject {
     }
     private var searchDebounceTimer: Timer?
     private var searchCache: [String: [AutocompleteResult]] = [:]
-    private var pollingTimer: Timer?
 
     private var baseURL: String {
         appEnvironment.url ?? "https://www.newsblur.com"
@@ -68,7 +62,7 @@ class DiscoverSitesViewModel: ObservableObject {
         let excluded: Set<String> = [
             "saved_searches", "saved_stories", "read_stories", "widget_stories",
             "river_blurblogs", "river_global", "dashboard", "infrequent", "everything",
-            "discover_sites", "daily_briefing"
+            "discover_sites"
         ]
         return allFolders.filter { !excluded.contains($0) && !$0.hasPrefix("trending:") }
     }
@@ -105,10 +99,6 @@ class DiscoverSitesViewModel: ObservableObject {
     // MARK: - Tab Lifecycle
 
     func onTabSelected(_ tab: DiscoverTab) {
-        if tab != .webFeed {
-            stopPolling()
-        }
-
         switch tab {
         case .search:
             if !searchState.isTrendingLoaded {
@@ -138,8 +128,6 @@ class DiscoverSitesViewModel: ObservableObject {
             if !googleNewsState.isDataLoaded {
                 loadGoogleNewsData()
             }
-        case .webFeed:
-            if webFeedState.isAnalyzing { startPolling() }
         }
     }
 
@@ -188,8 +176,7 @@ class DiscoverSitesViewModel: ObservableObject {
         guard let json = decoded else {
             throw NSError(domain: "DiscoverSites", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid response"])
         }
-        if let code = json["code"] as? Int, code < 0,
-           !(request.url?.path == "/webfeed/status" && json["status"] as? String == "unknown") {
+        if let code = json["code"] as? Int, code < 0 {
             throw NSError(domain: "DiscoverSites", code: code,
                           userInfo: [NSLocalizedDescriptionKey: json["message"] as? String ?? json["error"] as? String ?? "The request could not be completed. Please try again."])
         }
@@ -468,220 +455,6 @@ class DiscoverSitesViewModel: ObservableObject {
         }
     }
 
-    // MARK: - 5. Analyze Web Feed
-
-    func analyzeWebFeed(url: String, hint: String = "") {
-        let trimmedUrl = url.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmedUrl.isEmpty else { return }
-
-        stopPolling()
-        pollingSuspended = false
-        analysisStartedAt = Date()
-        webFeedState.analyzedURL = trimmedUrl
-        webFeedState.detectedFeedURL = nil
-        let requestId = UUID().uuidString
-        webFeedState.requestId = requestId
-        webFeedState.isAnalyzing = true
-        webFeedState.progressMessage = "Analyzing web page..."
-        webFeedState.errorMessage = nil
-        webFeedState.variants = []
-        webFeedState.selectedVariantIndex = nil
-
-        guard let request = makeRequest(
-            path: "/webfeed/analyze",
-            method: "POST",
-            body: ["url": trimmedUrl, "request_id": requestId, "story_hint": String(hint.prefix(200))]
-        ) else {
-            webFeedState.isAnalyzing = false
-            webFeedState.errorMessage = "Invalid URL"
-            return
-        }
-
-        Task {
-            do {
-                let json = try await performRequest(request)
-                guard webFeedState.requestId == requestId else { return }
-                if json["code"] as? Int == 2 {
-                    webFeedState.isAnalyzing = false
-                    webFeedState.progressMessage = "This URL is already an RSS feed."
-                    webFeedState.detectedFeedURL = json["feed_address"] as? String ?? trimmedUrl
-                    return
-                }
-                if !pollingSuspended { startPolling() }
-            } catch {
-                guard webFeedState.requestId == requestId else { return }
-                webFeedState.isAnalyzing = false
-                webFeedState.errorMessage = "Failed to start analysis: \(error.localizedDescription)"
-            }
-        }
-    }
-
-    // MARK: - 6. Poll Web Feed Status
-
-    private func startPolling() {
-        stopPolling()
-        pollingSuspended = false
-        pollWebFeedStatus()
-        guard webFeedState.isAnalyzing else { return }
-        pollingTimer = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: true) { [weak self] _ in
-            Task { @MainActor [weak self] in
-                self?.pollWebFeedStatus()
-            }
-        }
-    }
-
-    func stopPolling() {
-        pollingGeneration = UUID()
-        pollingSuspended = true
-        pollingRequest = nil
-        pollingTimer?.invalidate()
-        pollingTimer = nil
-    }
-
-    func pollWebFeedStatus() {
-        guard webFeedState.isAnalyzing else { stopPolling(); return }
-        if let started = analysisStartedAt, Date().timeIntervalSince(started) >= 120 {
-            stopPolling()
-            webFeedState.isAnalyzing = false
-            webFeedState.errorMessage = "Analysis timed out. Please try again."
-            return
-        }
-        guard let requestId = webFeedState.requestId else {
-            stopPolling()
-            return
-        }
-
-        guard pollingRequest != requestId else { return }
-        guard let request = makeRequest(
-            path: "/webfeed/status",
-            params: ["request_id": requestId]
-        ) else { return }
-
-        pollingRequest = requestId
-        let generation = pollingGeneration
-        Task {
-            defer { if pollingRequest == requestId && pollingGeneration == generation { pollingRequest = nil } }
-            do {
-                let json = try await performRequest(request)
-                guard webFeedState.requestId == requestId, webFeedState.isAnalyzing, pollingGeneration == generation else { return }
-                let eventType = json["type"] as? String ?? json["status"] as? String ?? ""
-                let message = json["message"] as? String
-
-                switch eventType {
-                case "start", "progress":
-                    webFeedState.progressMessage = message ?? "Analyzing..."
-
-                case "variants", "complete":
-                    stopPolling()
-                    webFeedState.isAnalyzing = false
-
-                    let variantsData = json["variants_data"] as? [String: Any] ?? json
-                    let variantsArray = variantsData["variants"] as? [[String: Any]] ?? json["variants"] as? [[String: Any]] ?? []
-                    webFeedState.variants = variantsArray.enumerated().map { index, dict in
-                        WebFeedVariant(index: index, dict: dict)
-                    }
-                    webFeedState.htmlHash = variantsData["html_hash"] as? String ?? json["html_hash"] as? String ?? ""
-                    webFeedState.faviconUrl = variantsData["favicon_url"] as? String ?? json["favicon_url"] as? String ?? ""
-                    webFeedState.feedTitle = variantsData["page_title"] as? String ?? variantsData["feed_title"] as? String ?? json["page_title"] as? String ?? json["feed_title"] as? String ?? ""
-
-                    if !webFeedState.variants.isEmpty {
-                        webFeedState.selectedVariantIndex = 0
-                    }
-
-                    if webFeedState.variants.isEmpty { webFeedState.errorMessage = "No story patterns were found. Try a page that lists articles." }
-                    webFeedState.progressMessage = ""
-
-                case "error":
-                    stopPolling()
-                    webFeedState.isAnalyzing = false
-                    webFeedState.errorMessage = json["error"] as? String ?? message ?? "Analysis failed"
-                    webFeedState.progressMessage = ""
-
-                default:
-                    webFeedState.progressMessage = message ?? (eventType == "unknown" ? "Waiting for analysis to start..." : "Analyzing page...")
-                }
-            } catch {
-                guard webFeedState.requestId == requestId, webFeedState.isAnalyzing, pollingGeneration == generation else { return }
-                let failure = error as NSError
-                if failure.domain == "DiscoverSites" {
-                    stopPolling()
-                    webFeedState.isAnalyzing = false
-                    webFeedState.errorMessage = error.localizedDescription
-                } else {
-                    webFeedState.progressMessage = "Connection interrupted. Retrying..."
-                }
-            }
-        }
-    }
-
-    // MARK: - 7. Subscribe Web Feed
-
-    func subscribeWebFeed() {
-        guard !webFeedState.isSubscribing, !isAdding, let variantIndex = webFeedState.selectedVariantIndex,
-              variantIndex >= 0,
-              variantIndex < webFeedState.variants.count else { return }
-
-        let variant = webFeedState.variants[variantIndex]
-        let feedURL = webFeedState.analyzedURL
-        webFeedState.errorMessage = nil
-        addedSuccess = false
-        webFeedState.isSubscribing = true
-
-        var bodyParams: [String: String] = [
-            "url": feedURL,
-            "variant_index": String(variantIndex),
-            "feed_title": webFeedState.feedTitle,
-            "story_container_xpath": variant.storyContainerXpath,
-            "title_xpath": variant.titleXpath,
-            "link_xpath": variant.linkXpath,
-            "content_xpath": variant.contentXpath,
-            "image_xpath": variant.imageXpath,
-            "author_xpath": variant.authorXpath,
-            "date_xpath": variant.dateXpath,
-            "html_hash": webFeedState.htmlHash,
-            "favicon_url": webFeedState.faviconUrl,
-            "staleness_days": String(Int(webFeedState.stalenessDays)),
-            "mark_unread_on_change": webFeedState.markUnreadOnChange ? "true" : "false",
-            "folder": resolvedFolder
-        ]
-
-        if let requestId = webFeedState.requestId {
-            bodyParams["request_id"] = requestId
-        }
-
-        guard let request = makeRequest(
-            path: "/webfeed/subscribe",
-            method: "POST",
-            body: bodyParams
-        ) else {
-            webFeedState.isSubscribing = false
-            return
-        }
-
-        let generation = lifecycleGeneration
-        Task {
-            guard lifecycleGeneration == generation else { return }
-            do {
-                let json = try await performRequest(request)
-                guard lifecycleGeneration == generation else { return }
-                webFeedState.isSubscribing = false
-
-                let code = json["code"] as? Int ?? 0
-                if code <= 0 {
-                    webFeedState.errorMessage = json["message"] as? String ?? "Subscription failed"
-                } else {
-                    addedFeedURLs.insert(feedURL)
-                    addedFeedUrl = feedURL
-                    addedSuccess = true
-                }
-            } catch {
-                guard lifecycleGeneration == generation else { return }
-                webFeedState.isSubscribing = false
-                webFeedState.errorMessage = "Subscription failed: \(error.localizedDescription)"
-            }
-        }
-    }
-
     // MARK: - 8. Google News Data
 
     func loadGoogleNewsData() {
@@ -917,14 +690,12 @@ class DiscoverSitesViewModel: ObservableObject {
     // MARK: - Reset
 
     func reset() {
-        stopPolling()
         searchDebounceTimer?.invalidate()
         searchCache = [:]
         categoryRequests = [:]
         searchRequests = [:]
         autocompleteRequest = UUID()
         lifecycleGeneration = UUID()
-        analysisStartedAt = nil
         isAdding = false
         isPreparingPreview = false
         selectedPreviewStoryID = nil
@@ -933,7 +704,6 @@ class DiscoverSitesViewModel: ObservableObject {
         selectedFolder = ""
 
         searchState = SearchTabState()
-        webFeedState = WebFeedTabState()
         popularState = CategoryTabState()
         youtubeState = CategoryTabState()
         redditState = CategoryTabState()

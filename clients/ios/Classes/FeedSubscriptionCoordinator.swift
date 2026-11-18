@@ -183,7 +183,6 @@ import ObjectiveC
         app.feedDetailViewController.cancelMarkStoryReadTimer()
         app.cleanUpTryFeed()
         app.pendingFolder = nil
-        app.pendingDailyBriefingStoryHash = nil
         app.inFindingStoryMode = false
         app.findingStoryStartDate = nil
         app.findingStoryDictionary = nil

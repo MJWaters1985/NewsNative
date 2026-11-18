@@ -181,18 +181,6 @@ import QuartzCore
         XCTAssertEqual(fixture.stories.feedPage, 2)
     }
 
-    func test_dailyBriefingPaginationStillUsesItsPresentationAndLoader() {
-        let fixture = makeFixture(storyCount: 100)
-        fixture.stories.isDailyBriefing = true
-        fixture.controller.pageFetching = false
-
-        fixture.controller.fetchRiverPage(3, withCallback: nil)
-
-        XCTAssertEqual(fixture.controller.loadingPresentations, 1)
-        XCTAssertEqual(fixture.controller.dailyBriefingPages, [3])
-        XCTAssertEqual(fixture.controller.offlinePageLoads, 0)
-    }
-
     func test_emptyPageReloadsCompletionRow() {
         let fixture = makeFixture(storyCount: 100)
         fixture.resetMeasurements()
@@ -735,7 +723,6 @@ private final class PaginationAppDelegate: NewsBlurAppDelegate {
     var legacyTableForTest = true
     var loadingPresentations = 0
     var offlinePageLoads = 0
-    var dailyBriefingPages = [Int32]()
     var runsScrollCheck = false
     var onOfflinePageLoad: (() -> Void)?
 
@@ -762,9 +749,6 @@ private final class PaginationAppDelegate: NewsBlurAppDelegate {
     override func loadOfflineStories() {
         offlinePageLoads += 1
         onOfflinePageLoad?()
-    }
-    override func fetchDailyBriefingPage(_ page: Int32, withCallback callback: (() -> Void)?) {
-        dailyBriefingPages.append(page)
     }
 
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

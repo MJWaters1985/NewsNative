@@ -47,7 +47,6 @@
 @synthesize isRiverView;
 @synthesize isSocialView;
 @synthesize isSocialRiverView;
-@synthesize isDailyBriefing;
 @synthesize isSavedView;
 @synthesize isReadView;
 @synthesize inSearch;
@@ -81,7 +80,6 @@
     self.isRiverView = NO;
     self.isSocialView = NO;
     self.isSocialRiverView = NO;
-    self.isDailyBriefing = NO;
     self.isSavedView = NO;
     self.isReadView = NO;
     self.isWidgetView = NO;
@@ -127,7 +125,6 @@
     !self.isEverything &&
     !self.isInfrequent &&
     !self.isTrending &&
-    !self.isDailyBriefing &&
     !self.isSavedView &&
     !self.isReadView &&
     !self.isSocialView &&
@@ -399,8 +396,6 @@
             return @"Long Reads";
         } else if ([activeFolder isEqualToString:@"trending:good_reads"]) {
             return @"Good Reads";
-        } else if ([activeFolder isEqualToString:@"daily_briefing"]) {
-            return @"Daily Briefing";
         } else if (isSavedView && activeSavedStoryTag) {
             return activeSavedStoryTag;
         } else if ([activeFolder isEqualToString:@"widget_stories"]) {

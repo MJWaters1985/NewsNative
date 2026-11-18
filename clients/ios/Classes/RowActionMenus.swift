@@ -33,7 +33,7 @@ import UIKit
 @MainActor enum RowActionMenus {
     static func isUserFolder(_ folder: String) -> Bool {
         !folder.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
-        !["everything", "infrequent", "dashboard", "discover_sites", "daily_briefing", "try_feed"].contains(folder) &&
+        !["everything", "infrequent", "dashboard", "discover_sites", "try_feed"].contains(folder) &&
         !folder.hasPrefix("river_") && !folder.hasPrefix("trending:") &&
         !folder.hasPrefix("saved_") && !folder.hasSuffix("_stories")
     }
@@ -79,7 +79,7 @@ import UIKit
                 collection.toggleStoryUnread(dictionary)
                 controller.reload()
             })
-            if !collection.isSavedView && !collection.isReadView && !collection.isSocialView && !collection.isDailyBriefing && !collection.isTrending && !collection.isInfrequent {
+            if !collection.isSavedView && !collection.isReadView && !collection.isSocialView && !collection.isTrending && !collection.isInfrequent {
                 reading += [
                     action("newer", NBLocalization.text("Mark newer as read"), newestFirst ? "arrow.up.to.line" : "arrow.down.to.line") {
                         controller.markFeedsRead(fromTimestamp: story.timestamp, andOlder: false)

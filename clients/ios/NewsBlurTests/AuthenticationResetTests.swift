@@ -106,10 +106,6 @@ import WebKit
         XCTAssertTrue(createdModel, "The state below must belong to the controller being reset")
         model.searchState.query = "previous account private query"
         model.selectedFolder = "Previous account folder"
-        model.webFeedState.analyzedURL = "https://private.example.invalid/articles"
-        model.webFeedState.feedTitle = "Previous analysis"
-        model.webFeedState.requestId = "previous-analysis"
-        model.webFeedState.isAnalyzing = true
         if preview { fixture.detail.beginDiscoverPreview() }
         XCTAssertTrue(preview ? fixture.detail.canReturnToDiscoverSites : fixture.detail.isDiscoverSitesVisible)
         attach(fixture, name: "Discovery retained before account change")
@@ -125,10 +121,6 @@ import WebKit
         XCTAssertNil(discovery.parent)
         XCTAssertTrue(model.searchState.query.isEmpty)
         XCTAssertTrue(model.selectedFolder.isEmpty)
-        XCTAssertTrue(model.webFeedState.analyzedURL.isEmpty)
-        XCTAssertTrue(model.webFeedState.feedTitle.isEmpty)
-        XCTAssertNil(model.webFeedState.requestId)
-        XCTAssertFalse(model.webFeedState.isAnalyzing)
         fixture.detail.returnToDiscoverSites()
         XCTAssertFalse(fixture.detail.isDiscoverSitesVisible, "The next account cannot reopen the retained pane")
     }
@@ -238,7 +230,6 @@ import WebKit
         UserDefaults.standard.set("overlay", forKey: "split_behavior")
         // AuthenticationResetTests.swift removes unrelated deep-link work before exercising an ordinary subscription refresh.
         fixture.app.pendingFolder = nil
-        fixture.app.pendingDailyBriefingStoryHash = nil
         fixture.app.inFindingStoryMode = false
         fixture.app.isTryFeedView = false
         fixture.app.tryFeedFeedId = nil
@@ -545,7 +536,6 @@ import WebKit
         XCTAssertFalse(fixture.app.isTryFeedView, file: file, line: line)
         XCTAssertFalse(fixture.app.inFindingStoryMode, file: file, line: line)
         XCTAssertNil(fixture.app.pendingFolder, file: file, line: line)
-        XCTAssertNil(fixture.app.pendingDailyBriefingStoryHash, file: file, line: line)
         for (index, label) in [fixture.feeds.userLabel, fixture.feeds.neutralCount, fixture.feeds.positiveCount].compactMap({ $0 }).enumerated() {
             XCTAssertTrue((label.text ?? "").isEmpty, "Remove earlier header identity and counts", file: file, line: line)
             XCTAssertTrue(label.isHidden, "Cleared header label \(["username", "unread count", "focus count"][index]) must stay hidden", file: file, line: line)
@@ -695,7 +685,6 @@ import WebKit
         app.tryFeedStoryId = "anonymous-story"
         app.inFindingStoryMode = true
         app.pendingFolder = "old-folder"
-        app.pendingDailyBriefingStoryHash = "old-briefing-story"
         feeds.loadViewIfNeeded()
         feeds.title = "Feeds"
         feeds.userInfoView = UIView(frame: CGRect(x: 0, y: 0, width: 340, height: 60))
@@ -1133,9 +1122,7 @@ private final class AuthenticationRefreshPublication: @unchecked Sendable {
 
     func test_pagerVisitsEverySourceInOrderAndStopsAtBothEnds() throws {
         let (controller, model) = makeDiscovery()
-        // AuthenticationResetTests.swift: DiscoverTab.allCases leaves out the AI Web Feed tab while NewsNativeFeatures.swift sets it aside.
         let sources = DiscoverTab.allCases
-        XCTAssertEqual(sources.contains(.webFeed), NewsNativeFeatures.aiFeatures)
         try swipe(controller, x: 600, y: 0)
         XCTAssertEqual(model.activeTab, .search)
         for source in sources.dropFirst() {

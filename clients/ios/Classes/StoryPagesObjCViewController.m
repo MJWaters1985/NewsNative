@@ -596,9 +596,6 @@
             } else if (appDelegate.storiesCollection.isRiverView &&
                        [appDelegate.storiesCollection.activeFolder isEqualToString:@"trending:good_reads"]) {
                 titleImage = [UIImage systemImageNamed:@"star.fill"];
-            } else if (appDelegate.storiesCollection.isRiverView &&
-                       [appDelegate.storiesCollection.activeFolder isEqualToString:@"daily_briefing"]) {
-                titleImage = [UIImage imageNamed:@"briefing"];
             } else if (appDelegate.storiesCollection.isSavedView &&
                        appDelegate.storiesCollection.activeSavedStoryTag) {
                 titleImage = [UIImage imageNamed:@"tag.png"];
@@ -1465,10 +1462,6 @@
                    [appDelegate.storiesCollection.activeFolder isEqualToString:@"trending:good_reads"]) {
             titleImage = [UIImage systemImageNamed:@"star.fill"];
             titleText = [NBLocalization text:@"Good Reads"];
-        } else if (appDelegate.storiesCollection.isRiverView &&
-                   [appDelegate.storiesCollection.activeFolder isEqualToString:@"daily_briefing"]) {
-            titleImage = [UIImage imageNamed:@"briefing"];
-            titleText = [NBLocalization text:@"Daily Briefing"];
         } else if (appDelegate.storiesCollection.isSavedView &&
                    appDelegate.storiesCollection.activeSavedStoryTag) {
             titleImage = [UIImage imageNamed:@"tag.png"];

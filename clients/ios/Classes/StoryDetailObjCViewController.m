@@ -66,7 +66,6 @@
 
 - (NSString *)embedResourcesInCSS:(NSString *)css bundle:(NSBundle *)bundle;
 - (NSInteger)storyContentWidth;
-- (BOOL)openDailyBriefingStoryForURL:(NSURL *)url;
 - (NSString *)clusterStoriesHTML;
 - (NSString *)dataURLForImage:(UIImage *)image mimeType:(NSString *)mimeType;
 - (BOOL)isClusterMarkReadEnabled;
@@ -2901,10 +2900,6 @@
     }
     
     if (navigationAction.navigationType == WKNavigationTypeLinkActivated) {
-        if ([self openDailyBriefingStoryForURL:url]) {
-            decisionHandler(WKNavigationActionPolicyCancel);
-            return;
-        }
 //        NSLog(@"Link clicked, views: %@ = %@", appDelegate.navigationController.topViewController, appDelegate.masterContainerViewController.childViewControllers);
         if (appDelegate.isPresentingActivities) {
             decisionHandler(WKNavigationActionPolicyCancel);
@@ -2916,22 +2911,6 @@
     }
     
     decisionHandler(WKNavigationActionPolicyAllow);
-}
-
-- (BOOL)openDailyBriefingStoryForURL:(NSURL *)url {
-    NSString *storyHash = [DailyBriefingLinkDecision storyHashForURL:url
-                                                    isDailyBriefing:appDelegate.storiesCollection.isDailyBriefing];
-    if (![storyHash length]) {
-        return NO;
-    }
-
-    NSInteger location = [appDelegate.storiesCollection locationOfStoryId:storyHash];
-    if (location < 0) {
-        return NO;
-    }
-
-    [appDelegate.feedDetailViewController loadStoryAtRow:location];
-    return YES;
 }
 
 - (void)showOriginalStory:(UIGestureRecognizer *)gesture {
@@ -4010,13 +3989,6 @@
 #pragma mark Text view
 
 - (void)showTextOrStoryView {
-    if ([self.activeStory[@"is_daily_briefing_summary"] boolValue]) {
-        if (self.inTextView) {
-            [self showStoryView];
-        }
-        return;
-    }
-
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",
                            [self.activeStory objectForKey:@"story_feed_id"]];
     if ([appDelegate isFeedInTextView:feedIdStr]) {
@@ -4031,11 +4003,6 @@
 }
 
 - (void)toggleTextView:(id)sender {
-    if ([self.activeStory[@"is_daily_briefing_summary"] boolValue]) {
-        [self showStoryView];
-        return;
-    }
-
     if (self.inTextView)
         [self showStoryView];
     else
@@ -4051,10 +4018,6 @@
 
 - (void)fetchTextView {
     if (!self.activeStoryId || !self.activeStory) return;
-    if ([self.activeStory[@"is_daily_briefing_summary"] boolValue]) {
-        [self showStoryView];
-        return;
-    }
     self.inTextView = YES;
 //    NSLog(@"Fetching Text: %@", [self.activeStory objectForKey:@"story_title"]);
     if (self.activeStory == appDelegate.storyPagesViewController.currentPage.activeStory) {

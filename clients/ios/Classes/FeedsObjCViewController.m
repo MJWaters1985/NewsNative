@@ -53,33 +53,6 @@ static UIImage *NBImageFromColor(UIColor *color) {
 
 static NSArray<NSString *> *NewsBlurTopSectionNames;
 
-static BOOL NBBriefingEnabledFromResults(NSDictionary *results) {
-    id explicitFlag = results[@"briefing_enabled"];
-    if (explicitFlag && explicitFlag != [NSNull null]) {
-        return [explicitFlag boolValue];
-    }
-
-    NSDictionary *userProfile = results[@"user_profile"];
-    id preferencesValue = userProfile[@"preferences"];
-    NSDictionary *preferences = nil;
-
-    if ([preferencesValue isKindOfClass:[NSDictionary class]]) {
-        preferences = preferencesValue;
-    } else if ([preferencesValue isKindOfClass:[NSString class]]) {
-        NSData *preferencesData = [(NSString *)preferencesValue dataUsingEncoding:NSUTF8StringEncoding];
-        if (preferencesData) {
-            preferences = [NSJSONSerialization JSONObjectWithData:preferencesData options:0 error:nil];
-        }
-    }
-
-    id fallbackFlag = preferences[@"briefing_enabled"];
-    if (fallbackFlag && fallbackFlag != [NSNull null]) {
-        return [fallbackFlag boolValue];
-    }
-
-    return NO;
-}
-
 static NSDictionary *NBUserProfilePreferencesDictionary(NSDictionary *userProfile) {
     id preferencesValue = userProfile[@"preferences"];
     if ([preferencesValue isKindOfClass:[NSDictionary class]]) {
@@ -240,9 +213,8 @@ static BOOL NBBoolPreferenceValue(id value) {
     // keep in sync with NewsBlurTopSection
     NewsBlurTopSectionNames = @[/* 0 */ @"dashboard",
                                         /* 1 */ @"discover_sites",
-                                        /* 2 */ @"daily_briefing",
-                                        /* 3 */ @"infrequent",
-                                        /* 4 */ @"everything"];
+                                        /* 2 */ @"infrequent",
+                                        /* 3 */ @"everything"];
 }
 
 - (void)viewDidLoad {
@@ -1716,10 +1688,8 @@ static BOOL NBBoolPreferenceValue(id value) {
     
     NSArray *savedStories = [appDelegate updateStarredStoryCounts:results];
     [allFolders setValue:savedStories forKey:@"saved_stories"];
-    [allFolders setValue:@[] forKey:@"daily_briefing"];
 
     appDelegate.dictFolders = allFolders;
-    appDelegate.briefingEnabled = NBBriefingEnabledFromResults(results);
     
     appDelegate.dictInactiveFeeds = [results[@"inactive_feeds"] mutableCopy];
     
@@ -1799,9 +1769,6 @@ static BOOL NBBoolPreferenceValue(id value) {
         [appDelegate.dictFoldersArray insertObject:sectionName atIndex:sectionIndex];
     }];
 
-    NSArray<NSString *> *orderedFolders = [DailyBriefingFolderPlacementDecision orderedFoldersFromFolderNames:appDelegate.dictFoldersArray
-                                                                                                     isEnabled:appDelegate.briefingEnabled];
-    appDelegate.dictFoldersArray = [orderedFolders mutableCopy];
     
     // Add Widget Site Stories folder to bottom
 //    [appDelegate.dictFoldersArray removeObject:@"widget_stories"];
@@ -1892,9 +1859,7 @@ static BOOL NBBoolPreferenceValue(id value) {
         [self cacheFeedRowLocations];
     }
     
-    if (appDelegate.pendingDailyBriefingStoryHash != nil) {
-        [self loadNotificationStory];
-    } else if (appDelegate.pendingFolder != nil) {
+    if (appDelegate.pendingFolder != nil) {
         if ([appDelegate splitUnreadCountForFolder:appDelegate.pendingFolder].nt > 0) {
             [self loadNotificationStory];
         }
@@ -3282,7 +3247,6 @@ heightForHeaderInSection:(NSInteger)section {
         section != NewsBlurTopSectionDiscoverSites &&
         section != NewsBlurTopSectionInfrequentSiteStories &&
         section != NewsBlurTopSectionAllStories &&
-        ![folderName isEqualToString:@"daily_briefing"] &&
         ![folderName isEqualToString:@"river_global"] &&
         ![folderName isEqualToString:@"river_blurblogs"] &&
         ![folderName hasPrefix:@"trending:"] &&
@@ -3312,11 +3276,6 @@ heightForHeaderInSection:(NSInteger)section {
 
     if (section == NewsBlurTopSectionInfrequentSiteStories &&
         ![prefs boolForKey:@"show_infrequent_site_stories"]) {
-        return 0;
-    }
-
-    if ([folderName isEqualToString:@"daily_briefing"] &&
-        (!appDelegate.briefingEnabled || !NewsNativeFeatures.aiFeatures)) {
         return 0;
     }
 
@@ -3622,8 +3581,6 @@ heightForHeaderInSection:(NSInteger)section {
 
     if ([folderName isEqualToString:@"dashboard"]) {
         return @"Dashboard";
-    } else if ([folderName isEqualToString:@"daily_briefing"]) {
-        return @"Daily Briefing";
     } else if ([folderName isEqualToString:@"infrequent"]) {
         return @"Infrequent Site Stories";
     } else if ([folderName isEqualToString:@"everything"]) {
@@ -4120,7 +4077,6 @@ heightForHeaderInSection:(NSInteger)section {
             [folderName isEqualToString:@"discover_sites"] ||
             [folderName isEqualToString:@"everything"] ||
             [folderName isEqualToString:@"infrequent"] ||
-            [folderName isEqualToString:@"daily_briefing"] ||
             [folderName isEqualToString:@"saved_stories"] ||
             [folderName isEqualToString:@"saved_searches"] ||
             [folderName isEqualToString:@"read_stories"] ||
@@ -4152,7 +4108,6 @@ heightForHeaderInSection:(NSInteger)section {
             [folderName isEqualToString:@"discover_sites"] ||
             [folderName isEqualToString:@"everything"] ||
             [folderName isEqualToString:@"infrequent"] ||
-            [folderName isEqualToString:@"daily_briefing"] ||
             [folderName isEqualToString:@"saved_stories"] ||
             [folderName isEqualToString:@"saved_searches"] ||
             [folderName isEqualToString:@"read_stories"] ||

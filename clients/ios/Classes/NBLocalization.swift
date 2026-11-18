@@ -66,7 +66,6 @@ import UIKit
         case "this site": return NBLocalization.text("Mark this site as read")
         case "site": return NBLocalization.text("Mark site as read")
         case "this list": return NBLocalization.text("Mark this list as read")
-        case "daily briefing": return NBLocalization.text("Mark daily briefing as read")
         default: return String(format: NBLocalization.text("Mark %@ as read"), collection)
         }
     }

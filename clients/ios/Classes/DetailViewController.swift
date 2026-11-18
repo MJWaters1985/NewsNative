@@ -643,7 +643,7 @@ class DetailViewController: BaseViewController {
               viewIfLoaded?.window != nil else { return }
         hasPendingDuoFullscreenRestoration = false
         guard !hasVisibleStoryForSidebarLayout, !isFeedShown,
-              appDelegate.pendingNotificationStory == nil, appDelegate.pendingDailyBriefingStoryHash == nil,
+              appDelegate.pendingNotificationStory == nil,
               !appDelegate.inFindingStoryMode, appDelegate.tryFeedFeedId == nil else { return }
         // DetailViewController.swift reveals restored Feeds once attached, after UIKit's initial secondary-only callback, without overriding an explicit destination.
         applyDuoFullscreenSidebar(.feeds, animated: false)

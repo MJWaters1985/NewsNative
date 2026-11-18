@@ -107,7 +107,7 @@ import UIKit
 #else
         for position in ["bottom", "top"] {
             try assertStoryToolbarSelectionStates(phone: true, compact: false, position: position,
-                                                  selections: [nil, "feed", nil, "everything", nil, "daily_briefing", nil])
+                                                  selections: [nil, "feed", nil, "everything", nil])
         }
 #endif
     }
@@ -197,7 +197,6 @@ import UIKit
             collection.activeFeed = selection == "feed" ? ["id": 1, "feed_title": "Empty selected feed"] : nil
             collection.activeFolder = selection == "feed" ? nil : selection
             collection.isRiverView = selection != nil && selection != "feed"
-            collection.isDailyBriefing = selection == "daily_briefing"
 
             // StoryTitlesHeaderBarLayoutTests.swift exercises the real layout entry point without loading account data or a reader.
             stories.perform(Selector(("configureAdaptiveStoryToolbar")))
@@ -338,7 +337,7 @@ import UIKit
     func test_moveToMenuExcludesVirtualFoldersAndKeepsRealDestinations() throws {
         let app = NewsBlurAppDelegate()
         app.dictFoldersArray = NSMutableArray(array: [
-            "discover_sites", "daily_briefing", "dashboard", "infrequent", "everything",
+            "discover_sites", "dashboard", "infrequent", "everything",
             "river_global", "river_blurblogs", "saved_stories", "read_stories", "widget_stories", "saved_searches",
             "Technology", "Technology ▸ iOS", "discover_sites_notes", "daily_briefing_notes"
         ])
@@ -1950,7 +1949,7 @@ import UIKit
         XCTAssertFalse(gesture.isEnabled, "The visible reader must still apply its own edge-swipe preference")
     }
 
-    func test_narrowSidebarShortensFilterBeforeCompressingDiscover() throws {
+    func test_narrowSidebarShortensFilterBeforeCompressingOtherControls() throws {
         try XCTSkipUnless(NewsNativeFeatures.aiFeatures, "NewsNativeFeatures.swift sets AI features aside, including clustering, AI labels and related sites.")
         let (bar, parent) = makeBar(width: 320)
         // StoryTitlesHeaderBarLayoutTests.swift hosts glass in a window before checking its event routing.
@@ -1970,19 +1969,17 @@ import UIKit
 
         XCTAssertEqual(bar.headerContainer.safeAreaLayoutGuide.layoutFrame.width, 320, accuracy: 0.5)
         XCTAssertEqual(title(of: bar.optionsPill), "UNREAD")
-        XCTAssertGreaterThanOrEqual(bar.discoverPill.bounds.width, 40)
         assertVisibleControlsFit(bar)
-        let center = bar.discoverPill.convert(CGPoint(x: bar.discoverPill.bounds.midX, y: bar.discoverPill.bounds.midY), to: parent)
+        let center = bar.searchPill.convert(CGPoint(x: bar.searchPill.bounds.midX, y: bar.searchPill.bounds.midY), to: parent)
         let hit = parent.hitTest(center, with: nil)
-        XCTAssertTrue(hit === bar.discoverPill || hit?.isDescendant(of: bar.discoverPill) == true,
-                      "Discover must receive touches through its glass group, got \(String(describing: hit))")
+        XCTAssertTrue(hit === bar.searchPill || hit?.isDescendant(of: bar.searchPill) == true,
+                      "Search must receive touches through its glass group, got \(String(describing: hit))")
     }
 
     func test_wideSidebarKeepsFilterAndSortOrder() {
         let (bar, parent) = makeBar(width: 600)
         withExtendedLifetime(parent) {
             XCTAssertEqual(title(of: bar.optionsPill), "UNREAD · NEWEST")
-            XCTAssertGreaterThanOrEqual(bar.discoverPill.bounds.width, 40)
             assertVisibleControlsFit(bar)
         }
     }
@@ -1993,7 +1990,6 @@ import UIKit
             parent.frame.size.width = width
             settle(bar, parent: parent)
             XCTAssertEqual(title(of: bar.optionsPill), width == 320 ? "UNREAD" : "UNREAD · NEWEST")
-            XCTAssertGreaterThanOrEqual(bar.discoverPill.bounds.width, 40)
             assertVisibleControlsFit(bar)
         }
     }
@@ -2029,78 +2025,10 @@ import UIKit
                     }
                     if width >= 390 { XCTAssertEqual(title(of: bar.optionsPill), fullTitle) }
                     XCTAssertEqual(bar.optionsPill.titleLabel?.numberOfLines, 1)
-                    XCTAssertGreaterThanOrEqual(bar.discoverPill.bounds.width, 40)
                     assertVisibleControlsFit(bar)
                 }
             }
         }
-    }
-
-    func test_hiddenDiscoverAndMarkReadReleaseTheirWidthForTheSortLabel() throws {
-        try XCTSkipUnless(NewsNativeFeatures.aiFeatures, "NewsNativeFeatures.swift sets AI features aside, including clustering, AI labels and related sites.")
-        let (bar, parent) = makeBar(width: 360)
-        XCTAssertEqual(title(of: bar.optionsPill), "UNREAD")
-        bar.updateDiscoverVisibility(isRiver: true, isEverything: true, isSocial: false, isSaved: false, isRead: false, isWidget: false, isInfrequent: false)
-        settle(bar, parent: parent)
-        XCTAssertTrue(bar.discoverPill.isHidden)
-        XCTAssertEqual(title(of: bar.optionsPill), "UNREAD · NEWEST")
-        assertVisibleControlsFit(bar)
-
-        bar.markReadContainer.isHidden = true
-        bar.updateDiscoverVisibility(isRiver: true, isEverything: false, isSocial: false, isSaved: false, isRead: false, isWidget: false, isInfrequent: false)
-        settle(bar, parent: parent)
-        XCTAssertEqual(title(of: bar.optionsPill), "UNREAD · NEWEST")
-        XCTAssertGreaterThanOrEqual(bar.discoverPill.bounds.width, 40)
-        assertVisibleControlsFit(bar)
-    }
-
-    func test_dailyBriefingRetainsItsSettingsIconAndRestoresTheWideLabel() {
-        let (bar, parent) = makeBar(width: 320)
-        bar.setDailyBriefingMode(true)
-        for width: CGFloat in [320, 600, 320] {
-            parent.frame.size.width = width
-            settle(bar, parent: parent)
-            XCTAssertEqual(bar.discoverPill.accessibilityLabel, "Daily Briefing Settings")
-            XCTAssertEqual(title(of: bar.optionsPill), width == 320 ? "UNREAD" : "UNREAD · NEWEST")
-            XCTAssertEqual(title(of: bar.discoverPill), width == 320 ? nil : "BRIEFING SETTINGS")
-            XCTAssertGreaterThanOrEqual(bar.discoverPill.bounds.width, 40)
-            assertVisibleControlsFit(bar)
-        }
-        bar.setDailyBriefingMode(false)
-        settle(bar, parent: parent)
-        XCTAssertEqual(bar.discoverPill.accessibilityLabel, "Related Sites")
-    }
-
-    func test_faviconsSurviveStableLayoutWithoutRecreatingViewsOrSchedulingLayout() throws {
-        try XCTSkipUnless(NewsNativeFeatures.aiFeatures, "NewsNativeFeatures.swift sets AI features aside, including clustering, AI labels and related sites.")
-        let (bar, parent) = makeBar(width: 600)
-        let icon = UIGraphicsImageRenderer(size: CGSize(width: 12, height: 12)).image { context in
-            UIColor.red.setFill()
-            context.fill(CGRect(x: 0, y: 0, width: 12, height: 12))
-        }
-        bar.updateDiscoverPill(favicons: Array(repeating: icon, count: 5))
-        settle(bar, parent: parent)
-        let images = bar.discoverPill.subviews.compactMap { $0 as? UIImageView }.filter { $0.image === icon }
-        XCTAssertEqual(images.count, 5)
-        let originalFrames = images.map(\.frame)
-        var layoutCallbacks = 0
-        let originalCallback = bar.headerContainer.onBoundsChange
-        bar.headerContainer.onBoundsChange = { layoutCallbacks += 1; originalCallback?() }
-        for _ in 0..<20 {
-            bar.relayoutPills()
-            bar.headerContainer.layoutIfNeeded()
-        }
-        XCTAssertEqual(layoutCallbacks, 0)
-        XCTAssertEqual(images.map(\.frame), originalFrames)
-        XCTAssertTrue(images.allSatisfy { $0.superview === bar.discoverPill })
-        parent.frame.size.width = 320
-        settle(bar, parent: parent)
-        XCTAssertEqual(title(of: bar.optionsPill), "UNREAD")
-        XCTAssertGreaterThanOrEqual(bar.discoverPill.bounds.width, 40)
-        assertVisibleControlsFit(bar)
-        parent.frame.size.width = 600
-        settle(bar, parent: parent)
-        XCTAssertEqual(bar.discoverPill.subviews.compactMap { $0 as? UIImageView }.filter { $0.image === icon }.count, 5)
     }
 
     func test_activeSearchColorsAndIndependentMarkActionsSurviveResizing() {
@@ -2166,7 +2094,6 @@ import UIKit
         let bar = StoryTitlesHeaderBar()
         bar.setup(in: parent)
         bar.updateOptionsPill(order: "newest", readFilter: "unread")
-        bar.updateDiscoverVisibility(isRiver: true, isEverything: false, isSocial: false, isSaved: false, isRead: false, isWidget: false, isInfrequent: false)
         settle(bar, parent: parent)
         return (bar, parent)
     }
@@ -2217,7 +2144,7 @@ import UIKit
     }
 
     private func assertVisibleControlsFit(_ bar: StoryTitlesHeaderBar, file: StaticString = #filePath, line: UInt = #line) {
-        let controls: [UIView] = [bar.discoverPill, bar.optionsPill, bar.searchPill, bar.markReadContainer]
+        let controls: [UIView] = [bar.optionsPill, bar.searchPill, bar.markReadContainer]
         var previousRight: CGFloat = 0
         for control in controls where !control.isHidden {
             let rect = control.convert(control.bounds, to: bar.headerContainer)

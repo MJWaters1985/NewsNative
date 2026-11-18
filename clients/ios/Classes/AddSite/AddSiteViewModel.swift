@@ -85,7 +85,7 @@ class AddSiteViewModel: ObservableObject {
         let excluded: Set<String> = [
             "saved_searches", "saved_stories", "read_stories", "widget_stories",
             "river_blurblogs", "river_global", "trending:well_read", "trending:long_reads", "trending:good_reads",
-            "dashboard", "daily_briefing", "discover_sites", "infrequent", "everything"
+            "dashboard", "discover_sites", "infrequent", "everything"
         ]
         return allFolders.filter { !excluded.contains($0) }
     }

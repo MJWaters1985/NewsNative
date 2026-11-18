@@ -404,7 +404,6 @@ import ObjectiveC.runtime
         XCTAssertNil(fixture.controller.swipingStoryHash)
 
         fixture.table.currentIndexPath = IndexPath(row: 2, section: 3)
-        fixture.stories.isDailyBriefing = true
         fixture.begin()
         fixture.end(state: 3)
         XCTAssertEqual(fixture.stories.readHashes, ["classic-story-1"])
@@ -449,7 +448,6 @@ import ObjectiveC.runtime
 
     func test_classicActionsIgnoreMissingAndNonStoryLocations() {
         let briefing = ClassicSwipeCallbackFixture()
-        briefing.stories.isDailyBriefing = true
         briefing.table.currentIndexPath = IndexPath(row: 20, section: 3)
         briefing.controller.mappedLocation = 1
         briefing.cell.storyHash = "classic-story-1"
@@ -588,7 +586,6 @@ import ObjectiveC.runtime
     var onReload: (() -> Void)?
     override var isLegacyTable: Bool { true }
     override var isDashboard: Bool { false }
-    override var isDailyBriefingView: Bool { false }
     override func reloadTable() {
         tableReloadCount += 1
         onReload?()

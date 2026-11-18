@@ -173,7 +173,6 @@
 - (void)confirmDeleteSite:(UINavigationController *)menuNavigationController;
 - (void)openMoveView:(UINavigationController *)menuNavigationController;
 - (IBAction)doOpenOptionsMenu:(id)sender;
-- (IBAction)doOpenDiscoverFromPill:(id)sender;
 - (IBAction)doActivateSearch:(id)sender;
 - (IBAction)doDeactivateSearch:(id)sender;
 - (void)deactivateSearch;

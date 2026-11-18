@@ -261,7 +261,6 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 @property (nonatomic) BOOL isPremium;
 @property (nonatomic) BOOL isPremiumArchive;
 @property (nonatomic) BOOL isPremiumPro;
-@property (nonatomic) BOOL briefingEnabled;
 @property (nonatomic) NSInteger premiumExpire;
 @property (nonatomic, strong) NSMutableDictionary *dictUnreadCounts;
 @property (nonatomic, strong) NSMutableDictionary *dictTextFeeds;
@@ -275,7 +274,6 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 
 @property (nonatomic, readonly) NSString *widgetFolder;
 @property (nonatomic, strong) NSString *pendingFolder;
-@property (nonatomic, strong) NSString *pendingDailyBriefingStoryHash;
 @property (nonatomic, copy, readonly) NSDictionary<NSString *, NSString *> *pendingNotificationStory;
 
 @property (nonatomic) NSArray *categories;
@@ -398,7 +396,6 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)prepareWebView:(WKWebView *)webView completionHandler:(void (^)(void))completion;
 
 - (void)handleUserActivity:(NSUserActivity *)activity;
-- (void)openDailyBriefingWithStoryHash:(NSString *)storyHash;
 - (void)loadFolder:(NSString *)folder feedID:(NSString *)feedIdStr;
 - (void)reloadFeedsView:(BOOL)showLoader;
 - (void)finishAuthentication;

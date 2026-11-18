@@ -300,7 +300,6 @@ import WebKit
 
     override var isLegacyTable: Bool { legacyTableForTest }
     override var isDashboard: Bool { dashboardForTest }
-    override var isDailyBriefingView: Bool { false }
 
     override func reloadTable() {
         tableReloadCount += 1

@@ -27,7 +27,6 @@
     BOOL isRiverView;
     BOOL isSocialView;
     BOOL isSocialRiverView;
-    BOOL isDailyBriefing;
     BOOL inSearch;
     NSString *searchQuery;
 }
@@ -53,7 +52,6 @@
 @property (nonatomic, readwrite) BOOL isRiverView;
 @property (nonatomic, readwrite) BOOL isSocialView;
 @property (nonatomic, readwrite) BOOL isSocialRiverView;
-@property (nonatomic, readwrite) BOOL isDailyBriefing;
 @property (nonatomic, readwrite) BOOL isSavedView;
 @property (nonatomic, readwrite) BOOL isReadView;
 @property (nonatomic, readwrite) BOOL isWidgetView;

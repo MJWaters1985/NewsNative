@@ -35,7 +35,6 @@
 #define kTableViewRowHeight 60;
 #define kTableViewRiverRowHeight 90;
 #define kTableViewShortRowDifference 14;
-static const CGFloat NBDailyBriefingSectionHeaderHeight = 36.0f;
 
 typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
 {
@@ -108,18 +107,6 @@ static const NSInteger NBTryFeedTitleFallbackPageCount = 5;
 @property (nonatomic) BOOL duoOwnsNavigationItems;
 @property (nonatomic) BOOL duoPreviousSupplementBackButton;
 @property (nonatomic, strong) NSURLSessionDataTask *currentFetchTask;
-@property (nonatomic) CFTimeInterval dailyBriefingReloadStartedAt;
-@property (nonatomic) NSTimeInterval dailyBriefingReloadDataMs;
-@property (nonatomic) NSTimeInterval dailyBriefingHeightTotalMs;
-@property (nonatomic) NSTimeInterval dailyBriefingHeightMaxMs;
-@property (nonatomic) NSInteger dailyBriefingHeightMaxRow;
-@property (nonatomic) NSUInteger dailyBriefingHeightCallCount;
-@property (nonatomic) NSTimeInterval dailyBriefingCellTotalMs;
-@property (nonatomic) NSTimeInterval dailyBriefingCellMaxMs;
-@property (nonatomic) NSInteger dailyBriefingCellMaxRow;
-@property (nonatomic) NSUInteger dailyBriefingCellCallCount;
-@property (nonatomic) NSInteger dailyBriefingReloadStoryCount;
-@property (nonatomic) BOOL dailyBriefingDidLogInitialRender;
 @property (nonatomic, copy) NSArray<NSDictionary *> *visibleStoryRows;
 @property (nonatomic, copy) NSArray<NSString *> *renderedStoryLocationIds;
 @property (nonatomic, copy) NSDictionary *renderedStoryAppendContext;
@@ -149,7 +136,6 @@ static const NSInteger NBTryFeedTitleFallbackPageCount = 5;
 @property (nonatomic) BOOL hasBottomNextFeedActiveDragStartOffset;
 @property (nonatomic) CGFloat bottomNextFeedActiveDragStartOffsetY;
 @property (nonatomic, strong) NSArray<UIBarButtonItem *> *verticalStoryToolbarItems;
-@property (nonatomic, strong) UIBarButtonItem *verticalDiscoverItem;
 @property (nonatomic, strong) UIBarButtonItem *verticalOptionsItem;
 @property (nonatomic, strong) UIBarButtonItem *verticalSettingsItem;
 @property (nonatomic, strong) UIBarButtonItem *verticalSearchItem;
@@ -191,14 +177,6 @@ static const NSInteger NBTryFeedTitleFallbackPageCount = 5;
 - (CGFloat)bottomNextFeedRevealDistanceForScroll:(UIScrollView *)scroll;
 
 @end
-
-static inline CFTimeInterval NBDailyBriefingNow(void) {
-    return CACurrentMediaTime();
-}
-
-static inline double NBDailyBriefingElapsedMs(CFTimeInterval start) {
-    return (NBDailyBriefingNow() - start) * 1000.0;
-}
 
 static const CGFloat NBBottomNextFeedThreshold = 96.0f;
 static const CGFloat NBBottomNextFeedFadeDistance = 56.0f;
@@ -319,7 +297,6 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     [self.storyTitlesHeaderBar.searchCancelButton addTarget:self action:@selector(doDeactivateSearch:) forControlEvents:UIControlEventTouchUpInside];
 
     // Wire pill actions
-    [self.storyTitlesHeaderBar.discoverPill addTarget:self action:@selector(doOpenDiscoverFromPill:) forControlEvents:UIControlEventTouchUpInside];
     [self.storyTitlesHeaderBar.optionsPill addTarget:self action:@selector(doOpenOptionsMenu:) forControlEvents:UIControlEventTouchUpInside];
     [self.storyTitlesHeaderBar.searchPill addTarget:self action:@selector(doActivateSearch:) forControlEvents:UIControlEventTouchUpInside];
 
@@ -695,35 +672,11 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     self.scrollingMarkReadRow = NSNotFound;
     self.visibleStoryRows = [self buildVisibleStoryRows];
     [self rememberStoryAppendState];
-    BOOL shouldLogDailyBriefingRender = storiesCollection.isDailyBriefing;
-    if (shouldLogDailyBriefingRender) {
-        self.dailyBriefingReloadStartedAt = NBDailyBriefingNow();
-        self.dailyBriefingReloadDataMs = 0;
-        self.dailyBriefingHeightTotalMs = 0;
-        self.dailyBriefingHeightMaxMs = 0;
-        self.dailyBriefingHeightMaxRow = NSNotFound;
-        self.dailyBriefingHeightCallCount = 0;
-        self.dailyBriefingCellTotalMs = 0;
-        self.dailyBriefingCellMaxMs = 0;
-        self.dailyBriefingCellMaxRow = NSNotFound;
-        self.dailyBriefingCellCallCount = 0;
-        self.dailyBriefingReloadStoryCount = storiesCollection.storyLocationsCount;
-        self.dailyBriefingDidLogInitialRender = NO;
-    }
-    
-    CFTimeInterval reloadStartedAt = shouldLogDailyBriefingRender ? NBDailyBriefingNow() : 0;
     // FeedDetailObjCViewController.m keeps the same pulse alive while a loading-only table reloads.
     if (storiesCollection.storyLocationsCount > 0 || self.pageFinished) {
         [ReaderMotion retireLoadingRows:self.storyTitlesTable];
     }
     [self.storyTitlesTable reloadData];
-    if (shouldLogDailyBriefingRender) {
-        self.dailyBriefingReloadDataMs = NBDailyBriefingElapsedMs(reloadStartedAt);
-        NSLog(@"DailyBriefing iOS render: reloadData rows=%ld reload=%.1fms text_size=%ld",
-              (long)self.dailyBriefingReloadStoryCount,
-              self.dailyBriefingReloadDataMs,
-              (long)self.textSize);
-    }
     [self warmStoryPreviewCacheAroundLocation:storiesCollection.locationOfActiveStory];
     
     NSInteger location = storiesCollection.locationOfActiveStory;
@@ -753,7 +706,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 }
 
 - (BOOL)shouldShowStoryClustering {
-    if (storiesCollection.isDailyBriefing || !self.isLegacyTable) {
+    if (!self.isLegacyTable) {
         return NO;
     }
 
@@ -855,7 +808,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 }
 
 - (void)rememberStoryAppendState {
-    if (!self.isLegacyTable || self.isDashboard || storiesCollection.isDailyBriefing) {
+    if (!self.isLegacyTable || self.isDashboard) {
         self.renderedStoryLocationIds = nil;
         self.renderedStoryAppendContext = nil;
         return;
@@ -865,7 +818,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 }
 
 - (BOOL)appendStoryTableFromLocation:(NSInteger)previousStoryCount {
-    if (!self.isLegacyTable || self.isDashboard || storiesCollection.isDailyBriefing || self.isFadingTable ||
+    if (!self.isLegacyTable || self.isDashboard || self.isFadingTable ||
         !self.messageView.hidden || self.pageFinished || previousStoryCount == 0 ||
         self.renderedStoryLocationIds.count != previousStoryCount ||
         storiesCollection.storyLocationsCount < previousStoryCount ||
@@ -905,7 +858,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 }
 
 - (NSArray<NSDictionary *> *)storyRowDescriptors {
-    if (!self.isLegacyTable || storiesCollection.isDailyBriefing) {
+    if (!self.isLegacyTable) {
         return nil;
     }
 
@@ -941,7 +894,6 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 - (NSInteger)storyLocationForScrollingAtIndexPath:(NSIndexPath *)indexPath {
     NSDictionary *rowDescriptor = [self storyRowDescriptorForIndexPath:indexPath];
     NSNumber *targetLocation = [FeedRowScrollReadDecision targetStoryLocationWithRowStoryLocation:rowDescriptor[FeedDetailVisibleRowStoryLocationKey]
-                                                                                 isDailyBriefing:storiesCollection.isDailyBriefing
                                                                                        storyCount:storiesCollection.storyLocationsCount];
     if (targetLocation == nil) {
         return NSNotFound;
@@ -1315,14 +1267,13 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
                 item.sharesBackground = NO;
                 return item;
             };
-            self.verticalDiscoverItem = makeItem([NBLocalization text:@"Related Sites"], @"sparkle.magnifyingglass", @"story-list-discover", @selector(doOpenDiscoverFromPill:));
             self.verticalOptionsItem = makeItem([NBLocalization text:@"Story options"], @"line.3.horizontal.decrease", @"story-list-options", @selector(doOpenOptionsMenu:));
             self.verticalSettingsItem = makeItem([NBLocalization text:@"Site Settings"], @"gearshape", @"story-list-settings", @selector(doOpenSettingsMenu:));
             self.verticalSearchItem = makeItem([NBLocalization text:@"Search stories"], @"magnifyingglass", @"story-list-search", @selector(doActivateSearch:));
             self.verticalMarkReadOptionsItem = makeItem([NBLocalization text:@"Mark Read options"], @"plus", @"story-list-mark-read-options", nil);
             self.verticalMarkReadItem = makeItem([NBLocalization text:@"Mark all read and return"], @"checkmark", @"story-list-mark-read", @selector(doOpenMarkReadMenu:));
             self.verticalStoryToolbarItems = @[
-                self.verticalDiscoverItem, self.verticalOptionsItem, self.verticalSettingsItem, self.verticalSearchItem,
+                self.verticalOptionsItem, self.verticalSettingsItem, self.verticalSearchItem,
                 self.verticalMarkReadOptionsItem, self.verticalMarkReadItem
             ];
         }
@@ -1340,15 +1291,6 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 - (void)updateVerticalStoryToolbarState {
 #if !TARGET_OS_MACCATALYST && __IPHONE_OS_VERSION_MAX_ALLOWED >= 270100
     if (@available(iOS 27.1, *)) {
-        if (self.verticalDiscoverItem.hidden != self.storyTitlesHeaderBar.discoverPill.hidden) {
-            self.verticalDiscoverItem.hidden = self.storyTitlesHeaderBar.discoverPill.hidden;
-        }
-        NSString *discoverTitle = storiesCollection.isDailyBriefing ? [NBLocalization text:@"Daily Briefing Settings"] : [NBLocalization text:@"Related Sites"];
-        if (![self.verticalDiscoverItem.title isEqualToString:discoverTitle]) {
-            self.verticalDiscoverItem.title = discoverTitle;
-            self.verticalDiscoverItem.accessibilityLabel = discoverTitle;
-            self.verticalDiscoverItem.image = [UIImage systemImageNamed:storiesCollection.isDailyBriefing ? @"slider.horizontal.3" : @"sparkle.magnifyingglass"];
-        }
         if (![self.verticalOptionsItem.accessibilityLabel isEqualToString:self.storyTitlesHeaderBar.optionsPill.accessibilityLabel]) {
             self.verticalOptionsItem.accessibilityLabel = self.storyTitlesHeaderBar.optionsPill.accessibilityLabel;
         }
@@ -1933,9 +1875,6 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     self.reconcilingFirstPageArticle = NO;
     self.retainedFirstPageStoryHash = nil;
     self.retainedFirstPageNeighbors = nil;
-    if ([self respondsToSelector:@selector(resetDailyBriefingState)]) {
-        [(FeedDetailViewController *)self resetDailyBriefingState];
-    }
 
     [self hideTryFeedSubscribeBanner];
     appDelegate.hasLoadedFeedDetail = NO;
@@ -2071,12 +2010,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 
 - (NSString *)normalizedPreviewTextForStory:(NSDictionary *)story {
     NSString *content = nil;
-    if (storiesCollection.isDailyBriefing &&
-        [story[@"daily_briefing_preview_text"] isKindOfClass:[NSString class]]) {
-        content = story[@"daily_briefing_preview_text"];
-    } else {
-        content = [[[[story objectForKey:@"story_content"] convertHTML] stringByDecodingXMLEntities] stringByDecodingHTMLEntities];
-    }
+    content = [[[[story objectForKey:@"story_content"] convertHTML] stringByDecodingXMLEntities] stringByDecodingHTMLEntities];
 
     if (![content isKindOfClass:[NSString class]]) {
         content = @"";
@@ -2627,7 +2561,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     if (!self.isLegacyTable || self.isDashboard || self.dashboardIndex >= 0 ||
         storiesCollection.inSearch || storiesCollection.isSocialView || storiesCollection.isSocialRiverView ||
         storiesCollection.isSavedView || storiesCollection.isReadView || storiesCollection.isWidgetView ||
-        storiesCollection.isDailyBriefing || storiesCollection.isTrending || storiesCollection.isInfrequent ||
+        storiesCollection.isTrending || storiesCollection.isInfrequent ||
         appDelegate.isSavedStoriesIntelligenceMode || appDelegate.tryFeedFeedId || appDelegate.inFindingStoryMode) return nil;
     if (storiesCollection.isRiverView) {
         if (!storiesCollection.activeFolder || [@[@"dashboard", @"notifications"] containsObject:storiesCollection.activeFolder]) return nil;
@@ -3260,7 +3194,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     
     // FeedDetailObjCViewController.m keeps an already presented native list intact while requesting its next page.
     BOOL isNativePageAppend = page > 1 && self.isLegacyTable && !self.isDashboard &&
-        !storiesCollection.isDailyBriefing && storiesCollection.storyCount > 0;
+        storiesCollection.storyCount > 0;
     if (!isNativePageAppend) {
         [self loadingFeed];
     }
@@ -3270,11 +3204,6 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         return;
     }
 
-    if (storiesCollection.isDailyBriefing) {
-        [(FeedDetailViewController *)self fetchDailyBriefingPage:page withCallback:callback];
-        return;
-    }
-    
     storiesCollection.feedPage = page;
     self.pageFetching = YES;
     NSInteger storyCount = storiesCollection.storyCount;
@@ -3585,7 +3514,6 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     NSInteger previousStoryCount = storiesCollection.storyLocationsCount;
     BOOL premiumRestriction = !appDelegate.isPremium &&
     storiesCollection.isRiverView &&
-    !storiesCollection.isDailyBriefing &&
     !storiesCollection.isReadView &&
     !storiesCollection.isWidgetView &&
     !storiesCollection.isSocialView &&
@@ -4221,7 +4149,6 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     if (self.pageFinished) {
         BOOL premiumRestriction = !appDelegate.isPremium &&
         storiesCollection.isRiverView &&
-        !storiesCollection.isDailyBriefing &&
         !storiesCollection.isReadView &&
         !storiesCollection.isWidgetView &&
         !storiesCollection.isSocialView &&
@@ -4390,7 +4317,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 
 - (void)tableView:(UITableView *)tableView prefetchRowsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths {
     if (tableView != self.storyTitlesTable || !self.isLegacyTable || self.isDashboard ||
-        storiesCollection.isDailyBriefing || CGRectGetWidth(tableView.bounds) <= 0) return;
+        CGRectGetWidth(tableView.bounds) <= 0) return;
 
     NSMutableArray<NSIndexPath *> *requestedRows = [self.storyTextLayoutPrefetchRows mutableCopy] ?: [NSMutableArray array];
     for (NSIndexPath *indexPath in indexPaths) {
@@ -4413,7 +4340,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 - (BOOL)prepareStoryTextLayoutsForRows:(NSArray<NSIndexPath *> *)indexPaths
                     preparedPreviews:(NSDictionary<NSString *, NSString *> *)preparedPreviews {
     UITableView *tableView = self.storyTitlesTable;
-    if (!indexPaths.count || !self.isLegacyTable || self.isDashboard || storiesCollection.isDailyBriefing ||
+    if (!indexPaths.count || !self.isLegacyTable || self.isDashboard ||
         CGRectGetWidth(tableView.bounds) <= 0) return NO;
 
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
@@ -4499,10 +4426,6 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         return 0;
     }
 
-    if (tableView == self.storyTitlesTable && storiesCollection.isDailyBriefing) {
-        return [(FeedDetailViewController *)self dailyBriefingSectionCount];
-    }
-
     return 1;
 }
 
@@ -4511,135 +4434,10 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         return 0;
     }
 
-    if (tableView == self.storyTitlesTable && storiesCollection.isDailyBriefing) {
-        return [(FeedDetailViewController *)self dailyBriefingNumberOfRowsInSection:section];
-    }
-
     NSInteger storyCount = self.isLegacyTable ? [self storyRowDescriptors].count : storiesCollection.storyLocationsCount;
 
     // The +1 is for the finished/loading bar.
     return storyCount + 1;
-}
-
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-    if (tableView != self.storyTitlesTable || !storiesCollection.isDailyBriefing) {
-        return nil;
-    }
-
-    DailyBriefingSectionInfo *sectionInfo = [(FeedDetailViewController *)self dailyBriefingSectionInfoForSection:section];
-    if (!sectionInfo || sectionInfo.isLoadingSection) {
-        return nil;
-    }
-
-    CGFloat width = CGRectGetWidth(tableView.bounds);
-    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, width, NBDailyBriefingSectionHeaderHeight)];
-    headerView.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xEAECE6, 0xEBDDCC, 0x3A3A3C, 0x2C2C2E);
-
-    UIView *separator = [[UIView alloc] initWithFrame:CGRectMake(0, NBDailyBriefingSectionHeaderHeight - 1, width, 1)];
-    separator.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
-    separator.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xD9DDD5, 0xD9CDBE, 0x4A4A4C, 0x242426);
-    [headerView addSubview:separator];
-
-    UIFontDescriptor *fontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
-    UIFont *titleFont = [UIFont fontWithName:@"WhitneySSm-Medium" size:fontDescriptor.pointSize];
-    UIFont *dateFont = [UIFont fontWithName:@"WhitneySSm-Book" size:MAX(titleFont.pointSize - 1, 10)];
-    UIColor *titleColor = UIColorFromLightSepiaMediumDarkRGB(0x4C4D4A, 0x5C4A3D, 0xE0E0E0, 0xE8E8E8);
-    UIColor *dateColor = UIColorFromLightSepiaMediumDarkRGB(0x767974, 0x7D6F61, 0xA5A5AA, 0x98989D);
-
-    CGFloat leftInset = 12.0f;
-    CGFloat rightInset = 8.0f;
-    CGFloat disclosureSize = 29.0f;
-    CGFloat dateWidth = MIN(120.0f, ceil([sectionInfo.dateText sizeWithAttributes:@{NSFontAttributeName: dateFont}].width) + 4.0f);
-    CGFloat textHeight = NBDailyBriefingSectionHeaderHeight;
-    CGFloat disclosureX = width - rightInset - disclosureSize;
-    CGFloat dateX = MAX(leftInset + 80.0f, disclosureX - 8.0f - dateWidth);
-    CGFloat titleWidth = MAX(60.0f, dateX - leftInset - 8.0f);
-
-    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(leftInset, 0, titleWidth, textHeight)];
-    titleLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    titleLabel.font = titleFont;
-    titleLabel.textColor = titleColor;
-    titleLabel.backgroundColor = UIColor.clearColor;
-    titleLabel.text = sectionInfo.title;
-    titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-    [headerView addSubview:titleLabel];
-
-    UILabel *dateLabel = [[UILabel alloc] initWithFrame:CGRectMake(dateX, 0, MAX(0, dateWidth), textHeight)];
-    dateLabel.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
-    dateLabel.font = dateFont;
-    dateLabel.textColor = dateColor;
-    dateLabel.backgroundColor = UIColor.clearColor;
-    dateLabel.textAlignment = NSTextAlignmentRight;
-    dateLabel.text = sectionInfo.dateText;
-    dateLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-    [headerView addSubview:dateLabel];
-
-    UIImage *disclosureBorder = [UIImage imageNamed:@"disclosure_border"];
-    if ([[[ThemeManager themeManager] effectiveTheme] isEqualToString:ThemeStyleDark]) {
-        disclosureBorder = [UIImage imageNamed:@"disclosure_border_dark"];
-    }
-
-    UIImageView *disclosureBorderView = [[UIImageView alloc] initWithFrame:CGRectMake(disclosureX, CGRectGetMidY(headerView.bounds) - disclosureSize/2.0f, disclosureSize, disclosureSize)];
-    disclosureBorderView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
-    disclosureBorderView.image = disclosureBorder;
-    [headerView addSubview:disclosureBorderView];
-
-    UIImageView *disclosureView = [[UIImageView alloc] initWithFrame:CGRectMake(disclosureX, CGRectGetMidY(headerView.bounds) - disclosureSize/2.0f, disclosureSize, disclosureSize)];
-    disclosureView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
-    disclosureView.contentMode = UIViewContentModeCenter;
-    disclosureView.image = [UIImage imageNamed:(sectionInfo.isCollapsed ? @"disclosure.png" : @"disclosure_down.png")];
-    [headerView addSubview:disclosureView];
-
-    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-    button.frame = headerView.bounds;
-    button.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    button.tag = section;
-    button.accessibilityLabel = [NSString stringWithFormat:@"%@, %@, %@", sectionInfo.title, sectionInfo.dateText, sectionInfo.isCollapsed ? @"collapsed" : @"expanded"];
-    [button addTarget:self action:@selector(didToggleDailyBriefingSection:) forControlEvents:UIControlEventTouchUpInside];
-    [headerView addSubview:button];
-
-    // FeedDetailObjCViewController.m mirrors the briefing section header for a right-to-left interface: the title
-    // leads from the right and the date and disclosure arrow trail on the left.
-    if (NBLocalization.isRightToLeft) {
-        for (UIView *view in @[titleLabel, dateLabel, disclosureBorderView, disclosureView]) {
-            view.frame = [NBLocalization directionalRect:view.frame within:headerView.bounds rightToLeft:YES];
-            if (view.autoresizingMask & UIViewAutoresizingFlexibleLeftMargin) {
-                view.autoresizingMask = (view.autoresizingMask & ~UIViewAutoresizingFlexibleLeftMargin) | UIViewAutoresizingFlexibleRightMargin;
-            }
-        }
-        dateLabel.textAlignment = NSTextAlignmentLeft;
-        if (sectionInfo.isCollapsed) {
-            disclosureView.image = [disclosureView.image imageWithHorizontallyFlippedOrientation];
-        }
-    }
-
-    return headerView;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-    if (tableView != self.storyTitlesTable || !storiesCollection.isDailyBriefing) {
-        return 0.0f;
-    }
-
-    DailyBriefingSectionInfo *sectionInfo = [(FeedDetailViewController *)self dailyBriefingSectionInfoForSection:section];
-    return (!sectionInfo || sectionInfo.isLoadingSection) ? 0.01f : NBDailyBriefingSectionHeaderHeight;
-}
-
-- (void)didToggleDailyBriefingSection:(UIButton *)button {
-    if (!storiesCollection.isDailyBriefing) {
-        return;
-    }
-
-    [(FeedDetailViewController *)self toggleDailyBriefingSectionAt:button.tag];
-
-    NSIndexSet *sections = [NSIndexSet indexSetWithIndex:button.tag];
-    [self.storyTitlesTable reloadSections:sections withRowAnimation:UITableViewRowAnimationAutomatic];
-
-    NSInteger location = storiesCollection.locationOfActiveStory;
-    NSIndexPath *indexPath = [self indexPathForStoryLocation:location];
-    if (indexPath && location >= 0 && self.view.window != nil) {
-        [self.storyTitlesTable selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
-    }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView 
@@ -4649,16 +4447,11 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     BOOL isClusterRow = [rowDescriptor[FeedDetailVisibleRowTypeKey] integerValue] == FeedDetailVisibleRowTypeCluster;
     NSInteger location = [self storyLocationForIndexPath:indexPath];
     NSInteger parentLocation = isClusterRow ? [self storyLocationForScrollingAtIndexPath:indexPath] : location;
-    BOOL shouldMeasureRender = tableView == self.storyTitlesTable &&
-        storiesCollection.isDailyBriefing &&
-        location < storyCount;
-    CFTimeInterval renderStartedAt = shouldMeasureRender ? NBDailyBriefingNow() : 0;
     
     NSString *cellIdentifier;
     NSDictionary *feed ;
     
     if ([FeedRowLoadingDecision shouldShowLoadingCellWithIsLegacyTable:self.isLegacyTable
-                                                      isDailyBriefing:storiesCollection.isDailyBriefing
                                                       hasRowDescriptor:rowDescriptor != nil
                                                          storyLocation:location
                                                             storyCount:storyCount]) {
@@ -4751,7 +4544,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     cell.feedColorBarTopBorder =  UIColorFromFixedRGB(colorBorder);
     
     // favicon
-    UIImage *preparedFavicon = self.isLegacyTable && !self.isDashboard && !storiesCollection.isDailyBriefing ?
+    UIImage *preparedFavicon = self.isLegacyTable && !self.isDashboard ?
         [appDelegate preparedFavicon:feedIdStr size:CGSizeMake(16, 16)] : nil;
     if (preparedFavicon) [cell setPreparedSiteFavicon:preparedFavicon];
     else cell.siteFavicon = [appDelegate getFavicon:feedIdStr];
@@ -4770,9 +4563,8 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     cell.textSize = self.textSize;
     cell.isShort = NO;
     cell.isClusterStory = isClusterRow;
-    cell.storyTextLayoutCache = self.isLegacyTable && !isClusterRow && !storiesCollection.isDailyBriefing ?
+    cell.storyTextLayoutCache = self.isLegacyTable && !isClusterRow ?
         self.storyTextLayoutCache : nil;
-    cell.isDailyBriefingSummary = !isClusterRow && [story[@"is_daily_briefing_summary"] boolValue];
     
     UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
     if (!self.isPhoneOrCompact &&
@@ -4812,15 +4604,6 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     }
     
     [cell setNeedsDisplay];
-    if (shouldMeasureRender) {
-        double elapsedMs = NBDailyBriefingElapsedMs(renderStartedAt);
-        self.dailyBriefingCellCallCount += 1;
-        self.dailyBriefingCellTotalMs += elapsedMs;
-        if (elapsedMs > self.dailyBriefingCellMaxMs) {
-            self.dailyBriefingCellMaxMs = elapsedMs;
-            self.dailyBriefingCellMaxRow = location;
-        }
-    }
     
     return cell;
 }
@@ -4894,8 +4677,6 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
                 feedTitle = [NBLocalization text:@"All Stories"];
             } else if ([storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
                 feedTitle = [NBLocalization text:@"Infrequent Site Stories"];
-            } else if ([storiesCollection.activeFolder isEqualToString:@"daily_briefing"]) {
-                feedTitle = [NBLocalization text:@"Daily Briefing"];
             } else if (storiesCollection.isSavedView && storiesCollection.activeSavedStoryTag) {
                 feedTitle = storiesCollection.activeSavedStoryTag;
             } else if ([storiesCollection.activeFolder isEqualToString:@"widget_stories"]) {
@@ -5228,50 +5009,6 @@ leadingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
     } else if (![cell isKindOfClass:[FeedDetailTableCell class]]) {
         [ReaderMotion row:cell key:[NSString stringWithFormat:@"status-%ld-%ld-%ld", (long)indexPath.section, (long)indexPath.row, (long)storiesCollection.storyLocationsCount] owner:self scrolling:tableView.dragging || tableView.decelerating];
     }
-    if (tableView == self.storyTitlesTable &&
-        storiesCollection.isDailyBriefing &&
-        !self.dailyBriefingDidLogInitialRender &&
-        [self storyLocationForIndexPath:indexPath] < storiesCollection.storyLocationsCount) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (self.dailyBriefingDidLogInitialRender || !storiesCollection.isDailyBriefing) {
-                return;
-            }
-
-            NSArray<NSIndexPath *> *visibleRows = [tableView indexPathsForVisibleRows];
-            NSIndexPath *lastVisibleIndexPath = nil;
-            for (NSIndexPath *visibleIndexPath in [visibleRows reverseObjectEnumerator]) {
-                if ([self storyLocationForIndexPath:visibleIndexPath] < storiesCollection.storyLocationsCount) {
-                    lastVisibleIndexPath = visibleIndexPath;
-                    break;
-                }
-            }
-
-            NSInteger currentLocation = [self storyLocationForIndexPath:indexPath];
-            NSInteger lastVisibleLocation = lastVisibleIndexPath ? [self storyLocationForIndexPath:lastVisibleIndexPath] : NSNotFound;
-            if (!lastVisibleIndexPath || currentLocation < lastVisibleLocation) {
-                return;
-            }
-
-            self.dailyBriefingDidLogInitialRender = YES;
-            double totalMs = NBDailyBriefingElapsedMs(self.dailyBriefingReloadStartedAt);
-            double avgHeightMs = self.dailyBriefingHeightCallCount ? self.dailyBriefingHeightTotalMs / self.dailyBriefingHeightCallCount : 0;
-            double avgCellMs = self.dailyBriefingCellCallCount ? self.dailyBriefingCellTotalMs / self.dailyBriefingCellCallCount : 0;
-            NSLog(@"DailyBriefing iOS render: first_screen rows=%ld visible=%lu total=%.1fms height_calls=%lu height_total=%.1fms height_avg=%.2fms height_max=%.1fms@%ld cell_calls=%lu cell_total=%.1fms cell_avg=%.2fms cell_max=%.1fms@%ld",
-                  (long)self.dailyBriefingReloadStoryCount,
-                  (unsigned long)visibleRows.count,
-                  totalMs,
-                  (unsigned long)self.dailyBriefingHeightCallCount,
-                  self.dailyBriefingHeightTotalMs,
-                  avgHeightMs,
-                  self.dailyBriefingHeightMaxMs,
-                  (long)self.dailyBriefingHeightMaxRow,
-                  (unsigned long)self.dailyBriefingCellCallCount,
-                  self.dailyBriefingCellTotalMs,
-                  avgCellMs,
-                  self.dailyBriefingCellMaxMs,
-                  (long)self.dailyBriefingCellMaxRow);
-        });
-    }
     NSIndexPath *lastVisibleRow = (NSIndexPath *)[[tableView indexPathsForVisibleRows] lastObject];
     if (lastVisibleRow && [indexPath isEqual:lastVisibleRow]) {
         [self performSelector:@selector(checkScroll)
@@ -5282,7 +5019,7 @@ leadingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     BOOL cacheRowHeight = tableView == self.storyTitlesTable && self.isLegacyTable &&
-        !storiesCollection.isDailyBriefing && indexPath.section == 0 &&
+        indexPath.section == 0 &&
         indexPath.row >= 0 && indexPath.row < self.visibleStoryRows.count;
     if (cacheRowHeight) {
         CGFloat width = CGRectGetWidth(tableView.bounds);
@@ -5301,10 +5038,6 @@ leadingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSInteger storyCount = storiesCollection.storyLocationsCount;
     NSDictionary *clusterStory = [self clusterStoryForIndexPath:indexPath];
     NSInteger location = [self storyLocationForIndexPath:indexPath];
-    BOOL shouldMeasureRender = tableView == self.storyTitlesTable &&
-        storiesCollection.isDailyBriefing &&
-        location < storyCount;
-    CFTimeInterval renderStartedAt = shouldMeasureRender ? NBDailyBriefingNow() : 0;
     CGFloat rowHeight;
 
     if (clusterStory) {
@@ -5372,17 +5105,7 @@ leadingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
         } else if (self.textSize != FeedDetailTextSizeTitleOnly) {
             if (self.textSize == FeedDetailTextSizeMedium || self.textSize == FeedDetailTextSizeLong) {
                 NSUInteger contentLength = 0;
-                if (storiesCollection.isDailyBriefing) {
-                    if ([story[@"daily_briefing_preview_length"] respondsToSelector:@selector(unsignedIntegerValue)]) {
-                        contentLength = [story[@"daily_briefing_preview_length"] unsignedIntegerValue];
-                    }
-                    if (!contentLength && [story[@"daily_briefing_preview_text"] isKindOfClass:[NSString class]]) {
-                        contentLength = [story[@"daily_briefing_preview_text"] length];
-                    }
-                    if (!contentLength) {
-                        contentLength = [[self cachedPreviewTextForStory:story location:location] length];
-                    }
-                } else if (story) {
+                if (story) {
                     contentLength = [[self cachedPreviewTextForStory:story location:location] length];
                 }
                 
@@ -5439,15 +5162,6 @@ finish_height_measurement:
     if (cacheRowHeight) {
         if (!self.storyRowHeightCache) self.storyRowHeightCache = [NSMutableDictionary dictionary];
         self.storyRowHeightCache[@(indexPath.row)] = @(rowHeight);
-    }
-    if (shouldMeasureRender) {
-        double elapsedMs = NBDailyBriefingElapsedMs(renderStartedAt);
-        self.dailyBriefingHeightCallCount += 1;
-        self.dailyBriefingHeightTotalMs += elapsedMs;
-        if (elapsedMs > self.dailyBriefingHeightMaxMs) {
-            self.dailyBriefingHeightMaxMs = elapsedMs;
-            self.dailyBriefingHeightMaxRow = location;
-        }
     }
 
     return rowHeight;
@@ -5541,7 +5255,6 @@ finish_height_measurement:
 #else
     if (!self.isLegacyTable ||
         self.messageView.hidden == NO ||
-        storiesCollection.isDailyBriefing ||
         self.pageFetching ||
         !self.pageFinished ||
         self.inPullToRefresh_ ||
@@ -5912,11 +5625,6 @@ finish_height_measurement:
     CGFloat prefetchDistance = MAX(500.0, 3 * CGRectGetHeight(self.storyTitlesTable.bounds));
     BOOL shouldFetchNextPage = !self.pageFetching && (remainingOffset <= prefetchDistance ||
         (appDelegate.inFindingStoryMode));
-    if (storiesCollection.isDailyBriefing) {
-        shouldFetchNextPage = !self.pageFetching && [DailyBriefingPaginationDecision shouldPrefetchNextPageWithRemainingOffset:remainingOffset
-                                                                                                                isDragging:self.storyTitlesTable.dragging
-                                                                                                            isDecelerating:self.storyTitlesTable.decelerating];
-    }
 
     if (shouldFetchNextPage) {
         if (storiesCollection.isRiverView && storiesCollection.activeFolder) {
@@ -5956,7 +5664,7 @@ finish_height_measurement:
     } else {
         // Establish the first cursor while the visible top is in a header or top bounce.
         // Waiting for a row hit would skip earlier parents on the first fast scroll.
-        if (storiesCollection.isDailyBriefing || [table numberOfRowsInSection:0] == 0) return;
+        if ([table numberOfRowsInSection:0] == 0) return;
         CGRect firstRow = [table rectForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
         if (visibleTop >= CGRectGetMinY(firstRow)) return;
     }
@@ -6040,8 +5748,6 @@ finish_height_measurement:
 
 - (NSDictionary *)getStoryAtLocation:(NSInteger)storyLocation {
     NSNumber *storyIndex = [StoryRowLookupDecision storyIndexFor:storyLocation
-                                                isDailyBriefing:storiesCollection.isDailyBriefing
-                                                 allStoriesCount:storiesCollection.activeFeedStories.count
                                            visibleStoryLocations:storiesCollection.activeFeedStoryLocations ?: @[]];
     if (storyIndex == nil) return nil;
 
@@ -6053,10 +5759,6 @@ finish_height_measurement:
 }
 
 - (NSInteger)storyLocationForIndexPath:(NSIndexPath *)indexPath {
-    if (storiesCollection.isDailyBriefing) {
-        return [(FeedDetailViewController *)self dailyBriefingStoryLocationForIndexPath:indexPath];
-    }
-
     if (self.isLegacyTable) {
         NSDictionary *rowDescriptor = [self storyRowDescriptorForIndexPath:indexPath];
         if (rowDescriptor == nil) {
@@ -6080,10 +5782,6 @@ finish_height_measurement:
 }
 
 - (NSIndexPath *)indexPathForStoryLocation:(NSInteger)location {
-    if (storiesCollection.isDailyBriefing) {
-        return [(FeedDetailViewController *)self indexPathForDailyBriefingStoryLocation:location];
-    }
-
     if (self.isLegacyTable) {
         NSArray<NSDictionary *> *rowDescriptors = [self storyRowDescriptors];
         for (NSInteger row = 0; row < (NSInteger)rowDescriptors.count; row++) {
@@ -6445,16 +6143,6 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         return;
     }
 
-    if (storiesCollection.isDailyBriefing) {
-        if ([sender isKindOfClass:[UIBarButtonItem class]]) {
-            [(FeedDetailViewController *)self openDailyBriefingSettingsFromBarButton:sender];
-        } else {
-            UIView *sourceView = self.settingsBarButton.customView ?: self.view;
-            [(FeedDetailViewController *)self openDailyBriefingSettingsFrom:sourceView];
-        }
-        return;
-    }
-    
     MenuViewController *viewController = [MenuViewController new];
     __weak MenuViewController *weakViewController = viewController;
     
@@ -6740,26 +6428,6 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 #endif
 }
 
-- (IBAction)doOpenDiscoverFromPill:(id)sender {
-    if (self.presentedViewController) {
-        [self.presentedViewController dismissViewControllerAnimated:YES completion:nil];
-        return;
-    }
-
-    UIView *pillView = self.storyTitlesHeaderBar.discoverPill;
-
-    if ([sender isKindOfClass:[UIBarButtonItem class]]) {
-        if (storiesCollection.isDailyBriefing) {
-            [(FeedDetailViewController *)self openDailyBriefingSettingsFromBarButton:sender];
-        }
-        return;
-    }
-
-    if (storiesCollection.isDailyBriefing) {
-        [(FeedDetailViewController *)self openDailyBriefingSettingsFrom:pillView];
-    }
-}
-
 - (IBAction)doActivateSearch:(id)sender {
     if (self.storyTitlesHeaderBar.isSearchActive) {
         [self deactivateSearch];
@@ -6779,30 +6447,14 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 }
 
 - (void)updateStoryTitlesHeaderPillState {
-    [self.storyTitlesHeaderBar setDailyBriefingMode:storiesCollection.isDailyBriefing];
-
     // Update options pill text
     NSString *order = storiesCollection.activeOrder ?: @"newest";
     NSString *readFilter = storiesCollection.activeReadFilter ?: @"all";
     [self.storyTitlesHeaderBar updateOptionsPillWithOrder:order readFilter:readFilter];
 
-    // Update discover pill visibility
-    BOOL isEverything = storiesCollection.isEverything && storiesCollection.isRiverView;
-    BOOL isSocial = storiesCollection.isSocialRiverView || storiesCollection.isSocialView;
-    BOOL isSaved = storiesCollection.isSavedView;
-    BOOL isRead = storiesCollection.isReadView;
-    BOOL isWidget = storiesCollection.isWidgetView;
-    BOOL isInfrequent = storiesCollection.isInfrequent || storiesCollection.isTrending;
-    [self.storyTitlesHeaderBar updateDiscoverVisibilityWithIsRiver:storiesCollection.isRiverView isEverything:isEverything isSocial:isSocial isSaved:isSaved isRead:isRead isWidget:isWidget isInfrequent:isInfrequent];
-    if (storiesCollection.isDailyBriefing) {
-        self.storyTitlesHeaderBar.discoverPill.hidden = NO;
-    }
-
     // Build mark-read menu with timing submenu
     NSString *collectionTitle;
-    if (storiesCollection.isDailyBriefing) {
-        collectionTitle = @"daily briefing";
-    } else if (storiesCollection.isTrending) {
+    if (storiesCollection.isTrending) {
         collectionTitle = @"this list";
     } else if (storiesCollection.isRiverView) {
         collectionTitle = [storiesCollection.activeFolder isEqualToString:@"everything"] ? @"everything" : @"entire folder";
@@ -6810,82 +6462,6 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         collectionTitle = @"this site";
     }
     [self updateMarkReadPillMenu:collectionTitle];
-
-    // Update discover pill favicons
-    if (storiesCollection.isDailyBriefing) {
-        [self.storyTitlesHeaderBar updateDiscoverPillWithFavicons:@[]];
-    } else if (storiesCollection.activeFeed) {
-        NSArray *similarFeeds = storiesCollection.activeFeed[@"similar_feeds"];
-        if ([similarFeeds isKindOfClass:[NSArray class]] && similarFeeds.count > 0) {
-            NSArray *feedIds = [similarFeeds subarrayWithRange:NSMakeRange(0, MIN(similarFeeds.count, 5))];
-            [self loadDiscoverFavicons:feedIds];
-        } else {
-            [self.storyTitlesHeaderBar updateDiscoverPillWithFavicons:@[]];
-        }
-    } else {
-        [self.storyTitlesHeaderBar updateDiscoverPillWithFavicons:@[]];
-    }
-}
-
-- (void)loadDiscoverFavicons:(NSArray *)feedIds {
-    // Check which favicons are already cached vs need fetching
-    NSMutableArray *cachedFavicons = [NSMutableArray array];
-    NSMutableArray *missingFeedIds = [NSMutableArray array];
-
-    for (id feedId in feedIds) {
-        NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
-        UIImage *cached = [appDelegate.cachedFavicons objectForKey:feedIdStr];
-        if (cached) {
-            [cachedFavicons addObject:cached];
-        } else {
-            [missingFeedIds addObject:feedIdStr];
-        }
-    }
-
-    // If all cached, update immediately
-    if (missingFeedIds.count == 0) {
-        [self.storyTitlesHeaderBar updateDiscoverPillWithFavicons:cachedFavicons];
-        return;
-    }
-
-    // Show what we have so far (may be empty)
-    [self.storyTitlesHeaderBar updateDiscoverPillWithFavicons:cachedFavicons];
-
-    // Fetch missing favicons from server
-    NSString *feedIdsQuery = [NSString stringWithFormat:@"?feed_ids=%@",
-                              [missingFeedIds componentsJoinedByString:@"&feed_ids="]];
-    NSString *urlString = [NSString stringWithFormat:@"%@/reader/favicons%@",
-                           self.appDelegate.url, feedIdsQuery];
-
-    [appDelegate GET:urlString parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-            for (NSString *feedIdStr in missingFeedIds) {
-                NSString *faviconData = responseObject[feedIdStr];
-                if (faviconData && (id)faviconData != [NSNull null] && faviconData.length > 0) {
-                    NSData *imageData = [[NSData alloc] initWithBase64EncodedString:faviconData options:NSDataBase64DecodingIgnoreUnknownCharacters];
-                    UIImage *faviconImage = [UIImage imageWithData:imageData];
-                    if (faviconImage) {
-                        [self.appDelegate saveFavicon:faviconImage feedId:feedIdStr];
-                    }
-                }
-            }
-
-            dispatch_async(dispatch_get_main_queue(), ^{
-                // Rebuild favicons from cache now that they're saved
-                NSMutableArray *updatedFavicons = [NSMutableArray array];
-                for (id feedId in feedIds) {
-                    NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
-                    UIImage *favicon = [self.appDelegate.cachedFavicons objectForKey:feedIdStr];
-                    if (favicon) {
-                        [updatedFavicons addObject:favicon];
-                    }
-                }
-                [self.storyTitlesHeaderBar updateDiscoverPillWithFavicons:updatedFavicons];
-            });
-        });
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        // Silently fail — keep showing whatever cached favicons we have
-    }];
 }
 
 - (void)updateMarkReadPillMenu:(NSString *)collectionTitle {
@@ -7244,7 +6820,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
                 title = [NBLocalization text:@"Top Level"];
                 iconName = @"menu_icn_all.png";
             } else if ([title isEqualToString:@"dashboard"] || [title isEqualToString:@"infrequent"] ||
-                       [title isEqualToString:@"discover_sites"] || [title isEqualToString:@"daily_briefing"]) {
+                       [title isEqualToString:@"discover_sites"]) {
                 continue;
             } else {
                 NSArray *components = [title componentsSeparatedByString:@" ▸ "];

@@ -185,7 +185,6 @@ struct AddSiteView: View {
         let icon: (name: String, set: String)
         switch tab {
         case .search: icon = ("search", "lucide")
-        case .webFeed: icon = ("globe", "lucide")
         case .popular: icon = ("fire", "heroicons-solid")
         case .youtube: icon = ("youtube", "lucide")
         case .reddit: icon = ("reddit-logo-fill", "phosphor-fill")

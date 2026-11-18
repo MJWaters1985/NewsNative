@@ -236,13 +236,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 @synthesize isPremium;
 @synthesize isPremiumArchive;
 @synthesize isPremiumPro;
-@synthesize briefingEnabled;
 @synthesize premiumExpire;
 @synthesize userInteractionsArray;
 @synthesize userActivitiesArray;
 @synthesize dictFoldersArray;
 @synthesize notificationFeedIds;
-@synthesize pendingDailyBriefingStoryHash;
 
 @synthesize database;
 @synthesize categories;
@@ -300,7 +298,6 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     isPremium = NO;
     isPremiumArchive = NO;
     isPremiumPro = NO;
-    briefingEnabled = NO;
     premiumExpire = 0;
     
     NBURLCache *urlCache = [[NBURLCache alloc] init];
@@ -679,27 +676,19 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
             }];
         } else if ([action isEqualToString:@"VIEW_STORY_IDENTIFIER"] ||
                    [action isEqualToString:@"com.apple.UNNotificationDefaultActionIdentifier"]) {
-            BOOL isDailyBriefing = [[content objectForKey:@"is_daily_briefing"] boolValue];
 #if TARGET_OS_MACCATALYST
             if (!self.window) {
                 // NewsBlurAppDelegate.m waits for SceneDelegate.swift to replace the reader retained after Command-W.
                 self.pendingFolder = nil;
-                self.pendingNotificationStory = isDailyBriefing ? nil : @{@"feedId": feedIdStr, @"storyHash": storyHash ?: @""};
-                self.pendingDailyBriefingStoryHash = isDailyBriefing ?
-                    [DailyBriefingStartupDecision pendingStoryHashForStoryHash:storyHash] : nil;
+                self.pendingNotificationStory = @{@"feedId": feedIdStr, @"storyHash": storyHash ?: @""};
                 if (completionHandler) completionHandler();
                 return;
             }
 #endif
-            if (isDailyBriefing) {
-                self.pendingNotificationStory = nil;
-                [self openDailyBriefingWithStoryHash:storyHash];
-                if (completionHandler) completionHandler();
-            } else {
+            {
                 [self popToRootWithCompletion:^{
                     // NewsBlurAppDelegate.m keeps a notification's lookup within its source feed.
                     self.pendingFolder = nil;
-                    self.pendingDailyBriefingStoryHash = nil;
                     self.pendingNotificationStory = @{@"feedId": feedIdStr, @"storyHash": storyHash ?: @""};
                     [self loadFeed:feedIdStr withStory:storyHash animated:NO];
                     if (completionHandler) completionHandler();
@@ -1456,7 +1445,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 
     NSUserDefaults *preferences = NSUserDefaults.standardUserDefaults;
     BOOL restoredDuoFullscreen = [self.detailViewController restoreDuoFullscreenReaderForAccount:[preferences stringForKey:@"active_username"]];
-    if (restoredDuoFullscreen && !self.pendingNotificationStory && !self.pendingDailyBriefingStoryHash &&
+    if (restoredDuoFullscreen && !self.pendingNotificationStory &&
         !self.inFindingStoryMode && !self.tryFeedFeedId &&
         [self.pendingFolder isEqualToString:[preferences stringForKey:@"app_opening"]]) {
         // NewsBlurAppDelegate.m starts restored fullscreen at Feeds, while explicit notification and deep-link requests keep their destinations.
@@ -1993,7 +1982,6 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     // identifies the new account, a relaunch must not restore an earlier account's subscriptions.
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"active_username"];
     self.pendingFolder = nil;
-    self.pendingDailyBriefingStoryHash = nil;
     self.pendingNotificationStory = nil;
     self.tryFeedFeedId = nil;
     self.tryFeedStoryId = nil;
@@ -2377,15 +2365,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     // NewsBlurAppDelegate.m preserves pending navigation when a late feed refresh finishes after the window closes.
     if (!self.window) return;
 #endif
-    NSString *startupFolder = [DailyBriefingStartupDecision startupFolderWithPendingStoryHash:self.pendingDailyBriefingStoryHash
-                                                                                pendingFolder:self.pendingFolder];
-
-    if (self.pendingDailyBriefingStoryHash != nil && [startupFolder isEqualToString:@"daily_briefing"]) {
-        NSString *storyHash = self.pendingDailyBriefingStoryHash.length ? self.pendingDailyBriefingStoryHash : nil;
-        self.pendingDailyBriefingStoryHash = nil;
-        self.pendingFolder = nil;
-        [self openDailyBriefingWithStoryHash:storyHash];
-    } else if (self.pendingNotificationStory) {
+    if (self.pendingNotificationStory) {
         [self loadFeed:self.pendingNotificationStory[@"feedId"]
             withStory:self.pendingNotificationStory[@"storyHash"] animated:NO];
     } else if (self.inFindingStoryMode) {
@@ -2410,8 +2390,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         [self loadFeed:self.tryFeedFeedId withStory:self.tryFeedStoryId animated:NO];
     } else if (!self.isPhone && !self.isCompactWidth && self.storiesCollection == nil) {
         [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:storiesCollection.activeFolder];
-    } else if (startupFolder != nil) {
-        [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:startupFolder];
+    } else if (self.pendingFolder != nil) {
+        [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:self.pendingFolder];
     }
     
     self.pendingFolder = nil;
@@ -2534,7 +2514,6 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     NSSet<NSString *> *excludedFolders = [NSSet setWithObjects:
                                           @"dashboard",
                                           @"infrequent",
-                                          @"daily_briefing",
                                           @"read_stories",
                                           @"saved_searches",
                                           @"saved_stories",
@@ -2571,8 +2550,6 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     if ([folderTitle isEqualToString:@"dashboard"] || [folderTitle isEqualToString:@"everything"] || [folderTitle isEqualToString:@"infrequent"]) {
         return @[folderTitle];
     } else if ([folderTitle hasPrefix:@"trending:"]) {
-        return @[];
-    } else if ([folderTitle isEqualToString:@"daily_briefing"]) {
         return @[];
     } else if ([folderTitle isEqualToString:@"widget_stories"]) {
         NSUserDefaults *groupDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.tk.waters.newsnative"];
@@ -2725,9 +2702,6 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         if ([folder isEqualToString:@"saved_stories"] || [folderName isEqualToString:@"saved_stories"]) {
             feedDetailView.storiesCollection.isSavedView = YES;
             [feedDetailView.storiesCollection setActiveFolder:@"saved_stories"];
-        } else if ([folder isEqualToString:@"daily_briefing"] || [folderName isEqualToString:@"daily_briefing"]) {
-            feedDetailView.storiesCollection.isDailyBriefing = YES;
-            [feedDetailView.storiesCollection setActiveFolder:@"daily_briefing"];
         } else if ([folder isEqualToString:@"saved_searches"] || [folderName isEqualToString:@"saved_searches"]) {
             feedDetailView.storiesCollection.isSavedView = YES;
             [feedDetailView.storiesCollection setActiveFolder:@"saved_searches"];
@@ -3226,9 +3200,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 #pragma mark Siri Shortcuts
 
 - (void)handleUserActivity:(NSUserActivity *)activity {
-    if ([activity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
-        [self handleUniversalLink:activity.webpageURL];
-    } else if ([activity.activityType isEqualToString:@"tk.waters.newsnative.refresh"]) {
+    if ([activity.activityType isEqualToString:@"tk.waters.newsnative.refresh"]) {
         //        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
         //        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
         [self showFeedsListAnimated:NO];
@@ -3252,45 +3224,6 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
             [self loadFolder:folder feedID:feedID];
         }
     }
-}
-
-- (void)handleUniversalLink:(NSURL *)url {
-    if (!url) return;
-
-    NSString *path = url.path;
-    if ([path hasPrefix:@"/briefing"]) {
-        // Extract story hash from query parameter: /briefing?story=hash
-        NSURLComponents *components = [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:NO];
-        NSString *storyHash = nil;
-        for (NSURLQueryItem *item in components.queryItems) {
-            if ([item.name isEqualToString:@"story"]) {
-                storyHash = item.value;
-                break;
-            }
-        }
-        [self openDailyBriefingWithStoryHash:storyHash];
-    }
-}
-
-- (void)openDailyBriefingWithStoryHash:(NSString *)storyHash {
-    if (!self.activeUsername) {
-        self.pendingDailyBriefingStoryHash = [DailyBriefingStartupDecision pendingStoryHashForStoryHash:storyHash];
-        return;
-    }
-
-    self.pendingDailyBriefingStoryHash = nil;
-
-    [self popToRootWithCompletion:^{
-        if (storyHash.length > 0) {
-            self.inFindingStoryMode = YES;
-            self.findingStoryStartDate = [NSDate date];
-            self.findingStoryDictionary = nil;
-            self.tryFeedStoryId = storyHash;
-            self.tryFeedFeedId = nil;
-            self.tryFeedStoryTitle = nil;
-        }
-        [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:@"daily_briefing"];
-    }];
 }
 
 - (void)donateRefresh {
@@ -4669,9 +4602,6 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     } else if (storiesCollection.isRiverView &&
                [storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
         titleLabel.text = [@"     " stringByAppendingString:[NBLocalization text:@"Infrequent Site Stories"]];
-    } else if (storiesCollection.isRiverView &&
-               [storiesCollection.activeFolder isEqualToString:@"daily_briefing"]) {
-        titleLabel.text = [@"     " stringByAppendingString:[NBLocalization text:@"Daily Briefing"]];
     } else if (storiesCollection.isSavedView && storiesCollection.activeSavedStoryTag) {
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
             titleLabel.text = [NSString stringWithFormat:@"     %@", storiesCollection.activeSavedStoryTag];
@@ -4735,9 +4665,6 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         } else if (storiesCollection.isRiverView &&
                    [storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
             titleImage = [UIImage imageNamed:@"ak-icon-infrequent.png"];
-        } else if (storiesCollection.isRiverView &&
-                   [storiesCollection.activeFolder isEqualToString:@"daily_briefing"]) {
-            titleImage = [UIImage imageNamed:@"briefing"];
         } else if (storiesCollection.isSavedView && storiesCollection.activeSavedStoryTag) {
             titleImage = [UIImage imageNamed:@"tag.png"];
         } else if ([storiesCollection.activeFolder isEqualToString:@"widget_stories"]) {
@@ -4792,8 +4719,6 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         return @"All Site Stories";
     } else if ([folder isEqualToString:@"infrequent"]) {
         return @"Infrequent Site Stories";
-    } else if ([folder isEqualToString:@"daily_briefing"]) {
-        return @"Daily Briefing";
     } else if ([folder isEqualToString:@"widget_stories"]) {
         return @"Widget Site Stories";
     } else if ([folder isEqualToString:@"read_stories"]) {
@@ -4824,8 +4749,6 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         return [UIImage imageNamed:@"all-stories"];
     } else if ([folder isEqualToString:@"infrequent"]) {
         return [UIImage imageNamed:@"ak-icon-infrequent.png"];
-    } else if ([folder isEqualToString:@"daily_briefing"]) {
-        return [UIImage imageNamed:@"briefing"];
     } else if ([folder isEqualToString:@"widget_stories"]) {
         return [UIImage imageNamed:@"g_icn_folder_widget.png"];
     } else if ([folder isEqualToString:@"read_stories"]) {

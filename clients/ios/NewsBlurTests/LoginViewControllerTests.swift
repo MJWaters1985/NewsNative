@@ -613,13 +613,13 @@ final class Test_FeedDetailEmptyState: XCTestCase {
         }
     }
 
-    func test_expandedSelectionPromptDoesNotCoverSelectedFeedsFoldersOrDailyBriefing() {
+    func test_expandedSelectionPromptDoesNotCoverSelectedFeedsOrFolders() {
         let preferences = UserDefaults.standard
         let oldOpening = preferences.object(forKey: "app_opening")
         preferences.set("feeds", forKey: "app_opening")
         defer { preferences.set(oldOpening, forKey: "app_opening") }
 
-        for selection in ["feed", "everything", "daily_briefing"] {
+        for selection in ["feed", "everything"] {
             let app = DuoEmptyFeedApp()
             let collection = StoriesCollection()
             collection.appDelegate = app
@@ -628,7 +628,6 @@ final class Test_FeedDetailEmptyState: XCTestCase {
             } else {
                 collection.activeFolder = selection
                 collection.isRiverView = true
-                collection.isDailyBriefing = selection == "daily_briefing"
             }
             app.storiesCollection = collection
             let detail = DuoExpansionDetailController()
@@ -645,7 +644,7 @@ final class Test_FeedDetailEmptyState: XCTestCase {
             stories.viewWillAppear(false)
 
             XCTAssertTrue(stories.messageView.isHidden,
-                          "The empty-selection prompt must not cover the \(selection) loading or briefing presentation")
+                          "The empty-selection prompt must not cover the \(selection) loading presentation")
             XCTAssertTrue(stories.appDelegate === app)
         }
     }

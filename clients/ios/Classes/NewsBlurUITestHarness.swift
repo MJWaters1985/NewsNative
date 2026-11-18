@@ -660,7 +660,6 @@ private enum ReaderUITestFixtures {
         defaults.set("related", forKey: "cluster_mode")
 
         appDelegate.pendingFolder = nil
-        appDelegate.pendingDailyBriefingStoryHash = nil
         appDelegate.tryFeedFeedId = nil
         appDelegate.tryFeedStoryId = nil
         appDelegate.tryFeedStoryTitle = nil
@@ -2001,27 +2000,6 @@ private final class DiscoverSitesUITestURLProtocol: URLProtocol {
             return ["code": 1]
         case "/discover/google-news/feed":
             return ["feed_url": "https://ui-test.newsblur.example/google-news.xml"]
-        case "/webfeed/analyze":
-            if params["url"]?.contains("blocked") == true {
-                return ["code": -1, "message": "This page could not be accessed. Try a public page."]
-            }
-            if params["url"]?.contains("rss") == true {
-                return ["code": 2, "feed_address": "https://ui-test.newsblur.example/existing.xml"]
-            }
-            return ["code": 1]
-        case "/webfeed/status":
-            return ["status": "complete", "variants_data": ["page_title": "Independent Journal", "html_hash": "fixture-hash",
-                "variants": [
-                    ["label": "Latest articles", "story_container": "//article", "title": ".//h2", "link": ".//a/@href",
-                     "preview_stories": [["title": "How cities are changing", "link": "https://ui-test.newsblur.example/cities"]]],
-                    ["label": "Featured stories", "story_container": "//section/article", "title": ".//h3", "link": ".//a/@href",
-                     "preview_stories": [["title": "Ideas for a quieter internet", "link": "https://ui-test.newsblur.example/ideas"]]]
-                ]]]
-        case "/webfeed/subscribe":
-            guard params["variant_index"] == "1", params["story_container_xpath"] == "//section/article" else {
-                return ["code": -1, "message": "Choose Featured stories to verify the selected variant."]
-            }
-            return ["code": 1]
         default:
             throw URLError(.unsupportedURL)
         }

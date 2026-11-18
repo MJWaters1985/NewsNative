@@ -80,7 +80,7 @@ enum ClassifierFolderPath {
     /// The dictFolders keys in NewsBlurAppDelegate.m that hold sites but aren't folders a classifier can scope to.
     /// "everything" is the server's " " folder of sites outside any folder.
     private static let nonFolderKeys: Set<String> = [
-        "everything", "dashboard", "infrequent", "daily_briefing", "read_stories", "saved_searches", "saved_stories",
+        "everything", "dashboard", "infrequent", "read_stories", "saved_searches", "saved_stories",
         "river_global", "river_blurblogs", "widget_stories",
     ]
 

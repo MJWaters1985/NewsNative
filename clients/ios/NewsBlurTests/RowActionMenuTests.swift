@@ -623,7 +623,7 @@ import UIKit
         let folder = controller.feedActions(feedID: nil, folder: "Tech", source: UIView())
         XCTAssertEqual(folder.first?.first?.id, "mark-read")
         XCTAssertEqual(folder.last?.first?.id, "delete")
-        for name in ["everything", "infrequent", "dashboard", "discover_sites", "daily_briefing",
+        for name in ["everything", "infrequent", "dashboard", "discover_sites",
                      "try_feed", "saved_searches", "saved_stories", "read_stories", "widget_stories",
                      "river_global", "river_blurblogs", "trending:good_reads", ""] {
             XCTAssertFalse(RowActionMenus.isUserFolder(name), name)

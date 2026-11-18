@@ -174,7 +174,6 @@ import UIKit
         app.inFindingStoryMode = true
         app.tryFeedFeedId = "999"
         app.tryFeedStoryId = "999:old"
-        app.pendingDailyBriefingStoryHash = "briefing:old"
         app.detailViewController.storyTitlesInDashboard = true
         let coordinator = FeedSubscriptionCoordinator(app: app, defaults: nil)
         coordinator.feedsDidLoad()
@@ -191,7 +190,6 @@ import UIKit
         XCTAssertFalse(app.inFindingStoryMode)
         XCTAssertNil(app.tryFeedFeedId)
         XCTAssertNil(app.tryFeedStoryId)
-        XCTAssertNil(app.pendingDailyBriefingStoryHash)
         // AppDelegateHelperTests.swift delivers the real delayed feed-list callback after subscription navigation.
         app.backgroundLoadNotificationStory()
         XCTAssertEqual(app.storiesCollection.activeFeedIdStr, "123")
@@ -556,7 +554,6 @@ import UIKit
 
     override func loadFeedDetailView() {}
     override func cleanUpTryFeed() {}
-    override func openDailyBriefing(withStoryHash storyHash: String!) {}
     override func loadRiverFeedDetailView(_ feedDetailView: FeedDetailViewController!, withFolder folder: String!) {}
 
     func failSubscriptionWithExpiredSession() {

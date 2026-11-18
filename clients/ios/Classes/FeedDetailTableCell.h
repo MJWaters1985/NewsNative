@@ -41,7 +41,6 @@ typedef NS_ENUM(NSUInteger, FeedDetailTextSize)
     UIImage *siteFavicon;
     BOOL isRead;
     BOOL isRiverOrSocial;
-    BOOL isDailyBriefingSummary;
     BOOL hasAlpha;
 
     UIColor *feedColorBar;
@@ -76,7 +75,6 @@ typedef NS_ENUM(NSUInteger, FeedDetailTextSize)
 @property (readwrite) BOOL isShort;
 @property (readwrite) BOOL isRiverOrSocial;
 @property (readwrite) BOOL isClusterStory;
-@property (readwrite) BOOL isDailyBriefingSummary;
 @property (readwrite) BOOL hasAlpha;
 
 @property (nonatomic) FeedDetailTextSize textSize;

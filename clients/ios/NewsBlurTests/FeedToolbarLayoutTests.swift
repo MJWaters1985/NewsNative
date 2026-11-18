@@ -2180,11 +2180,10 @@ import WebKit
         let saved = defaults.object(forKey: "story_toolbar_position")
         defaults.set("bottom", forKey: "story_toolbar_position")
         defer { defaults.set(saved, forKey: "story_toolbar_position") }
-        for showsDiscovery in [false, true] {
+        do {
             let parent = UIView(frame: CGRect(x: 0, y: 0, width: 667, height: 375))
             let header = StoryTitlesHeaderBar()
             header.setup(in: parent)
-            header.discoverPill.isHidden = !showsDiscovery
             header.updateOptionsPill(order: "newest", readFilter: "unread")
             header.addSearchField(UITextField())
             header.setSearchActive(true)
@@ -2245,15 +2244,15 @@ import WebKit
             let header = StoryTitlesHeaderBar()
             header.setup(in: parent)
             header.updateOptionsPill(order: "newest", readFilter: filter)
-            for width: CGFloat in [600, 330, 284, 600] {
+            for width: CGFloat in [600, 330, 230, 600] {
                 parent.frame.size.width = width
                 parent.setNeedsLayout()
                 parent.layoutIfNeeded()
                 header.relayoutPills()
                 parent.layoutIfNeeded()
                 let title = header.optionsPill.configuration?.title ?? ""
-                if width == 284 {
-                    XCTAssertTrue(title.isEmpty, "A narrow four-control toolbar must use the dropdown icon instead of vertical text")
+                if width == 230 {
+                    XCTAssertTrue(title.isEmpty, "A narrow toolbar must use the dropdown icon instead of vertical text")
                     XCTAssertNotNil(header.optionsPill.configuration?.image)
                 }
                 if width == 600 {
@@ -2463,7 +2462,6 @@ import WebKit
             XCTAssertGreaterThanOrEqual(markFrame.minX, plusFrame.maxX)
             XCTAssertLessThanOrEqual(markFrame.maxX, parent.bounds.maxX - 16)
             XCTAssertGreaterThanOrEqual(header.searchPill.bounds.width, 44)
-            XCTAssertGreaterThanOrEqual(header.discoverPill.bounds.width, 44)
         }
     }
 
@@ -2586,7 +2584,6 @@ import WebKit
                 let header = StoryTitlesHeaderBar()
                 header.setup(in: parent)
                 header.updateOptionsPill(order: "newest", readFilter: "unread")
-                header.updateDiscoverVisibility(isRiver: true, isEverything: index == 1, isSocial: false, isSaved: false, isRead: false, isWidget: false, isInfrequent: false)
                 parent.layoutIfNeeded()
                 for button in [header.optionsPill, header.searchPill, header.markReadExpandButton, header.markReadPill] {
                     let center = button.convert(CGPoint(x: button.bounds.midX, y: button.bounds.midY), to: parent)
@@ -2596,9 +2593,6 @@ import WebKit
                 }
                 XCTAssertGreaterThanOrEqual(header.searchPill.bounds.width, 44,
                                             "The icon-only Search action must retain a full touch target")
-                if !header.discoverPill.isHidden {
-                    XCTAssertGreaterThanOrEqual(header.discoverPill.bounds.width, 44)
-                }
                 headers.append(header)
             }
             func capture(_ state: String) -> Data? {
@@ -2629,7 +2623,7 @@ import WebKit
         let header = StoryTitlesHeaderBar()
         header.setup(in: parent)
         parent.layoutIfNeeded()
-        for button in [header.discoverPill, header.optionsPill, header.searchPill,
+        for button in [header.optionsPill, header.searchPill,
                        header.markReadExpandButton, header.markReadPill] {
             XCTAssertTrue(button.isPointerInteractionEnabled,
                           "Every enabled story toolbar action should provide native pointer feedback")
@@ -2686,7 +2680,6 @@ import WebKit
         withExtendedLifetime(observations) {
             for _ in 0..<3 {
                 // FeedToolbarLayoutTests.swift mirrors the header updates made by each received story page.
-                header.setDailyBriefingMode(false)
                 header.updateOptionsPill(order: "newest", readFilter: "unread")
                 header.updateTheme()
             }

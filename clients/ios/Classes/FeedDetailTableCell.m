@@ -67,7 +67,6 @@ static UIFont *indicatorFont = nil;
 @synthesize textSize;
 @synthesize isRiverOrSocial;
 @synthesize isClusterStory;
-@synthesize isDailyBriefingSummary;
 @synthesize feedColorBar;
 @synthesize feedColorBarTopBorder;
 @synthesize hasAlpha;
@@ -634,16 +633,9 @@ static UIFont *indicatorFont = nil;
     rect.size.width -= 18; // Scrollbar padding
     CGRect dateRect = rect;
     
-    UIColor *backgroundColor;
-    if (cell.isDailyBriefingSummary) {
-        backgroundColor = isHighlighted ?
-            UIColorFromLightSepiaMediumDarkRGB(0xDCEAF8, 0xE9DCCB, 0x38414A, 0x30363E) :
-            UIColorFromLightSepiaMediumDarkRGB(0xEAF3FC, 0xF1E6D7, 0x30363E, 0x232830);
-    } else {
-        backgroundColor = isHighlighted ?
-            [ThemeManager.shared resolvedColor:UIColor.systemGray5Color] :
-            ThemeManager.shared.storyListBackgroundColor;
-    }
+    UIColor *backgroundColor = isHighlighted ?
+        [ThemeManager.shared resolvedColor:UIColor.systemGray5Color] :
+        ThemeManager.shared.storyListBackgroundColor;
     [backgroundColor set];
     
     CGContextFillRect(context, r);

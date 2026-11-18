@@ -146,11 +146,6 @@ import Combine
         if let viewModel { viewModel.onTabSelected(viewModel.activeTab) }
     }
 
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        viewModel?.stopPolling()
-    }
-
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         appDelegate?.detailViewController.discoverSitesDidAppear(self)

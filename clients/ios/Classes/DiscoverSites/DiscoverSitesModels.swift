@@ -15,7 +15,6 @@ enum DiscoverSitesFeedViewMode: String {
 
 enum DiscoverTab: String, CaseIterable, Identifiable {
     case search
-    case webFeed
     case popular
     case youtube
     case reddit
@@ -25,16 +24,9 @@ enum DiscoverTab: String, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
-    /// DiscoverSitesModels.swift: the AI-built Web Feed tab appears only when NewsNativeFeatures.swift allows AI features.
-    static var allCases: [DiscoverTab] {
-        let tabs: [DiscoverTab] = [.search, .webFeed, .popular, .youtube, .reddit, .newsletters, .podcasts, .googleNews]
-        return NewsNativeFeatures.aiFeatures ? tabs : tabs.filter { $0 != .webFeed }
-    }
-
     var label: String {
         switch self {
         case .search: return "Search"
-        case .webFeed: return "Web Feed"
         case .popular: return "Popular"
         case .youtube: return "YouTube"
         case .reddit: return "Reddit"
@@ -47,7 +39,6 @@ enum DiscoverTab: String, CaseIterable, Identifiable {
     var sfSymbol: String {
         switch self {
         case .search: return "magnifyingglass"
-        case .webFeed: return "globe"
         case .popular: return "flame.fill"
         case .youtube: return "play.rectangle.fill"
         case .reddit: return "bubble.left.and.bubble.right.fill"
@@ -235,48 +226,6 @@ struct GoogleNewsCategory: Identifiable {
     let subcategories: [String]
 }
 
-struct WebFeedVariant: Identifiable {
-    let id: Int
-    let label: String
-    let storyContainerXpath: String
-    let titleXpath: String
-    let linkXpath: String
-    let contentXpath: String
-    let imageXpath: String
-    let authorXpath: String
-    let dateXpath: String
-    let stories: [WebFeedPreviewStory]
-
-    init(index: Int, dict: [String: Any]) {
-        self.id = index
-        self.label = dict["label"] as? String ??
-            String(format: NBLocalization.text("Variant %@"), NBLocalization.formattedCount(index + 1))
-        self.storyContainerXpath = dict["story_container"] as? String ?? dict["story_container_xpath"] as? String ?? ""
-        self.titleXpath = dict["title"] as? String ?? dict["title_xpath"] as? String ?? ""
-        self.linkXpath = dict["link"] as? String ?? dict["link_xpath"] as? String ?? ""
-        self.contentXpath = dict["content"] as? String ?? dict["content_xpath"] as? String ?? ""
-        self.imageXpath = dict["image"] as? String ?? dict["image_xpath"] as? String ?? ""
-        self.authorXpath = dict["author"] as? String ?? dict["author_xpath"] as? String ?? ""
-        self.dateXpath = dict["date"] as? String ?? dict["date_xpath"] as? String ?? ""
-        let storiesArray = dict["preview_stories"] as? [[String: Any]] ?? dict["stories"] as? [[String: Any]] ?? []
-        self.stories = storiesArray.enumerated().map { WebFeedPreviewStory(index: $0, dict: $1) }
-    }
-}
-
-struct WebFeedPreviewStory: Identifiable {
-    let id: Int
-    let title: String
-    let link: String
-    let imageUrl: String?
-
-    init(index: Int, dict: [String: Any]) {
-        self.id = index
-        self.title = dict["title"] as? String ?? ""
-        self.link = dict["link"] as? String ?? ""
-        self.imageUrl = dict["image"] as? String
-    }
-}
-
 struct SearchTabState {
     var query: String = ""
     var results: [AutocompleteResult] = []
@@ -286,24 +235,6 @@ struct SearchTabState {
     var isTrendingLoaded: Bool = false
     var errorMessage: String?
     var trendingErrorMessage: String?
-}
-
-struct WebFeedTabState {
-    var url: String = ""
-    var analyzedURL: String = ""
-    var detectedFeedURL: String?
-    var isAnalyzing: Bool = false
-    var progressMessage: String = ""
-    var errorMessage: String?
-    var requestId: String?
-    var variants: [WebFeedVariant] = []
-    var selectedVariantIndex: Int?
-    var htmlHash: String = ""
-    var faviconUrl: String = ""
-    var stalenessDays: Double = 30
-    var markUnreadOnChange: Bool = false
-    var feedTitle: String = ""
-    var isSubscribing: Bool = false
 }
 
 struct CategoryTabState {
