@@ -240,7 +240,7 @@ static NSString *const kWaveShaderSource =
 
     // === "NewsBlur" in GothamNarrow ===
     UILabel *welcomeLabel = [[UILabel alloc] init];
-    welcomeLabel.text = @"NewsBlur";
+    welcomeLabel.text = @"NewsNative";
     welcomeLabel.font = [UIFont fontWithName:@"GothamNarrow-Medium" size:38] ?: [UIFont systemFontOfSize:38 weight:UIFontWeightBold];
     welcomeLabel.textColor = [UIColor whiteColor];
     welcomeLabel.textAlignment = NSTextAlignmentCenter;

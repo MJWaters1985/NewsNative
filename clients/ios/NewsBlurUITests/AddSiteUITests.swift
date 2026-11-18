@@ -72,7 +72,7 @@ final class Test_SafariFeedSubscription: XCTestCase {
         actionScreenshot.name = "Safari-Subscribe-in-NewsBlur-action"
         actionScreenshot.lifetime = .keepAlways
         add(actionScreenshot)
-        let subscription = XCUIApplication(bundleIdentifier: "com.newsblur.NewsBlur.Subscribe-Extension")
+        let subscription = XCUIApplication(bundleIdentifier: "tk.waters.newsnative.subscribe")
         subscribe.tap()
         XCTAssertTrue(subscription.segmentedControls.buttons["Save This Story"].waitForExistence(timeout: 15))
         XCTAssertTrue(subscription.segmentedControls.buttons["Share This Story"].exists)
@@ -217,7 +217,7 @@ final class DiscoverSitesUITests: XCTestCase {
         throw XCTSkip("Requires the signed Alpha app on ClayPad")
 #else
         try requireLiveClayPad()
-        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app = XCUIApplication(bundleIdentifier: "tk.waters.newsnative.alpha")
         app.launch()
         capture("claypad-discovery-before-preview")
         openLiveDiscovery()
@@ -273,7 +273,7 @@ final class DiscoverSitesUITests: XCTestCase {
         throw XCTSkip("Requires the signed Alpha app on ClayPad")
 #else
         try requireLiveClayPad()
-        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app = XCUIApplication(bundleIdentifier: "tk.waters.newsnative.alpha")
         app.launch()
         openLiveDiscovery()
         app.buttons["discover-tab-search"].tap()
@@ -296,7 +296,7 @@ final class DiscoverSitesUITests: XCTestCase {
         throw XCTSkip("Requires the signed Alpha app on ClayPad")
 #else
         try requireLiveClayPad()
-        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app = XCUIApplication(bundleIdentifier: "tk.waters.newsnative.alpha")
         app.launch()
         let field = app.textFields["add-site-url-field"]
         if !field.exists { app.buttons["feed-list-add"].tap() }
@@ -322,7 +322,7 @@ final class DiscoverSitesUITests: XCTestCase {
         throw XCTSkip("Requires the signed Alpha app on ClayPad")
 #else
         try requireLiveClayPad()
-        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app = XCUIApplication(bundleIdentifier: "tk.waters.newsnative.alpha")
         app.activate()
         openLiveDiscovery()
         app.buttons["discover-tab-search"].tap()
@@ -359,7 +359,7 @@ final class DiscoverSitesUITests: XCTestCase {
         throw XCTSkip("Requires the signed Alpha app on ClayPad")
 #else
         try requireLiveClayPad()
-        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app = XCUIApplication(bundleIdentifier: "tk.waters.newsnative.alpha")
         app.launch()
         openLiveDiscovery()
         let reddit = app.buttons["discover-tab-reddit"]
@@ -415,7 +415,7 @@ final class DiscoverSitesUITests: XCTestCase {
         throw XCTSkip("Requires the signed Alpha app on ClayPad")
 #else
         try requireLiveClayPad()
-        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app = XCUIApplication(bundleIdentifier: "tk.waters.newsnative.alpha")
         app.launch()
         openLiveDiscovery()
         app.buttons["discover-tab-popular"].tap()
@@ -452,7 +452,7 @@ final class DiscoverSitesUITests: XCTestCase {
         throw XCTSkip("Requires the signed Alpha app on ClayPad")
 #else
         try requireLiveClayPad()
-        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app = XCUIApplication(bundleIdentifier: "tk.waters.newsnative.alpha")
         let originalOrientation = XCUIDevice.shared.orientation
         XCUIDevice.shared.orientation = .landscapeRight
         defer {
@@ -929,7 +929,7 @@ final class DiscoverSitesUITests: XCTestCase {
         throw XCTSkip("Requires the signed Alpha app on ClayPad")
 #else
         try requireLiveClayPad()
-        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app = XCUIApplication(bundleIdentifier: "tk.waters.newsnative.alpha")
         app.launch()
         openLiveDiscovery()
         app.buttons["discover-tab-popular"].tap()
@@ -969,7 +969,7 @@ final class DiscoverSitesUITests: XCTestCase {
         throw XCTSkip("Requires the signed Alpha app on ClayPad")
 #else
         try requireLiveClayPad()
-        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app = XCUIApplication(bundleIdentifier: "tk.waters.newsnative.alpha")
         app.launch()
         openLiveDiscovery()
         app.buttons["discover-tab-popular"].tap()

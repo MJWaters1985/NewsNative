@@ -390,7 +390,7 @@
         } else if ([activeFolder isEqualToString:@"everything"]) {
             return @"All Site Stories";
         } else if ([activeFolder isEqualToString:@"dashboard"]) {
-            return @"NewsBlur Dashboard";
+            return @"NewsNative Dashboard";
         } else if ([activeFolder isEqualToString:@"infrequent"]) {
             return @"Infrequent Site Stories";
         } else if ([activeFolder isEqualToString:@"trending:well_read"]) {

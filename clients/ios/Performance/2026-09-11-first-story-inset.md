@@ -53,6 +53,6 @@ After verification, the temporary folder search was cleared and its Unread filte
 
 The signed Release build succeeds (`/tmp/newsblur-story-offset-device-build-56.log`), and `codesign --verify --deep --strict` passes. The executable SHA-256 is `f79335861fc37a818b7874d267f2764871d5f0ec948991081e1510619767abe6`.
 
-The same `com.newsblur.NB-Alpha` build was installed wirelessly on ClayPad Air (`C78768E8-4867-5C24-8298-FF27334049EE`) and ClayPhone SE 3 (`E62ABF72-70BD-5647-BC74-689A513A4EBE`). Install results both report success in `/tmp/newsblur-claypad-story-offset-install-56.json` and `/tmp/newsblur-clayphone-story-offset-install-56.json`.
+The same `tk.waters.newsnative.alpha` build was installed wirelessly on ClayPad Air (`C78768E8-4867-5C24-8298-FF27334049EE`) and ClayPhone SE 3 (`E62ABF72-70BD-5647-BC74-689A513A4EBE`). Install results both report success in `/tmp/newsblur-claypad-story-offset-install-56.json` and `/tmp/newsblur-clayphone-story-offset-install-56.json`.
 
 ClayPad Air launched in the foreground as process 1702, with performance probes disabled (`/tmp/newsblur-claypad-story-offset-launch-56.json`). The first ClayPhone launch was denied because the phone was locked (`/tmp/newsblur-clayphone-story-offset-launch-56.log`). After the user unlocked it, the updated app launched successfully in the foreground as process 43486, also with probes disabled (`/tmp/newsblur-clayphone-story-offset-launch-unlocked-56.json`). Physical-device interaction is not part of the screenshot comparison above.

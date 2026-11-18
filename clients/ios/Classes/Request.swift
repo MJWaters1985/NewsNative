@@ -59,7 +59,7 @@ class Request: NSObject {
         request.setValue("\(contentType.rawValue); charset=utf-8", forHTTPHeaderField: "Accept")
         
         let config = URLSessionConfiguration.default
-        config.sharedContainerIdentifier = "group.com.newsblur.NewsBlur-Group"
+        config.sharedContainerIdentifier = "group.tk.waters.newsnative"
         
         let session = URLSession(configuration: config, delegate: self, delegateQueue: nil)
         let task = session.dataTask(with: request)

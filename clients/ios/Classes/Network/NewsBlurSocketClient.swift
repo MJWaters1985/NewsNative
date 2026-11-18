@@ -21,12 +21,12 @@ import Foundation
     // MARK: - Properties
 
     /// Serial queue for all mutable state access
-    private let queue = DispatchQueue(label: "com.newsblur.socketclient", qos: .utility)
+    private let queue = DispatchQueue(label: "tk.waters.newsnative.socketclient", qos: .utility)
 
     /// Dedicated delegate queue for URLSession (off main thread)
     private let delegateQueue: OperationQueue = {
         let q = OperationQueue()
-        q.name = "com.newsblur.socketclient.delegate"
+        q.name = "tk.waters.newsnative.socketclient.delegate"
         q.maxConcurrentOperationCount = 1
         return q
     }()

@@ -48,7 +48,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
     [super viewDidLoad];
 
     if (self.operation == FeedChooserOperationWidgetSites) {
-        self.groupDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.newsblur.NewsBlur-Group"];
+        self.groupDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.tk.waters.newsnative"];
     }
     
     self.doneItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done)];

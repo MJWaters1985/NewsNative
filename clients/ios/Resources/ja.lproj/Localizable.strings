@@ -97,7 +97,7 @@
 "AI finds the stories" = "AIが記事を見つける";
 "ALL" = "すべて";
 "ALL NOTIFICATIONS" = "すべての通知";
-"About NewsBlur" = "NewsBlurについて";
+"About NewsNative" = "NewsNativeについて";
 "Accent [voice filter]" = "アクセント";
 "Account" = "アカウント";
 "Add" = "追加";
@@ -449,8 +449,8 @@
 "Get a summary of your top stories, delivered on your schedule." = "注目記事の概要を、希望するスケジュールで受け取れます。";
 "Global Shared Stories" = "全体で共有された記事";
 "Go to feed" = "フィードへ移動";
-"Go to the %@ feed in NewsBlur." = "NewsBlurで%@フィードを開く。";
-"Go to the %@ folder in NewsBlur." = "NewsBlurの%@フォルダーに移動します。";
+"Go to the %@ feed in NewsNative." = "NewsNativeで%@フィードを開く。";
+"Go to the %@ folder in NewsNative." = "NewsNativeの%@フォルダーに移動します。";
 "Good Reads" = "おすすめ記事";
 "Gray" = "グレー";
 "Grid" = "グリッド";
@@ -674,10 +674,10 @@
 "New posts from feeds you recently read" = "最近読んだフィードの新着記事";
 "New to NewsBlur? Create an account" = "NewsBlurを初めてご利用ですか？アカウントを作成";
 "Newest first" = "新しい順";
-"NewsBlur Dashboard" = "NewsBlurダッシュボード";
+"NewsNative Dashboard" = "NewsNativeダッシュボード";
 "NewsBlur Premium" = "NewsBlur Premium";
 "NewsBlur checks for changes and delivers new stories to your feed." = "NewsBlurが変更を確認し、新しい記事をフィードに配信します。";
-"NewsBlur detected %@ from your device." = "NewsBlurはデバイスから%@を検出しました。";
+"NewsNative detected %@ from your device." = "NewsNativeはデバイスから%@を検出しました。";
 "NewsBlur password" = "NewsBlurのパスワード";
 "Next" = "次へ";
 "Next Folder" = "次のフォルダー";
@@ -775,8 +775,8 @@
 "Pause Listening" = "読み上げを一時停止";
 "Percentage of the visible story scrolled by Space or Shift-Space" = "SpaceキーまたはShift-Spaceキーでスクロールする、表示中の記事に対する割合";
 "Permanently delete account" = "アカウントを完全に削除";
-"Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "NewsBlurで使用する言語を選択してください。この設定はいつでも「設定」で変更できます。";
-"Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "NewsBlurで使用する言語を選択してください。この設定はいつでもNewsBlurメニューで変更できます。";
+"Pick the language you'd like NewsNative to use. You can change this anytime in Preferences." = "NewsNativeで使用する言語を選択してください。この設定はいつでも「設定」で変更できます。";
+"Pick the language you'd like NewsNative to use. You can change this anytime in the NewsNative menu." = "NewsNativeで使用する言語を選択してください。この設定はいつでもNewsNativeメニューで変更できます。";
 "Pick which model writes your Daily Briefing" = "デイリーブリーフィングの生成に使用するモデルを選択";
 "Pitch stays natural at every speed." = "どの速度でも自然な高さの声で再生されます。";
 "Place the story list controls above or below the stories" = "記事リストの操作ボタンを記事の上または下に配置";
@@ -850,7 +850,7 @@
 "Reduce motion" = "動きを減らす";
 "Refine with a hint" = "ヒントを加えて絞り込む";
 "Refine with this title" = "このタイトルで絞り込む";
-"Refresh NewsBlur" = "NewsBlurを更新";
+"Refresh NewsNative" = "NewsNativeを更新";
 "Refresh site" = "サイトを更新";
 "Regex" = "正規表現";
 "Regex Patterns" = "正規表現パターン";
@@ -1153,7 +1153,7 @@
 "Top" = "上";
 "Top Level" = "最上位";
 "Top stories" = "トップ記事";
-"Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "NewsBlurのウィジェットを長押しするか、Macでは右クリックして「ウィジェットを編集」を選択してください。各ウィジェットのフォルダーまたはサイトを選択してください。";
+"Touch and hold a NewsNative widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "NewsNativeのウィジェットを長押しするか、Macでは右クリックして「ウィジェットを編集」を選択してください。各ウィジェットのフォルダーまたはサイトを選択してください。";
 "Train" = "学習";
 "Train This Story" = "この記事を学習させる";
 "Train This Story…" = "この記事を学習…";

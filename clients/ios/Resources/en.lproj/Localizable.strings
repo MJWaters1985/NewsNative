@@ -97,7 +97,7 @@
 "AI finds the stories" = "AI finds the stories";
 "ALL" = "ALL";
 "ALL NOTIFICATIONS" = "ALL NOTIFICATIONS";
-"About NewsBlur" = "About NewsBlur";
+"About NewsNative" = "About NewsNative";
 "Accent [voice filter]" = "Accent";
 "Account" = "Account";
 "Add" = "Add";
@@ -449,8 +449,8 @@
 "Get a summary of your top stories, delivered on your schedule." = "Get a summary of your top stories, delivered on your schedule.";
 "Global Shared Stories" = "Global Shared Stories";
 "Go to feed" = "Go to feed";
-"Go to the %@ feed in NewsBlur." = "Go to the %@ feed in NewsBlur.";
-"Go to the %@ folder in NewsBlur." = "Go to the %@ folder in NewsBlur.";
+"Go to the %@ feed in NewsNative." = "Go to the %@ feed in NewsNative.";
+"Go to the %@ folder in NewsNative." = "Go to the %@ folder in NewsNative.";
 "Good Reads" = "Good Reads";
 "Gray" = "Gray";
 "Grid" = "Grid";
@@ -674,10 +674,10 @@
 "New posts from feeds you recently read" = "New posts from feeds you recently read";
 "New to NewsBlur? Create an account" = "New to NewsBlur? Create an account";
 "Newest first" = "Newest first";
-"NewsBlur Dashboard" = "NewsBlur Dashboard";
+"NewsNative Dashboard" = "NewsNative Dashboard";
 "NewsBlur Premium" = "NewsBlur Premium";
 "NewsBlur checks for changes and delivers new stories to your feed." = "NewsBlur checks for changes and delivers new stories to your feed.";
-"NewsBlur detected %@ from your device." = "NewsBlur detected %@ from your device.";
+"NewsNative detected %@ from your device." = "NewsNative detected %@ from your device.";
 "NewsBlur password" = "NewsBlur password";
 "Next" = "Next";
 "Next Folder" = "Next Folder";
@@ -775,8 +775,8 @@
 "Pause Listening" = "Pause Listening";
 "Percentage of the visible story scrolled by Space or Shift-Space" = "Percentage of the visible story scrolled by Space or Shift-Space";
 "Permanently delete account" = "Permanently delete account";
-"Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences.";
-"Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu.";
+"Pick the language you'd like NewsNative to use. You can change this anytime in Preferences." = "Pick the language you'd like NewsNative to use. You can change this anytime in Preferences.";
+"Pick the language you'd like NewsNative to use. You can change this anytime in the NewsNative menu." = "Pick the language you'd like NewsNative to use. You can change this anytime in the NewsNative menu.";
 "Pick which model writes your Daily Briefing" = "Pick which model writes your Daily Briefing";
 "Pitch stays natural at every speed." = "Pitch stays natural at every speed.";
 "Place the story list controls above or below the stories" = "Place the story list controls above or below the stories";
@@ -850,7 +850,7 @@
 "Reduce motion" = "Reduce motion";
 "Refine with a hint" = "Refine with a hint";
 "Refine with this title" = "Refine with this title";
-"Refresh NewsBlur" = "Refresh NewsBlur";
+"Refresh NewsNative" = "Refresh NewsNative";
 "Refresh site" = "Refresh site";
 "Regex" = "Regex";
 "Regex Patterns" = "Regex Patterns";
@@ -1153,7 +1153,7 @@
 "Top" = "Top";
 "Top Level" = "Top Level";
 "Top stories" = "Top stories";
-"Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget.";
+"Touch and hold a NewsNative widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "Touch and hold a NewsNative widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget.";
 "Train" = "Train";
 "Train This Story" = "Train This Story";
 "Train This Story…" = "Train This Story…";

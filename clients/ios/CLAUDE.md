@@ -132,10 +132,10 @@ Story content is rendered in WKWebView with:
 
 | Scheme | Bundle ID | Purpose |
 |--------|-----------|---------|
-| NewsBlur | com.newsblur.NewsBlur | Production release |
-| NewsBlur Alpha | com.newsblur.NB-Alpha | Development/testing |
-| Widget Extension | com.newsblur.NewsBlur.widget | Home screen widget |
-| Share Extension | com.newsblur.NewsBlur.Share-Extension | Share sheet |
+| NewsBlur | tk.waters.newsnative | Production release |
+| NewsBlur Alpha | tk.waters.newsnative.alpha | Development/testing |
+| Widget Extension | tk.waters.newsnative.widget | Home screen widget |
+| Share Extension | tk.waters.newsnative.share | Share sheet |
 
 ## Code Style
 

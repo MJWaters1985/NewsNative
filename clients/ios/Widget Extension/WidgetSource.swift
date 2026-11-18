@@ -3,7 +3,7 @@ import Foundation
 import CryptoKit
 
 struct WidgetSourceCatalog {
-    static let group = "group.com.newsblur.NewsBlur-Group"
+    static let group = "group.tk.waters.newsnative"
     static let key = "widget:source_catalog"
     static let faviconKey = "widget:source_favicons"
     let feeds: [String: [String: Any]]

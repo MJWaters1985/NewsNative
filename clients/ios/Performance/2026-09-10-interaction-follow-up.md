@@ -40,7 +40,7 @@ The simulator is left signed in as `samuel` at the feed list, with Unread select
 
 ## Physical device installation
 
-The signed Release build of `00ed50ba6` passes signature verification. Its executable SHA-256 is `7db252d8743c968047df7eb6bd50afafd8ae68dccc582093e4a5245de73232d6`. NB Alpha (`com.newsblur.NB-Alpha`, version 14.7.2, build 336) installs successfully over Wi-Fi on both ClayPhone SE 3 and ClayPad Air. The standard NewsBlur app is not replaced.
+The signed Release build of `00ed50ba6` passes signature verification. Its executable SHA-256 is `7db252d8743c968047df7eb6bd50afafd8ae68dccc582093e4a5245de73232d6`. NB Alpha (`tk.waters.newsnative.alpha`, version 14.7.2, build 336) installs successfully over Wi-Fi on both ClayPhone SE 3 and ClayPad Air. The standard NewsBlur app is not replaced.
 
 ClayPad Air successfully launches the updated app with performance probes disabled. ClayPhone's first launch request is denied because the device is locked, after its installation succeeds. Local install/launch results are `/tmp/newsblur-clayphone-interaction-{install,launch}-30.json` and `/tmp/newsblur-claypad-interaction-{install,launch}-30.json`; the signed build log is `/tmp/newsblur-interaction-device-build-30.log`.
 

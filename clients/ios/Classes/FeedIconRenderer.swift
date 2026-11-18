@@ -77,7 +77,7 @@ import UIKit
     private var memoryObserver: NSObjectProtocol?
 
     override convenience init() {
-        self.init(preparationQueue: DispatchQueue(label: "com.newsblur.feed-icon-preparation", qos: .utility))
+        self.init(preparationQueue: DispatchQueue(label: "tk.waters.newsnative.feed-icon-preparation", qos: .utility))
     }
 
     @nonobjc init(preparationQueue: DispatchQueue, preparationByteLimit: Int = 8 * 1024 * 1024) {

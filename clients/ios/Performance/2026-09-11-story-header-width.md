@@ -32,7 +32,7 @@ The ordinary signed-in simulator app also opens Related sites from the icon (`he
 
 The Release device build succeeds (`/tmp/newsblur-header-width-device-build-51.log`), and `codesign --verify --deep --strict` passes. The NB Alpha executable SHA-256 is `61702cac70ba1a8006204d46da0a771465d0b8fb6b17d0dc612af2d787875eb9`.
 
-The same `com.newsblur.NB-Alpha` build was installed wirelessly and successfully launched in the foreground on both devices:
+The same `tk.waters.newsnative.alpha` build was installed wirelessly and successfully launched in the foreground on both devices:
 
 | Device | CoreDevice identifier | Launched process |
 | --- | --- | --- |

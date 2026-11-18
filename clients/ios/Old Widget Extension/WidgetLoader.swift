@@ -27,7 +27,7 @@ class Loader: NSObject, URLSessionDataDelegate {
 //        request.addValue(accept, forHTTPHeaderField: "Accept")
         
         let config = URLSessionConfiguration.background(withIdentifier: UUID().uuidString)
-        config.sharedContainerIdentifier = "group.com.newsblur.NewsBlur-Group"
+        config.sharedContainerIdentifier = "group.tk.waters.newsnative"
         
         let session = URLSession(configuration: config, delegate: self, delegateQueue: nil)
         let task = session.dataTask(with: request)

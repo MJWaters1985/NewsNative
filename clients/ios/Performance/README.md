@@ -22,7 +22,7 @@ xcodebuild -project NewsBlur.xcodeproj -scheme 'NewsBlur Alpha' \
 Install and launch using the helper, preserving app data and the account session:
 
 ```sh
-export IOS_BUNDLE_ID=com.newsblur.NB-Alpha
+export IOS_BUNDLE_ID=tk.waters.newsnative.alpha
 export IOS_APP_PATH='/tmp/newsblur-scroll-derived/Build/Products/Release-iphonesimulator/NB Alpha.app'
 export SIMCTL_CHILD_NB_SCROLL_PERFORMANCE=1
 python3 clients/ios/run_ios.py --udid "$IOS_SIM_UDID" terminate install launch

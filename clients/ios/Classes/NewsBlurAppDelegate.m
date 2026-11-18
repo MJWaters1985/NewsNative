@@ -534,13 +534,13 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)registerBackgroundTask {
-    [BGTaskScheduler.sharedScheduler registerForTaskWithIdentifier:@"com.newsblur.NewsBlur.refresh" usingQueue:dispatch_get_main_queue() launchHandler:^(__kindof BGTask * _Nonnull task) {
+    [BGTaskScheduler.sharedScheduler registerForTaskWithIdentifier:@"tk.waters.newsnative.refresh" usingQueue:dispatch_get_main_queue() launchHandler:^(__kindof BGTask * _Nonnull task) {
         [self handleAppRefresh:task];
     }];
 }
 
 - (void)scheduleAppRefresh {
-    BGAppRefreshTaskRequest *request = [[BGAppRefreshTaskRequest alloc] initWithIdentifier:@"com.newsblur.NewsBlur.refresh"];
+    BGAppRefreshTaskRequest *request = [[BGAppRefreshTaskRequest alloc] initWithIdentifier:@"tk.waters.newsnative.refresh"];
     NSError *error = nil;
     
     request.earliestBeginDate = [NSDate dateWithTimeIntervalSinceNow:15 * 60];
@@ -759,7 +759,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 
 - (BOOL)openURL:(NSURL *)url {
     if ([self handleFeedSubscriptionURL:url]) return YES;
-    if (self.activeUsername && [url.scheme isEqualToString:@"newsblurwidget"]) {
+    if (self.activeUsername && [url.scheme isEqualToString:@"newsnativewidget"]) {
         NSMutableDictionary *query = [NSMutableDictionary dictionary];
         
         for (NSURLQueryItem *item in [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:NO].queryItems) {
@@ -1169,13 +1169,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
                 if (!appDelegate) {
                     return;
                 }
-                NSString *previousURL = appDelegate.url;
-                appDelegate.cachedURL = nil;
-                if (![appDelegate.url isEqualToString:previousURL]) {
-                    // NewsBlurAppDelegate.m cancels old-server requests before login accepts credentials again.
-                    [ListenStoryBridge stopForAccountChange];
-                    [appDelegate clearNetworkManager];
-                }
+                [appDelegate serverSettingDidChange];
             }];
         }
 
@@ -1248,7 +1242,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 
 - (void)showWidgetSites {
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:[NBLocalization text:@"Widgets"]
-        message:[NBLocalization text:@"Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget."]
+        message:[NBLocalization text:@"Touch and hold a NewsNative widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget."]
         preferredStyle:UIAlertControllerStyleAlert];
     [alert addAction:[UIAlertAction actionWithTitle:[NBLocalization text:@"OK"] style:UIAlertActionStyleDefault handler:nil]];
     [self.splitViewController presentViewController:alert animated:YES completion:nil];
@@ -1326,7 +1320,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     NSMutableArray *appActivities = [[NSMutableArray alloc] init];
     if (url) [appActivities addObject:[[TUSafariActivity alloc] init]];
     if (url) [appActivities addObject:[[ARChromeActivity alloc]
-                                       initWithCallbackURL:[NSURL URLWithString:@"newsblur://"]]];
+                                       initWithCallbackURL:[NSURL URLWithString:@"newsnative://"]]];
     if (url) [appActivities addObject:[[NBCopyLinkActivity alloc] init]];
     
     UIActivityViewController *activityViewController = [[UIActivityViewController alloc]
@@ -2020,6 +2014,35 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     [self clearNetworkManager];
 }
 
++ (NSString *)defaultServerURL {
+    return DEFAULT_NEWSBLUR_URL;
+}
+
++ (NSString *)normalizedServerURL:(NSString *)serverString {
+    return NBNormalizedServerURLString(serverString);
+}
+
+- (void)applyCustomServer:(NSString *)serverString {
+    NSString *trimmed = [serverString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    if (trimmed.length) {
+        [defaults setObject:trimmed forKey:@"custom_domain"];
+    } else {
+        [defaults removeObjectForKey:@"custom_domain"];
+    }
+    [self serverSettingDidChange];
+}
+
+- (void)serverSettingDidChange {
+    NSString *previousURL = self.url;
+    self.cachedURL = nil;
+    if (![self.url isEqualToString:previousURL]) {
+        // NewsBlurAppDelegate.m cancels old-server requests before login accepts credentials again.
+        [ListenStoryBridge stopForAccountChange];
+        [self clearNetworkManager];
+    }
+}
+
 - (void)setCustomDomainForTesting:(NSString *)urlString {
     if (urlString.length) {
         self.customDomainOverrideForTesting = urlString;
@@ -2698,7 +2721,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (NSString *)widgetFolder {
-    NSUserDefaults *groupDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.newsblur.NewsBlur-Group"];
+    NSUserDefaults *groupDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.tk.waters.newsnative"];
     NSString *folder = [groupDefaults objectForKey:@"widget:show_folder"];
     
     if (folder == nil) {
@@ -2855,7 +2878,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     } else if ([folderTitle isEqualToString:@"daily_briefing"]) {
         return @[];
     } else if ([folderTitle isEqualToString:@"widget_stories"]) {
-        NSUserDefaults *groupDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.newsblur.NewsBlur-Group"];
+        NSUserDefaults *groupDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.tk.waters.newsnative"];
         NSArray *feedInfo = [groupDefaults objectForKey:@"widget:feeds_array"];
         NSMutableArray *feedIDs = [NSMutableArray array];
         
@@ -3019,7 +3042,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
             feedDetailView.storiesCollection.isRiverView = YES;
             [feedDetailView.storiesCollection setActiveFolder:@"widget_stories"];
 
-            NSUserDefaults *groupDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.newsblur.NewsBlur-Group"];
+            NSUserDefaults *groupDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.tk.waters.newsnative"];
             NSArray *feedInfo = [groupDefaults objectForKey:@"widget:feeds_array"];
 
             for (NSDictionary *info in feedInfo) {
@@ -3307,7 +3330,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     } else if ([storyBrowser isEqualToString:@"chrome"] &&
                [[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"googlechrome-x-callback://"]]) {
         NSString *openingURL = [url.absoluteString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];
-        NSURL *callbackURL = [NSURL URLWithString:@"newsblur://"];
+        NSURL *callbackURL = [NSURL URLWithString:@"newsnative://"];
         NSString *callback = [callbackURL.absoluteString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];
         NSString *sourceName = [[[NSBundle mainBundle]objectForInfoDictionaryKey:@"CFBundleName"] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];
         
@@ -3508,19 +3531,19 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 - (void)handleUserActivity:(NSUserActivity *)activity {
     if ([activity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
         [self handleUniversalLink:activity.webpageURL];
-    } else if ([activity.activityType isEqualToString:@"com.newsblur.refresh"]) {
+    } else if ([activity.activityType isEqualToString:@"tk.waters.newsnative.refresh"]) {
         //        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
         //        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
         [self showFeedsListAnimated:NO];
         [self.feedsViewController refreshFeedList];
-    } else if ([activity.activityType isEqualToString:@"com.newsblur.gotoFolder"]) {
+    } else if ([activity.activityType isEqualToString:@"tk.waters.newsnative.gotoFolder"]) {
         NSString *folder = activity.userInfo[@"folder"];
 
         //        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
         //        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
         [self showFeedsListAnimated:NO];
         [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:folder];
-    } else if ([activity.activityType isEqualToString:@"com.newsblur.gotoFeed"]) {
+    } else if ([activity.activityType isEqualToString:@"tk.waters.newsnative.gotoFeed"]) {
         NSString *folder = activity.userInfo[@"folder"];
         NSString *feedID = activity.userInfo[@"feedID"];
 
@@ -3574,18 +3597,18 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)donateRefresh {
-    NSUserActivity *activity = [[NSUserActivity alloc] initWithActivityType:@"com.newsblur.refresh"];
+    NSUserActivity *activity = [[NSUserActivity alloc] initWithActivityType:@"tk.waters.newsnative.refresh"];
     
-    activity.title = [NBLocalization text:@"Refresh NewsBlur"];
+    activity.title = [NBLocalization text:@"Refresh NewsNative"];
     activity.userInfo = @{};
     activity.requiredUserInfoKeys = [NSSet new];
     activity.eligibleForSearch = YES;
     activity.eligibleForPrediction = YES;
-    activity.suggestedInvocationPhrase = @"Refresh NewsBlur";
+    activity.suggestedInvocationPhrase = @"Refresh NewsNative";
     
     CSSearchableItemAttributeSet *attributes = [[CSSearchableItemAttributeSet alloc] initWithItemContentType:(NSString *)kUTTypeItem];
     
-    attributes.contentDescription = @"Fetch new stories in NewsBlur.";
+    attributes.contentDescription = @"Fetch new stories in NewsNative.";
     
     activity.contentAttributeSet = attributes;
     
@@ -3594,7 +3617,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)donateFolder {
-    NSUserActivity *activity = [[NSUserActivity alloc] initWithActivityType:@"com.newsblur.gotoFolder"];
+    NSUserActivity *activity = [[NSUserActivity alloc] initWithActivityType:@"tk.waters.newsnative.gotoFolder"];
     NSString *folder = storiesCollection.activeFolder;
     NSString *title = storiesCollection.activeTitle;
     
@@ -3611,7 +3634,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     } else if ([folder isEqualToString:@"trending:good_reads"]) {
         activity.title = [NBLocalization text:@"Read Good Reads"];
     } else if ([folder isEqualToString:@"dashboard"]) {
-        activity.title = [NBLocalization text:@"NewsBlur Dashboard"];
+        activity.title = [NBLocalization text:@"NewsNative Dashboard"];
     } else if ([folder isEqualToString:@"everything"]) {
         activity.title = [NBLocalization text:@"Read All the Stories"];
     } else if ([folder isEqualToString:@"infrequent"]) {
@@ -3638,7 +3661,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     
     CSSearchableItemAttributeSet *attributes = [[CSSearchableItemAttributeSet alloc] initWithItemContentType:(NSString *)kUTTypeItem];
     
-    attributes.contentDescription = [NSString stringWithFormat:[NBLocalization text:@"Go to the %@ folder in NewsBlur."], title];
+    attributes.contentDescription = [NSString stringWithFormat:[NBLocalization text:@"Go to the %@ folder in NewsNative."], title];
     
     activity.contentAttributeSet = attributes;
     
@@ -3647,7 +3670,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)donateFeed {
-    NSUserActivity *activity = [[NSUserActivity alloc] initWithActivityType:@"com.newsblur.gotoFeed"];
+    NSUserActivity *activity = [[NSUserActivity alloc] initWithActivityType:@"tk.waters.newsnative.gotoFeed"];
     NSString *folder = storiesCollection.activeFolder;
     NSDictionary *feed = storiesCollection.activeFeed;
     NSString *title = storiesCollection.activeTitle;
@@ -3673,7 +3696,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     UIImage *thumbnailImage = [self getFavicon:feedID isSocial:isSocial isSaved:isSaved];
     UIImage *scaledImage = [Utilities imageWithImage:thumbnailImage convertToSize:CGSizeMake(128, 128)];
     
-    attributes.contentDescription = [NSString stringWithFormat:[NBLocalization text:@"Go to the %@ feed in NewsBlur."], title];
+    attributes.contentDescription = [NSString stringWithFormat:[NBLocalization text:@"Go to the %@ feed in NewsNative."], title];
     attributes.thumbnailData = UIImagePNGRepresentation(scaledImage);
     
     activity.contentAttributeSet = attributes;
@@ -4927,7 +4950,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     UILabel *titleLabel = [[UILabel alloc] init];
     // NewsBlurAppDelegate.m indents titles in code so each title reuses its unpadded translation.
     if (isDashboard) {
-        titleLabel.text = [@"     " stringByAppendingString:[NBLocalization text:@"NewsBlur Dashboard"]];
+        titleLabel.text = [@"     " stringByAppendingString:[NBLocalization text:@"NewsNative Dashboard"]];
     } else if (storiesCollection.isSocialRiverView &&
         [storiesCollection.activeFolder isEqualToString:@"river_blurblogs"]) {
         titleLabel.text = [@"     " stringByAppendingString:[NBLocalization text:@"All Shared Stories"]];
@@ -5067,7 +5090,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     } else if ([folder isEqualToString:@"trending:good_reads"]) {
         return @"Good Reads";
     } else if ([folder isEqualToString:@"dashboard"]) {
-        return @"NewsBlur Dashboard";
+        return @"NewsNative Dashboard";
     } else if ([folder isEqualToString:@"everything"] || [folder isEqualToString:@" "]) {
         return @"All Site Stories";
     } else if ([folder isEqualToString:@"infrequent"]) {
@@ -5299,7 +5322,29 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (UIImage *)defaultUserAvatar {
-    return [UIImage imageNamed:@"default_profile_avatar"];
+    return [NewsBlurAppDelegate nativeDefaultAvatar];
+}
+
++ (UIImage *)nativeDefaultAvatar {
+    // NewsBlurAppDelegate.m draws the placeholder shown while a profile photo loads or when it cannot load;
+    // the server's own photos, including its default, are shown as sent.
+    static UIImage *avatar;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        CGSize size = CGSizeMake(96, 96);
+        UIGraphicsImageRendererFormat *format = [UIGraphicsImageRendererFormat defaultFormat];
+        format.scale = 2;
+        avatar = [[[UIGraphicsImageRenderer alloc] initWithSize:size format:format] imageWithActions:^(UIGraphicsImageRendererContext *context) {
+            [[UIColor colorWithRed:0.56 green:0.56 blue:0.58 alpha:1] setFill];
+            [[UIBezierPath bezierPathWithOvalInRect:CGRectMake(0, 0, size.width, size.height)] fill];
+            UIImageSymbolConfiguration *configuration = [UIImageSymbolConfiguration configurationWithPointSize:58 weight:UIImageSymbolWeightRegular];
+            UIImage *person = [[UIImage systemImageNamed:@"person.fill" withConfiguration:configuration] imageWithTintColor:UIColor.whiteColor renderingMode:UIImageRenderingModeAlwaysOriginal];
+            CGRect personRect = CGRectMake((size.width - person.size.width) / 2, size.height - person.size.height + 4, person.size.width, person.size.height);
+            [[UIBezierPath bezierPathWithOvalInRect:CGRectMake(0, 0, size.width, size.height)] addClip];
+            [person drawInRect:personRect];
+        }];
+    });
+    return avatar;
 }
 
 #pragma mark -

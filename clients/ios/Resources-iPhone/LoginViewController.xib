@@ -172,7 +172,7 @@
                         <action selector="forgotPassword:" destination="-1" eventType="touchUpInside" id="ZzX-Q3-ch5"/>
                     </connections>
                 </button>
-                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" fixedFrame="YES" image="logo_newsblur_blur.png" translatesAutoresizingMaskIntoConstraints="NO" id="22">
+                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="22">
                     <rect key="frame" x="83" y="51" width="154" height="31"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 </imageView>
@@ -185,7 +185,6 @@
     <resources>
         <image name="Background.png" width="320" height="480"/>
         <image name="logo_background.png" width="1" height="59"/>
-        <image name="logo_newsblur_blur.png" width="612" height="118"/>
         <image name="onepassword-button" width="27" height="27"/>
     </resources>
 </document>

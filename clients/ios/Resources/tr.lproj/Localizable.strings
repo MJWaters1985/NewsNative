@@ -97,7 +97,7 @@
 "AI finds the stories" = "Haberleri yapay zekâ bulur";
 "ALL" = "TÜMÜ";
 "ALL NOTIFICATIONS" = "TÜM BİLDİRİMLER";
-"About NewsBlur" = "NewsBlur Hakkında";
+"About NewsNative" = "NewsNative Hakkında";
 "Accent [voice filter]" = "Aksan";
 "Account" = "Hesap";
 "Add" = "Ekle";
@@ -449,8 +449,8 @@
 "Get a summary of your top stories, delivered on your schedule." = "En önemli haberlerinizin özetini, belirlediğiniz zamanlarda alın.";
 "Global Shared Stories" = "Genel Paylaşılan Haberler";
 "Go to feed" = "Akışa git";
-"Go to the %@ feed in NewsBlur." = "NewsBlur'da %@ akışına git.";
-"Go to the %@ folder in NewsBlur." = "NewsBlur'da %@ klasörüne git.";
+"Go to the %@ feed in NewsNative." = "NewsNative'da %@ akışına git.";
+"Go to the %@ folder in NewsNative." = "NewsNative'da %@ klasörüne git.";
 "Good Reads" = "Okumaya Değer";
 "Gray" = "Gri";
 "Grid" = "Izgara";
@@ -674,10 +674,10 @@
 "New posts from feeds you recently read" = "Yakın zamanda okuduğunuz akışlardan yeni gönderiler";
 "New to NewsBlur? Create an account" = "NewsBlur'a yeni misiniz? Hesap oluşturun";
 "Newest first" = "En yeniden eskiye";
-"NewsBlur Dashboard" = "NewsBlur Kontrol Paneli";
+"NewsNative Dashboard" = "NewsNative Kontrol Paneli";
 "NewsBlur Premium" = "NewsBlur Premium";
 "NewsBlur checks for changes and delivers new stories to your feed." = "NewsBlur değişiklikleri kontrol eder ve yeni haberleri akışınıza iletir.";
-"NewsBlur detected %@ from your device." = "NewsBlur cihazınızın dilini algıladı: %@.";
+"NewsNative detected %@ from your device." = "NewsNative cihazınızın dilini algıladı: %@.";
 "NewsBlur password" = "NewsBlur parolası";
 "Next" = "Sonraki";
 "Next Folder" = "Sonraki Klasör";
@@ -775,8 +775,8 @@
 "Pause Listening" = "Dinlemeyi duraklat";
 "Percentage of the visible story scrolled by Space or Shift-Space" = "Boşluk veya Shift-Boşluk ile görüntülenen haberin kaydırılacağı yüzde";
 "Permanently delete account" = "Hesabı kalıcı olarak sil";
-"Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "NewsBlur için kullanmak istediğiniz dili seçin. Bunu istediğiniz zaman Tercihler'den değiştirebilirsiniz.";
-"Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "NewsBlur’da kullanmak istediğiniz dili seçin. Bunu istediğiniz zaman NewsBlur menüsünden değiştirebilirsiniz.";
+"Pick the language you'd like NewsNative to use. You can change this anytime in Preferences." = "NewsNative için kullanmak istediğiniz dili seçin. Bunu istediğiniz zaman Tercihler'den değiştirebilirsiniz.";
+"Pick the language you'd like NewsNative to use. You can change this anytime in the NewsNative menu." = "NewsNative’da kullanmak istediğiniz dili seçin. Bunu istediğiniz zaman NewsNative menüsünden değiştirebilirsiniz.";
 "Pick which model writes your Daily Briefing" = "Günlük Özetinizi hangi modelin yazacağını seçin";
 "Pitch stays natural at every speed." = "Her hızda ses perdesi doğal kalır.";
 "Place the story list controls above or below the stories" = "Haber listesi denetimlerini haberlerin üstüne veya altına yerleştir";
@@ -850,7 +850,7 @@
 "Reduce motion" = "Hareketi azalt";
 "Refine with a hint" = "Bir ipucuyla ayrıntılandırın";
 "Refine with this title" = "Bu başlıkla aramayı daralt";
-"Refresh NewsBlur" = "NewsBlur'ı yenile";
+"Refresh NewsNative" = "NewsNative'ı yenile";
 "Refresh site" = "Siteyi yenile";
 "Regex" = "Düzenli ifade";
 "Regex Patterns" = "Regex kalıpları";
@@ -1153,7 +1153,7 @@
 "Top" = "Üst";
 "Top Level" = "En Üst Düzey";
 "Top stories" = "Öne çıkan haberler";
-"Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "Bir NewsBlur bileşenine dokunup basılı tutun veya Mac'te sağ tıklayın, ardından Bileşeni Düzenle'yi seçin. Her bileşen için bir klasör veya site seçin.";
+"Touch and hold a NewsNative widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "Bir NewsNative bileşenine dokunup basılı tutun veya Mac'te sağ tıklayın, ardından Bileşeni Düzenle'yi seçin. Her bileşen için bir klasör veya site seçin.";
 "Train" = "Eğit";
 "Train This Story" = "Bu Haberi Eğit";
 "Train This Story…" = "Bu Haberi Eğit…";

@@ -231,13 +231,11 @@
 		175790AA2930605500490924 /* Background.png in Resources */ = {isa = PBXBuildFile; fileRef = 43A4C3F715B00A26008787B5 /* Background.png */; };
 		175790AB2930605500490924 /* Background@2X.png in Resources */ = {isa = PBXBuildFile; fileRef = 43A4C3F815B00A26008787B5 /* Background@2X.png */; };
 		175790AC2930605500490924 /* disclosure.png in Resources */ = {isa = PBXBuildFile; fileRef = 43A4C40B15B00A26008787B5 /* disclosure.png */; };
-		175790AD2930605500490924 /* logo_newsblur_512.png in Resources */ = {isa = PBXBuildFile; fileRef = FFEA5AEB19D340BC00ED87A0 /* logo_newsblur_512.png */; };
 		175790AE2930605500490924 /* fleuron.png in Resources */ = {isa = PBXBuildFile; fileRef = 43A4C41115B00A26008787B5 /* fleuron.png */; };
 		175790AF2930605500490924 /* g_icn_folder_widget@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17B33D1727D97282009108AD /* g_icn_folder_widget@2x.png */; };
 		175790B02930605500490924 /* logo_512.png in Resources */ = {isa = PBXBuildFile; fileRef = 43A4C42315B00A26008787B5 /* logo_512.png */; };
 		175790B12930605500490924 /* logo_background.png in Resources */ = {isa = PBXBuildFile; fileRef = 43A4C42415B00A26008787B5 /* logo_background.png */; };
 		175790B22930605500490924 /* logo_120.png in Resources */ = {isa = PBXBuildFile; fileRef = FFB9BE4017F4B65B00FE0A36 /* logo_120.png */; };
-		175790B42930605500490924 /* logo_newsblur_blur.png in Resources */ = {isa = PBXBuildFile; fileRef = 43A4C42615B00A26008787B5 /* logo_newsblur_blur.png */; };
 		175790B52930605500490924 /* warning.gif in Resources */ = {isa = PBXBuildFile; fileRef = 43A4C43F15B00A26008787B5 /* warning.gif */; };
 		175790B62930605500490924 /* warning.png in Resources */ = {isa = PBXBuildFile; fileRef = 43A4C44015B00A26008787B5 /* warning.png */; };
 		175790B72930605500490924 /* storyDetailViewDark.css in Resources */ = {isa = PBXBuildFile; fileRef = 17E265DD1C0D17340060655F /* storyDetailViewDark.css */; };
@@ -473,7 +471,6 @@
 		175791A92930605500490924 /* menu_icn_fetch.png in Resources */ = {isa = PBXBuildFile; fileRef = FFDD845416E8871A000AA0A2 /* menu_icn_fetch.png */; };
 		175791AA2930605500490924 /* menu_icn_fetch@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFDD845516E8871A000AA0A2 /* menu_icn_fetch@2x.png */; };
 		175791AB2930605500490924 /* ARChromeActivity.png in Resources */ = {isa = PBXBuildFile; fileRef = FF03AFF719F881380063002A /* ARChromeActivity.png */; };
-		175791AC2930605500490924 /* logo_newsblur_blur-dark.png in Resources */ = {isa = PBXBuildFile; fileRef = 17C4954E1C14049A004805A7 /* logo_newsblur_blur-dark.png */; };
 		175791AD2930605500490924 /* menu_icn_followers.png in Resources */ = {isa = PBXBuildFile; fileRef = FFDD845616E8871A000AA0A2 /* menu_icn_followers.png */; };
 		175791AE2930605500490924 /* menu_icn_followers@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFDD845716E8871A000AA0A2 /* menu_icn_followers@2x.png */; };
 		175791AF2930605500490924 /* g_icn_folder_sm@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17876B9D1C9911D40055DD15 /* g_icn_folder_sm@2x.png */; };
@@ -751,7 +748,6 @@
 		175792D92930605500490924 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 788EF355127E5BC80088EDC5 /* QuartzCore.framework */; };
 		175792DA2930605500490924 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 78095E3E128EF35400230C8E /* CFNetwork.framework */; };
 		175792E72930611C00490924 /* LaunchScreenDev.xib in Resources */ = {isa = PBXBuildFile; fileRef = 175792E62930611B00490924 /* LaunchScreenDev.xib */; };
-		175792E92930617600490924 /* logo_newsblur_512-dev.png in Resources */ = {isa = PBXBuildFile; fileRef = 175792E82930617600490924 /* logo_newsblur_512-dev.png */; };
 		175DC6AF2BBB87D200B3708F /* TrainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 175DC6AE2BBB87D200B3708F /* TrainerViewController.swift */; };
 		175DC6B02BBB87D200B3708F /* TrainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 175DC6AE2BBB87D200B3708F /* TrainerViewController.swift */; };
 		175FAC4C23AB34EB002AC38C /* menu_icn_widget.png in Resources */ = {isa = PBXBuildFile; fileRef = 175FAC4A23AB34EB002AC38C /* menu_icn_widget.png */; };
@@ -870,7 +866,6 @@
 		17BE5A771C5DDA8C0075F92C /* barbutton_sort_desc@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17BE5A711C5DDA8C0075F92C /* barbutton_sort_desc@3x.png */; };
 		17C074961C14C46B00CFCDB7 /* ThemeManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 17C074951C14C46B00CFCDB7 /* ThemeManager.m */; };
 		17C4954B1C129863004805A7 /* UISearchBar+Field.m in Sources */ = {isa = PBXBuildFile; fileRef = 17C4954A1C129863004805A7 /* UISearchBar+Field.m */; };
-		17C4954F1C14049A004805A7 /* logo_newsblur_blur-dark.png in Resources */ = {isa = PBXBuildFile; fileRef = 17C4954E1C14049A004805A7 /* logo_newsblur_blur-dark.png */; };
 		17C5BA631CA39AA100F5961C /* unread_blue.png in Resources */ = {isa = PBXBuildFile; fileRef = 17C5BA611CA39AA100F5961C /* unread_blue.png */; };
 		17C5BA641CA39AA100F5961C /* unread_blue@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17C5BA621CA39AA100F5961C /* unread_blue@2x.png */; };
 		17C5BA6B1CA39EA400F5961C /* unread_green_icn.png in Resources */ = {isa = PBXBuildFile; fileRef = 17C5BA651CA39EA400F5961C /* unread_green_icn.png */; };
@@ -1046,7 +1041,6 @@
 		43A4C46C15B00A26008787B5 /* fleuron.png in Resources */ = {isa = PBXBuildFile; fileRef = 43A4C41115B00A26008787B5 /* fleuron.png */; };
 		43A4C47E15B00A26008787B5 /* logo_512.png in Resources */ = {isa = PBXBuildFile; fileRef = 43A4C42315B00A26008787B5 /* logo_512.png */; };
 		43A4C47F15B00A26008787B5 /* logo_background.png in Resources */ = {isa = PBXBuildFile; fileRef = 43A4C42415B00A26008787B5 /* logo_background.png */; };
-		43A4C48115B00A26008787B5 /* logo_newsblur_blur.png in Resources */ = {isa = PBXBuildFile; fileRef = 43A4C42615B00A26008787B5 /* logo_newsblur_blur.png */; };
 		43A4C49A15B00A26008787B5 /* warning.gif in Resources */ = {isa = PBXBuildFile; fileRef = 43A4C43F15B00A26008787B5 /* warning.gif */; };
 		43A4C49B15B00A26008787B5 /* warning.png in Resources */ = {isa = PBXBuildFile; fileRef = 43A4C44015B00A26008787B5 /* warning.png */; };
 		43A4C49C15B00A26008787B5 /* world.png in Resources */ = {isa = PBXBuildFile; fileRef = 43A4C44115B00A26008787B5 /* world.png */; };
@@ -1615,7 +1609,6 @@
 		FFE816AD17E29D71008AF4B0 /* big_world_white.png in Resources */ = {isa = PBXBuildFile; fileRef = FFE816AC17E29D71008AF4B0 /* big_world_white.png */; };
 		FFEA5AE819D33FB400ED87A0 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = FFEA5AE719D33FB400ED87A0 /* LaunchScreen.xib */; };
 		FFEA5AEA19D3407400ED87A0 /* launch_gradient.png in Resources */ = {isa = PBXBuildFile; fileRef = FFEA5AE919D3407400ED87A0 /* launch_gradient.png */; };
-		FFEA5AEC19D340BC00ED87A0 /* logo_newsblur_512.png in Resources */ = {isa = PBXBuildFile; fileRef = FFEA5AEB19D340BC00ED87A0 /* logo_newsblur_512.png */; };
 		FFECD019172B105800D45A62 /* UIActivitySafari.png in Resources */ = {isa = PBXBuildFile; fileRef = FFECD017172B105800D45A62 /* UIActivitySafari.png */; };
 		FFECD01A172B105800D45A62 /* UIActivitySafari@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFECD018172B105800D45A62 /* UIActivitySafari@2x.png */; };
 		FFF1E4C817750BDD00BF59D3 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = FFF1E4C717750BDD00BF59D3 /* Settings.bundle */; platformFilter = ios; };
@@ -1906,7 +1899,6 @@
 		175696A51C596ABC004C128D /* menu_icn_all@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu_icn_all@2x.png"; sourceTree = "<group>"; };
 		175792E42930605500490924 /* NB Alpha.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "NB Alpha.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		175792E62930611B00490924 /* LaunchScreenDev.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LaunchScreenDev.xib; sourceTree = "<group>"; };
-		175792E82930617600490924 /* logo_newsblur_512-dev.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "logo_newsblur_512-dev.png"; sourceTree = "<group>"; };
 		175DC6AE2BBB87D200B3708F /* TrainerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainerViewController.swift; sourceTree = "<group>"; };
 		175FAC4A23AB34EB002AC38C /* menu_icn_widget.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_icn_widget.png; sourceTree = "<group>"; };
 		175FAC4B23AB34EB002AC38C /* menu_icn_widget@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu_icn_widget@2x.png"; sourceTree = "<group>"; };
@@ -1992,7 +1984,6 @@
 		17C074951C14C46B00CFCDB7 /* ThemeManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThemeManager.m; sourceTree = "<group>"; };
 		17C495491C129863004805A7 /* UISearchBar+Field.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UISearchBar+Field.h"; path = "Other Sources/UISearchBar+Field.h"; sourceTree = "<group>"; };
 		17C4954A1C129863004805A7 /* UISearchBar+Field.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UISearchBar+Field.m"; path = "Other Sources/UISearchBar+Field.m"; sourceTree = "<group>"; };
-		17C4954E1C14049A004805A7 /* logo_newsblur_blur-dark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "logo_newsblur_blur-dark.png"; sourceTree = "<group>"; };
 		17C5BA611CA39AA100F5961C /* unread_blue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = unread_blue.png; sourceTree = "<group>"; };
 		17C5BA621CA39AA100F5961C /* unread_blue@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "unread_blue@2x.png"; sourceTree = "<group>"; };
 		17C5BA651CA39EA400F5961C /* unread_green_icn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = unread_green_icn.png; sourceTree = "<group>"; };
@@ -2178,7 +2169,6 @@
 		43A4C41115B00A26008787B5 /* fleuron.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = fleuron.png; sourceTree = "<group>"; };
 		43A4C42315B00A26008787B5 /* logo_512.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo_512.png; sourceTree = "<group>"; };
 		43A4C42415B00A26008787B5 /* logo_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo_background.png; sourceTree = "<group>"; };
-		43A4C42615B00A26008787B5 /* logo_newsblur_blur.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo_newsblur_blur.png; sourceTree = "<group>"; };
 		43A4C43F15B00A26008787B5 /* warning.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = warning.gif; sourceTree = "<group>"; };
 		43A4C44015B00A26008787B5 /* warning.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = warning.png; sourceTree = "<group>"; };
 		43A4C44115B00A26008787B5 /* world.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = world.png; sourceTree = "<group>"; };
@@ -2776,7 +2766,6 @@
 		FFE816AC17E29D71008AF4B0 /* big_world_white.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = big_world_white.png; sourceTree = "<group>"; };
 		FFEA5AE719D33FB400ED87A0 /* LaunchScreen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LaunchScreen.xib; sourceTree = "<group>"; };
 		FFEA5AE919D3407400ED87A0 /* launch_gradient.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = launch_gradient.png; sourceTree = "<group>"; };
-		FFEA5AEB19D340BC00ED87A0 /* logo_newsblur_512.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo_newsblur_512.png; sourceTree = "<group>"; };
 		FFECD017172B105800D45A62 /* UIActivitySafari.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = UIActivitySafari.png; sourceTree = "<group>"; };
 		FFECD018172B105800D45A62 /* UIActivitySafari@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "UIActivitySafari@2x.png"; sourceTree = "<group>"; };
 		FFF1E4C717750BDD00BF59D3 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
@@ -3845,11 +3834,7 @@
 				43B6A26F15B6952F00CEA2E6 /* group.png */,
 				43B6A27015B6952F00CEA2E6 /* group@2x.png */,
 				43A4C42315B00A26008787B5 /* logo_512.png */,
-				FFEA5AEB19D340BC00ED87A0 /* logo_newsblur_512.png */,
-				175792E82930617600490924 /* logo_newsblur_512-dev.png */,
 				43A4C42415B00A26008787B5 /* logo_background.png */,
-				43A4C42615B00A26008787B5 /* logo_newsblur_blur.png */,
-				17C4954E1C14049A004805A7 /* logo_newsblur_blur-dark.png */,
 				17F156701BDABBF60092EBFD /* safari_shadow@2x.png */,
 				43A4C43F15B00A26008787B5 /* warning.gif */,
 				43A4C44015B00A26008787B5 /* warning.png */,
@@ -4766,7 +4751,7 @@
 					};
 					1749390F1C251BFE003D98AA = {
 						CreatedOnToolsVersion = 7.2;
-						DevelopmentTeam = HR7P97SD72;
+						DevelopmentTeam = QFXTY46FMX;
 						LastSwiftMigration = 1250;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
@@ -4776,7 +4761,7 @@
 					};
 					177551D2238E228A00E27818 = {
 						CreatedOnToolsVersion = 11.2.1;
-						DevelopmentTeam = HR7P97SD72;
+						DevelopmentTeam = QFXTY46FMX;
 						LastSwiftMigration = 1120;
 						ProvisioningStyle = Automatic;
 					};
@@ -4800,7 +4785,7 @@
 					};
 					A9220000000000000000001E = {
 						CreatedOnToolsVersion = 27.1;
-						DevelopmentTeam = HR7P97SD72;
+						DevelopmentTeam = QFXTY46FMX;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
@@ -4814,7 +4799,7 @@
 					};
 					FF8A94961DE3BB77000A4C31 = {
 						CreatedOnToolsVersion = 8.1;
-						DevelopmentTeam = HR7P97SD72;
+						DevelopmentTeam = QFXTY46FMX;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -4990,13 +4975,11 @@
 				17760B3F2E8C9CF0005641E9 /* drag_icon_v.png in Resources */,
 				175790AB2930605500490924 /* Background@2X.png in Resources */,
 				175790AC2930605500490924 /* disclosure.png in Resources */,
-				175790AD2930605500490924 /* logo_newsblur_512.png in Resources */,
 				175790AE2930605500490924 /* fleuron.png in Resources */,
 				175790AF2930605500490924 /* g_icn_folder_widget@2x.png in Resources */,
 				175790B02930605500490924 /* logo_512.png in Resources */,
 				175790B12930605500490924 /* logo_background.png in Resources */,
 				175790B22930605500490924 /* logo_120.png in Resources */,
-				175790B42930605500490924 /* logo_newsblur_blur.png in Resources */,
 				175790B52930605500490924 /* warning.gif in Resources */,
 				175790B62930605500490924 /* warning.png in Resources */,
 				175790B72930605500490924 /* storyDetailViewDark.css in Resources */,
@@ -5189,7 +5172,6 @@
 				175791792930605500490924 /* barbutton_selection_off@3x.png in Resources */,
 				1757917A2930605500490924 /* logo_80.png in Resources */,
 				1757917B2930605500490924 /* menu_icn_markread.png in Resources */,
-				175792E92930617600490924 /* logo_newsblur_512-dev.png in Resources */,
 				1757917C2930605500490924 /* line_spacing_xs.png in Resources */,
 				1757917D2930605500490924 /* disclosure_down.png in Resources */,
 				1757917F2930605500490924 /* disclosure_border_dark@2x.png in Resources */,
@@ -5237,7 +5219,6 @@
 				175791A92930605500490924 /* menu_icn_fetch.png in Resources */,
 				175791AA2930605500490924 /* menu_icn_fetch@2x.png in Resources */,
 				175791AB2930605500490924 /* ARChromeActivity.png in Resources */,
-				175791AC2930605500490924 /* logo_newsblur_blur-dark.png in Resources */,
 				175791AD2930605500490924 /* menu_icn_followers.png in Resources */,
 				175791AE2930605500490924 /* menu_icn_followers@2x.png in Resources */,
 				175791AF2930605500490924 /* g_icn_folder_sm@2x.png in Resources */,
@@ -5464,13 +5445,11 @@
 				43A4C45215B00A26008787B5 /* Background.png in Resources */,
 				43A4C45315B00A26008787B5 /* Background@2X.png in Resources */,
 				43A4C46615B00A26008787B5 /* disclosure.png in Resources */,
-				FFEA5AEC19D340BC00ED87A0 /* logo_newsblur_512.png in Resources */,
 				43A4C46C15B00A26008787B5 /* fleuron.png in Resources */,
 				17B33D1927D97282009108AD /* g_icn_folder_widget@2x.png in Resources */,
 				43A4C47E15B00A26008787B5 /* logo_512.png in Resources */,
 				43A4C47F15B00A26008787B5 /* logo_background.png in Resources */,
 				FFB9BE4717F4B65B00FE0A36 /* logo_120.png in Resources */,
-				43A4C48115B00A26008787B5 /* logo_newsblur_blur.png in Resources */,
 				43A4C49A15B00A26008787B5 /* warning.gif in Resources */,
 				43A4C49B15B00A26008787B5 /* warning.png in Resources */,
 				17E265DE1C0D17340060655F /* storyDetailViewDark.css in Resources */,
@@ -5712,7 +5691,6 @@
 				FFDD846016E8871A000AA0A2 /* menu_icn_fetch.png in Resources */,
 				FFDD846116E8871A000AA0A2 /* menu_icn_fetch@2x.png in Resources */,
 				FF03AFFE19F881380063002A /* ARChromeActivity.png in Resources */,
-				17C4954F1C14049A004805A7 /* logo_newsblur_blur-dark.png in Resources */,
 				FFDD846216E8871A000AA0A2 /* menu_icn_followers.png in Resources */,
 				FFDD846316E8871A000AA0A2 /* menu_icn_followers@2x.png in Resources */,
 				17876BA11C9911D40055DD15 /* g_icn_folder_sm@2x.png in Resources */,
@@ -6826,7 +6804,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 357;
+				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -6846,10 +6824,10 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 17.0;
+				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.newsblur.NewsBlur.widget;
+				PRODUCT_BUNDLE_IDENTIFIER = tk.waters.newsnative.widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTS_MACCATALYST = YES;
@@ -6879,7 +6857,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 357;
+				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -6893,10 +6871,10 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 17.0;
+				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.newsblur.NewsBlur.widget;
+				PRODUCT_BUNDLE_IDENTIFIER = tk.waters.newsnative.widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTS_MACCATALYST = YES;
@@ -6928,7 +6906,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Share Extension/Share Extension.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 357;
+				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -6952,9 +6930,9 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 17.0;
+				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.newsblur.NewsBlur.Share-Extension";
+				PRODUCT_BUNDLE_IDENTIFIER = "tk.waters.newsnative.share";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = YES;
@@ -6984,7 +6962,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Share Extension/Share Extension.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 357;
+				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -7002,9 +6980,9 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 17.0;
+				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.newsblur.NewsBlur.Share-Extension";
+				PRODUCT_BUNDLE_IDENTIFIER = "tk.waters.newsnative.share";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = YES;
@@ -7025,7 +7003,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 357;
+				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -7056,15 +7034,16 @@
 					"\"$(SRCROOT)\"",
 					"\"$(SRCROOT)/Other Sources\"",
 				);
-				MARKETING_VERSION = 17.0;
+				MARKETING_VERSION = 1.0;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = (
 					"-lsqlite3.0",
 					"-ObjC",
 					"-all_load",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.newsblur.NB-Alpha";
+				PRODUCT_BUNDLE_IDENTIFIER = "tk.waters.newsnative.alpha";
 				PRODUCT_MODULE_NAME = NewsBlur;
+				APP_DISPLAY_NAME = "NN Alpha";
 				PRODUCT_NAME = "NB Alpha";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -7089,7 +7068,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
-				CURRENT_PROJECT_VERSION = 357;
+				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -7119,14 +7098,15 @@
 					"\"$(SRCROOT)\"",
 					"\"$(SRCROOT)/Other Sources\"",
 				);
-				MARKETING_VERSION = 17.0;
+				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
 					"-lsqlite3.0",
 					"-ObjC",
 					"-all_load",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.newsblur.NB-Alpha";
+				PRODUCT_BUNDLE_IDENTIFIER = "tk.waters.newsnative.alpha";
 				PRODUCT_MODULE_NAME = NewsBlur;
+				APP_DISPLAY_NAME = "NN Alpha";
 				PRODUCT_NAME = "NB Alpha";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -7160,7 +7140,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 357;
+				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -7180,10 +7160,10 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 17.0;
+				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.newsblur.NB-Alpha.widget";
+				PRODUCT_BUNDLE_IDENTIFIER = "tk.waters.newsnative.alpha.widget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTS_MACCATALYST = YES;
@@ -7213,7 +7193,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 357;
+				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -7227,10 +7207,10 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 17.0;
+				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.newsblur.NB-Alpha.widget";
+				PRODUCT_BUNDLE_IDENTIFIER = "tk.waters.newsnative.alpha.widget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTS_MACCATALYST = YES;
@@ -7262,7 +7242,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 357;
+				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -7281,10 +7261,10 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 17.0;
+				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.newsblur.NewsBlur.old-widget";
+				PRODUCT_BUNDLE_IDENTIFIER = "tk.waters.newsnative.oldwidget";
 				PRODUCT_NAME = "Old NewsBlur Latest";
 				SKIP_INSTALL = YES;
 				SUPPORTS_MACCATALYST = NO;
@@ -7315,7 +7295,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 357;
+				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -7328,10 +7308,10 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 17.0;
+				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.newsblur.NewsBlur.old-widget";
+				PRODUCT_BUNDLE_IDENTIFIER = "tk.waters.newsnative.oldwidget";
 				PRODUCT_NAME = "Old NewsBlur Latest";
 				SKIP_INSTALL = YES;
 				SUPPORTS_MACCATALYST = NO;
@@ -7351,7 +7331,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 357;
+				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = YES;
@@ -7373,14 +7353,15 @@
 					"\"$(SRCROOT)\"",
 					"\"$(SRCROOT)/Other Sources\"",
 				);
-				MARKETING_VERSION = 17.0;
+				MARKETING_VERSION = 1.0;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = (
 					"-lsqlite3.0",
 					"-ObjC",
 					"-all_load",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.newsblur.NewsBlur;
+				PRODUCT_BUNDLE_IDENTIFIER = tk.waters.newsnative;
+				APP_DISPLAY_NAME = NewsNative;
 				PRODUCT_NAME = NewsBlur;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -7404,7 +7385,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
-				CURRENT_PROJECT_VERSION = 357;
+				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = YES;
@@ -7425,13 +7406,14 @@
 					"\"$(SRCROOT)\"",
 					"\"$(SRCROOT)/Other Sources\"",
 				);
-				MARKETING_VERSION = 17.0;
+				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
 					"-lsqlite3.0",
 					"-ObjC",
 					"-all_load",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.newsblur.NewsBlur;
+				PRODUCT_BUNDLE_IDENTIFIER = tk.waters.newsnative;
+				APP_DISPLAY_NAME = NewsNative;
 				PRODUCT_NAME = NewsBlur;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -7466,9 +7448,9 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 357;
+				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = HR7P97SD72;
+				DEVELOPMENT_TEAM = QFXTY46FMX;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -7492,9 +7474,9 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 17.0;
+				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.newsblur.NewsBlur.Subscribe-Extension";
+				PRODUCT_BUNDLE_IDENTIFIER = "tk.waters.newsnative.subscribe";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = YES;
@@ -7526,8 +7508,8 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 357;
-				DEVELOPMENT_TEAM = HR7P97SD72;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QFXTY46FMX;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -7546,9 +7528,9 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 17.0;
+				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.newsblur.NewsBlur.Subscribe-Extension";
+				PRODUCT_BUNDLE_IDENTIFIER = "tk.waters.newsnative.subscribe";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = YES;
@@ -7585,9 +7567,9 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 357;
+				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = HR7P97SD72;
+				DEVELOPMENT_TEAM = QFXTY46FMX;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -7603,7 +7585,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LAUNCH_SCREEN_NAME = LaunchScreen;
 				MACOSX_DEPLOYMENT_TARGET = 13.5;
-				MARKETING_VERSION = 17.0;
+				MARKETING_VERSION = 1.0;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PROVISIONING_PROFILE = "";
@@ -7642,9 +7624,9 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 357;
+				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = HR7P97SD72;
+				DEVELOPMENT_TEAM = QFXTY46FMX;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
@@ -7659,7 +7641,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LAUNCH_SCREEN_NAME = LaunchScreen;
 				MACOSX_DEPLOYMENT_TARGET = 13.5;
-				MARKETING_VERSION = 17.0;
+				MARKETING_VERSION = 1.0;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = "-ObjC";
@@ -7686,7 +7668,7 @@
 					"@loader_path/Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.5;
-				PRODUCT_BUNDLE_IDENTIFIER = com.newsblur.NewsBlurTests;
+				PRODUCT_BUNDLE_IDENTIFIER = tk.waters.newsnative.tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -7713,7 +7695,7 @@
 					"@loader_path/Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.5;
-				PRODUCT_BUNDLE_IDENTIFIER = com.newsblur.NewsBlurTests;
+				PRODUCT_BUNDLE_IDENTIFIER = tk.waters.newsnative.tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -7737,7 +7719,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.newsblur.NewsBlurUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = tk.waters.newsnative.uitests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -7759,7 +7741,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.newsblur.NewsBlurUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = tk.waters.newsnative.uitests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -7782,7 +7764,7 @@
 					"@loader_path/Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.5;
-				PRODUCT_BUNDLE_IDENTIFIER = com.newsblur.NewsBlurAlphaPerformanceTests;
+				PRODUCT_BUNDLE_IDENTIFIER = tk.waters.newsnative.alpha.performancetests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -7809,7 +7791,7 @@
 					"@loader_path/Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.5;
-				PRODUCT_BUNDLE_IDENTIFIER = com.newsblur.NewsBlurAlphaPerformanceTests;
+				PRODUCT_BUNDLE_IDENTIFIER = tk.waters.newsnative.alpha.performancetests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -7839,7 +7821,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 357;
+				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -7858,9 +7840,9 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 17.0;
+				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.newsblur.NewsBlur.Story-Notification-Service-Extension";
+				PRODUCT_BUNDLE_IDENTIFIER = "tk.waters.newsnative.notifications";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
@@ -7886,7 +7868,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 357;
+				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -7899,9 +7881,9 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 17.0;
+				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.newsblur.NewsBlur.Story-Notification-Service-Extension";
+				PRODUCT_BUNDLE_IDENTIFIER = "tk.waters.newsnative.notifications";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
@@ -7923,7 +7905,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.newsblur.NewsBlurAlphaUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = tk.waters.newsnative.alpha.uitests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -7944,7 +7926,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.newsblur.NewsBlurAlphaUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = tk.waters.newsnative.alpha.uitests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -7961,7 +7943,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = MacWindowChrome/Info.plist;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.newsblur.MacWindowChrome;
+				PRODUCT_BUNDLE_IDENTIFIER = tk.waters.newsnative.macwindowchrome;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
@@ -7979,7 +7961,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = MacWindowChrome/Info.plist;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.newsblur.MacWindowChrome;
+				PRODUCT_BUNDLE_IDENTIFIER = tk.waters.newsnative.macwindowchrome;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;

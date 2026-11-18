@@ -32,9 +32,9 @@ class AppMenuHelper: NSObject {
     
     // MARK: - Build Menus
     
-    private static let siteMenuIdentifier = UIMenu.Identifier("com.newsblur.site")
-    private static let storyMenuIdentifier = UIMenu.Identifier("com.newsblur.story")
-    private static let languageMenuIdentifier = UIMenu.Identifier("com.newsblur.language")
+    private static let siteMenuIdentifier = UIMenu.Identifier("tk.waters.newsnative.site")
+    private static let storyMenuIdentifier = UIMenu.Identifier("tk.waters.newsnative.story")
+    private static let languageMenuIdentifier = UIMenu.Identifier("tk.waters.newsnative.language")
 
     @MainActor static func languageMenu() -> UIMenu {
         // AppMenuHelper.swift evaluates availability when the menu opens, after sign-in or sheet dismissal.

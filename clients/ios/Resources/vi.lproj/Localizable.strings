@@ -97,7 +97,7 @@
 "AI finds the stories" = "AI tìm các bài viết";
 "ALL" = "TẤT CẢ";
 "ALL NOTIFICATIONS" = "TẤT CẢ THÔNG BÁO";
-"About NewsBlur" = "Giới thiệu về NewsBlur";
+"About NewsNative" = "Giới thiệu về NewsNative";
 "Accent [voice filter]" = "Giọng vùng miền";
 "Account" = "Tài khoản";
 "Add" = "Thêm";
@@ -449,8 +449,8 @@
 "Get a summary of your top stories, delivered on your schedule." = "Nhận bản tóm tắt những bài viết hàng đầu theo lịch bạn chọn.";
 "Global Shared Stories" = "Bài viết được chia sẻ toàn cầu";
 "Go to feed" = "Đi tới nguồn cấp dữ liệu";
-"Go to the %@ feed in NewsBlur." = "Đi tới nguồn %@ trên NewsBlur.";
-"Go to the %@ folder in NewsBlur." = "Đi tới thư mục %@ trong NewsBlur.";
+"Go to the %@ feed in NewsNative." = "Đi tới nguồn %@ trên NewsNative.";
+"Go to the %@ folder in NewsNative." = "Đi tới thư mục %@ trong NewsNative.";
 "Good Reads" = "Bài đọc hay";
 "Gray" = "Xám";
 "Grid" = "Lưới";
@@ -674,10 +674,10 @@
 "New posts from feeds you recently read" = "Bài đăng mới từ các nguồn cấp bạn vừa đọc";
 "New to NewsBlur? Create an account" = "Bạn mới dùng NewsBlur? Tạo tài khoản";
 "Newest first" = "Mới nhất trước";
-"NewsBlur Dashboard" = "Bảng điều khiển NewsBlur";
+"NewsNative Dashboard" = "Bảng điều khiển NewsNative";
 "NewsBlur Premium" = "NewsBlur Premium";
 "NewsBlur checks for changes and delivers new stories to your feed." = "NewsBlur kiểm tra các thay đổi và gửi bài viết mới đến nguồn cấp dữ liệu của bạn.";
-"NewsBlur detected %@ from your device." = "NewsBlur phát hiện thiết bị của bạn đang dùng %@.";
+"NewsNative detected %@ from your device." = "NewsNative phát hiện thiết bị của bạn đang dùng %@.";
 "NewsBlur password" = "mật khẩu NewsBlur";
 "Next" = "Tiếp theo";
 "Next Folder" = "Thư mục tiếp theo";
@@ -775,8 +775,8 @@
 "Pause Listening" = "Tạm dừng nghe";
 "Percentage of the visible story scrolled by Space or Shift-Space" = "Tỷ lệ phần trăm bài viết đang hiển thị được cuộn bằng phím cách hoặc Shift-Phím cách";
 "Permanently delete account" = "Xóa tài khoản vĩnh viễn";
-"Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "Chọn ngôn ngữ bạn muốn NewsBlur sử dụng. Bạn có thể thay đổi tùy chọn này bất cứ lúc nào trong phần Tùy chọn.";
-"Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "Chọn ngôn ngữ bạn muốn NewsBlur sử dụng. Bạn có thể thay đổi tùy chọn này bất cứ lúc nào trong menu NewsBlur.";
+"Pick the language you'd like NewsNative to use. You can change this anytime in Preferences." = "Chọn ngôn ngữ bạn muốn NewsNative sử dụng. Bạn có thể thay đổi tùy chọn này bất cứ lúc nào trong phần Tùy chọn.";
+"Pick the language you'd like NewsNative to use. You can change this anytime in the NewsNative menu." = "Chọn ngôn ngữ bạn muốn NewsNative sử dụng. Bạn có thể thay đổi tùy chọn này bất cứ lúc nào trong menu NewsNative.";
 "Pick which model writes your Daily Briefing" = "Chọn mô hình viết Bản tin hằng ngày của bạn";
 "Pitch stays natural at every speed." = "Cao độ giọng nói vẫn tự nhiên ở mọi tốc độ.";
 "Place the story list controls above or below the stories" = "Đặt các nút điều khiển danh sách bài viết ở phía trên hoặc phía dưới các bài viết";
@@ -850,7 +850,7 @@
 "Reduce motion" = "Giảm chuyển động";
 "Refine with a hint" = "Tinh chỉnh bằng gợi ý";
 "Refine with this title" = "Tinh chỉnh bằng tiêu đề này";
-"Refresh NewsBlur" = "Làm mới NewsBlur";
+"Refresh NewsNative" = "Làm mới NewsNative";
 "Refresh site" = "Làm mới trang web";
 "Regex" = "Biểu thức chính quy";
 "Regex Patterns" = "Mẫu Regex";
@@ -1153,7 +1153,7 @@
 "Top" = "Trên cùng";
 "Top Level" = "Cấp cao nhất";
 "Top stories" = "Bài viết hàng đầu";
-"Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "Chạm và giữ tiện ích NewsBlur, hoặc nhấp chuột phải vào tiện ích trên máy Mac, rồi chọn Chỉnh sửa tiện ích. Chọn thư mục hoặc trang web cho từng tiện ích.";
+"Touch and hold a NewsNative widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "Chạm và giữ tiện ích NewsNative, hoặc nhấp chuột phải vào tiện ích trên máy Mac, rồi chọn Chỉnh sửa tiện ích. Chọn thư mục hoặc trang web cho từng tiện ích.";
 "Train" = "Huấn luyện";
 "Train This Story" = "Huấn luyện bằng bài viết này";
 "Train This Story…" = "Huấn luyện bài viết này…";

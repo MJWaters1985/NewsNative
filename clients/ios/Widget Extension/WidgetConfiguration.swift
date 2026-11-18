@@ -3,7 +3,7 @@ import AppIntents
 import Foundation
 
 struct NewsBlurWidgetConfiguration: WidgetConfigurationIntent {
-    static var title: LocalizedStringResource = "NewsBlur"
+    static var title: LocalizedStringResource = "NewsNative"
     static var description = IntentDescription(LocalizedStringResource("Choose a folder or site for this widget."))
 
     @Parameter(title: LocalizedStringResource("Folder or site"))

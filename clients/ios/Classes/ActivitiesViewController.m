@@ -71,11 +71,17 @@
 }
 
 - (void)updateLogo {
-    if ([ThemeManager themeManager].isDarkTheme) {
-        self.logoImageView.image = [UIImage imageNamed:@"logo_newsblur_blur-dark.png"];
-    } else {
-        self.logoImageView.image = [UIImage imageNamed:@"logo_newsblur_blur.png"];
-    }
+    // ActivitiesViewController.m draws the NewsNative wordmark (logo and name) in the theme's secondary text color.
+    CGSize size = CGSizeMake(306, 59);
+    UIImage *logo = [UIImage imageNamed:@"logo_512"];
+    UIColor *textColor = [[ThemeManager themeManager] resolvedColor:UIColor.tertiaryLabelColor];
+    UIFont *font = [UIFont systemFontOfSize:40 weight:UIFontWeightBold];
+    self.logoImageView.image = [[[UIGraphicsImageRenderer alloc] initWithSize:size] imageWithActions:^(UIGraphicsImageRendererContext *context) {
+        [logo drawInRect:CGRectMake(0, 0, size.height, size.height) blendMode:kCGBlendModeNormal alpha:0.6];
+        NSDictionary *attributes = @{NSFontAttributeName: font, NSForegroundColorAttributeName: textColor};
+        CGSize textSize = [@"NewsNative" sizeWithAttributes:attributes];
+        [@"NewsNative" drawAtPoint:CGPointMake(size.height + 10, (size.height - textSize.height) / 2) withAttributes:attributes];
+    }];
 }
 
 - (void)updateTheme {

@@ -1203,7 +1203,7 @@ private final class DuoSidebarResizePan: FeedsSidebarResizePanGestureRecognizer 
             throw XCTSkip("Run alone on the logged-in open Duo with NEWSBLUR_LIVE_DUO_LAUNCH_TESTS=1")
         }
         let app = try XCTUnwrap(NewsBlurAppDelegate.shared())
-        guard Bundle.main.bundleIdentifier == "com.newsblur.NB-Alpha",
+        guard Bundle.main.bundleIdentifier == "tk.waters.newsnative.alpha",
               UIDevice.current.name.localizedCaseInsensitiveContains("duo"),
               !app.detailViewController.isPhoneOrCompact else { throw XCTSkip("Requires NB Alpha on open Duo") }
         guard let username = app.activeUsername, !username.isEmpty else { throw XCTSkip("Requires the existing logged-in account") }
@@ -2655,7 +2655,7 @@ private final class DuoSidebarResizePan: FeedsSidebarResizePanGestureRecognizer 
         #if !targetEnvironment(simulator)
         throw XCTSkip("Duo presentation audit requires the simulator")
         #else
-        guard #available(iOS 27.1, *), Bundle.main.bundleIdentifier == "com.newsblur.NB-Alpha" else {
+        guard #available(iOS 27.1, *), Bundle.main.bundleIdentifier == "tk.waters.newsnative.alpha" else {
             throw XCTSkip("Run the live NewsBlur Alpha target on iPhone Duo")
         }
         let environment = ProcessInfo.processInfo.environment

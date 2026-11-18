@@ -637,7 +637,7 @@ import WebKit
         navigation = UINavigationController(rootViewController: feeds)
         window = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first.map(UIWindow.init(windowScene:)) ?? UIWindow(frame: UIScreen.main.bounds)
         preferences = UserDefaults.standard.persistentDomain(forName: preferenceDomain) ?? [:]
-        sharedPreferences = UserDefaults(suiteName: "group.com.newsblur.NewsBlur-Group")?.persistentDomain(forName: "group.com.newsblur.NewsBlur-Group") ?? [:]
+        sharedPreferences = UserDefaults(suiteName: "group.tk.waters.newsnative")?.persistentDomain(forName: "group.tk.waters.newsnative") ?? [:]
     }
 
     func configureExpandedDuo() -> AuthenticationDuoSplitController {
@@ -824,7 +824,7 @@ import WebKit
         app.splitViewController = nil
         app.storiesCollection = nil
         UserDefaults.standard.setPersistentDomain(preferences, forName: preferenceDomain)
-        UserDefaults(suiteName: "group.com.newsblur.NewsBlur-Group")?.setPersistentDomain(sharedPreferences, forName: "group.com.newsblur.NewsBlur-Group")
+        UserDefaults(suiteName: "group.tk.waters.newsnative")?.setPersistentDomain(sharedPreferences, forName: "group.tk.waters.newsnative")
     }
 }
 

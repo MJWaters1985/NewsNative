@@ -4,7 +4,7 @@ import Foundation
 enum FeedSubscriptionURL {
     static func parse(_ url: URL) -> URL? {
         let scheme = url.scheme?.lowercased()
-        if scheme == "newsblur" {
+        if scheme == "newsnative" {
             guard url.host?.lowercased() == "subscribe",
                   let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
                   let value = components.queryItems?.first(where: { $0.name == "url" })?.value,

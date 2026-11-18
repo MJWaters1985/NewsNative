@@ -357,7 +357,7 @@ struct LanguageChooserView: View {
             // LanguageChooserView.swift names the detected language natively in its own column and in English
             // in the English column.
             let name = english ? Self.englishName(model.current) : Self.nativeName(model.current)
-            paragraph(String(format: NBLocalization.text("NewsBlur detected %@ from your device.", language: code), name), code: code)
+            paragraph(String(format: NBLocalization.text("NewsNative detected %@ from your device.", language: code), name), code: code)
         case .note:
             paragraph(NBLocalization.text("You can change this anytime in Preferences.", language: code), code: code)
         case .button:
@@ -394,10 +394,10 @@ struct LanguageChooserView: View {
                 .foregroundColor(muted ? LanguageChooserColors.muted : LanguageChooserColors.ink)
                 .accessibilityAddTraits(.isHeader)
             #if targetEnvironment(macCatalyst)
-            paragraph(NBLocalization.text("Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu.",
+            paragraph(NBLocalization.text("Pick the language you'd like NewsNative to use. You can change this anytime in the NewsNative menu.",
                                           language: code), code: code, color: muted ? LanguageChooserColors.muted : nil)
             #else
-            paragraph(NBLocalization.text("Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences.",
+            paragraph(NBLocalization.text("Pick the language you'd like NewsNative to use. You can change this anytime in Preferences.",
                                           language: code), code: code, color: muted ? LanguageChooserColors.muted : nil)
             #endif
         }

@@ -97,7 +97,7 @@
 "AI finds the stories" = "AI menemukan artikel";
 "ALL" = "SEMUA";
 "ALL NOTIFICATIONS" = "SEMUA NOTIFIKASI";
-"About NewsBlur" = "Tentang NewsBlur";
+"About NewsNative" = "Tentang NewsNative";
 "Accent [voice filter]" = "Aksen";
 "Account" = "Akun";
 "Add" = "Tambahkan";
@@ -449,8 +449,8 @@
 "Get a summary of your top stories, delivered on your schedule." = "Dapatkan ringkasan berita utama Anda, dikirim sesuai jadwal pilihan Anda.";
 "Global Shared Stories" = "Artikel yang Dibagikan Secara Global";
 "Go to feed" = "Buka feed";
-"Go to the %@ feed in NewsBlur." = "Buka feed %@ di NewsBlur.";
-"Go to the %@ folder in NewsBlur." = "Buka folder %@ di NewsBlur.";
+"Go to the %@ feed in NewsNative." = "Buka feed %@ di NewsNative.";
+"Go to the %@ folder in NewsNative." = "Buka folder %@ di NewsNative.";
 "Good Reads" = "Bacaan Bagus";
 "Gray" = "Abu-abu";
 "Grid" = "Kisi";
@@ -674,10 +674,10 @@
 "New posts from feeds you recently read" = "Postingan baru dari feed yang baru-baru ini Anda baca";
 "New to NewsBlur? Create an account" = "Baru menggunakan NewsBlur? Buat akun";
 "Newest first" = "Terbaru terlebih dahulu";
-"NewsBlur Dashboard" = "Dasbor NewsBlur";
+"NewsNative Dashboard" = "Dasbor NewsNative";
 "NewsBlur Premium" = "NewsBlur Premium";
 "NewsBlur checks for changes and delivers new stories to your feed." = "NewsBlur memeriksa perubahan dan mengirimkan artikel baru ke feed Anda.";
-"NewsBlur detected %@ from your device." = "NewsBlur mendeteksi %@ dari perangkat Anda.";
+"NewsNative detected %@ from your device." = "NewsNative mendeteksi %@ dari perangkat Anda.";
 "NewsBlur password" = "kata sandi NewsBlur";
 "Next" = "Berikutnya";
 "Next Folder" = "Folder Berikutnya";
@@ -775,8 +775,8 @@
 "Pause Listening" = "Jeda mendengarkan";
 "Percentage of the visible story scrolled by Space or Shift-Space" = "Persentase artikel yang terlihat yang digulir dengan Space atau Shift-Space";
 "Permanently delete account" = "Hapus akun secara permanen";
-"Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "Pilih bahasa yang ingin digunakan oleh NewsBlur. Anda dapat mengubahnya kapan saja di Preferensi.";
-"Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "Pilih bahasa yang ingin Anda gunakan di NewsBlur. Anda dapat mengubahnya kapan saja di menu NewsBlur.";
+"Pick the language you'd like NewsNative to use. You can change this anytime in Preferences." = "Pilih bahasa yang ingin digunakan oleh NewsNative. Anda dapat mengubahnya kapan saja di Preferensi.";
+"Pick the language you'd like NewsNative to use. You can change this anytime in the NewsNative menu." = "Pilih bahasa yang ingin Anda gunakan di NewsNative. Anda dapat mengubahnya kapan saja di menu NewsNative.";
 "Pick which model writes your Daily Briefing" = "Pilih model yang menulis Ringkasan Harian Anda";
 "Pitch stays natural at every speed." = "Nada suara tetap alami pada setiap kecepatan.";
 "Place the story list controls above or below the stories" = "Letakkan kontrol daftar artikel di atas atau di bawah artikel";
@@ -850,7 +850,7 @@
 "Reduce motion" = "Kurangi gerakan";
 "Refine with a hint" = "Persempit dengan petunjuk";
 "Refine with this title" = "Persempit dengan judul ini";
-"Refresh NewsBlur" = "Muat Ulang NewsBlur";
+"Refresh NewsNative" = "Muat Ulang NewsNative";
 "Refresh site" = "Muat ulang situs";
 "Regex" = "Regex";
 "Regex Patterns" = "Pola Regex";
@@ -1153,7 +1153,7 @@
 "Top" = "Teratas";
 "Top Level" = "Level Teratas";
 "Top stories" = "Artikel teratas";
-"Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "Sentuh dan tahan widget NewsBlur, atau klik kanan di Mac, lalu pilih Edit Widget. Pilih folder atau situs untuk setiap widget.";
+"Touch and hold a NewsNative widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "Sentuh dan tahan widget NewsNative, atau klik kanan di Mac, lalu pilih Edit Widget. Pilih folder atau situs untuk setiap widget.";
 "Train" = "Latih";
 "Train This Story" = "Latih Artikel Ini";
 "Train This Story…" = "Latih Artikel Ini…";

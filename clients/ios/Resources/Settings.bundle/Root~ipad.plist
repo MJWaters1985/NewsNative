@@ -1110,7 +1110,7 @@
 		</dict>
 		<dict>
 			<key>Title</key>
-			<string>About NewsBlur</string>
+			<string>About NewsNative</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -1130,7 +1130,7 @@
 			<key>Title</key>
 			<string>Copyright</string>
 			<key>DefaultValue</key>
-			<string>NewsBlur, Inc.</string>
+			<string>Mike Waters · based on NewsBlur by Samuel Clay (MIT License)</string>
 			<key>Key</key>
 			<string>copyright</string>
 		</dict>

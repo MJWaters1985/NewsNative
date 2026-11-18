@@ -12,13 +12,13 @@ enum FeedSubscriptionError: LocalizedError {
         case .invalidURL:
             return "Share an RSS feed or website URL from Safari to subscribe."
         case .signInRequired:
-            return "Open NewsBlur and sign in, then share this link again."
+            return "Open NewsNative and sign in, then share this link again."
         case .accountRefreshRequired:
-            return "Open NewsBlur once to refresh your account, then share this link again."
+            return "Open NewsNative once to refresh your account, then share this link again."
         case .server(let message):
             return message
         case .invalidResponse:
-            return "NewsBlur could not confirm the subscription. Please try again."
+            return "NewsNative could not confirm the subscription. Please try again."
         }
     }
 }
@@ -83,7 +83,7 @@ struct FeedSubscriptionRequest {
     static func feedID(data: Data, statusCode: Int) throws -> String {
         guard (200..<300).contains(statusCode) else {
             if statusCode == 401 || statusCode == 403 { throw FeedSubscriptionError.signInRequired }
-            throw FeedSubscriptionError.server("NewsBlur could not subscribe right now (HTTP \(statusCode)). Please try again.")
+            throw FeedSubscriptionError.server("NewsNative could not subscribe right now (HTTP \(statusCode)). Please try again.")
         }
         guard var text = String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) else {
             throw FeedSubscriptionError.invalidResponse
@@ -97,7 +97,7 @@ struct FeedSubscriptionRequest {
               let code = result["code"] as? Int else { throw FeedSubscriptionError.invalidResponse }
         guard code > 0 else {
             let message = result["message"] as? String ?? ""
-            throw FeedSubscriptionError.server(message.isEmpty ? "NewsBlur could not subscribe. Open NewsBlur to check your account, then try again." : message)
+            throw FeedSubscriptionError.server(message.isEmpty ? "NewsNative could not subscribe. Open NewsNative to check your account, then try again." : message)
         }
         let identifier: String
         if let number = result["usersub"] as? Int {

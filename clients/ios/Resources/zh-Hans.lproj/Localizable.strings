@@ -97,7 +97,7 @@
 "AI finds the stories" = "AI 帮你找到文章";
 "ALL" = "全部";
 "ALL NOTIFICATIONS" = "所有通知";
-"About NewsBlur" = "关于 NewsBlur";
+"About NewsNative" = "关于 NewsNative";
 "Accent [voice filter]" = "口音";
 "Account" = "账户";
 "Add" = "添加";
@@ -449,8 +449,8 @@
 "Get a summary of your top stories, delivered on your schedule." = "按你的时间安排，获取热门文章摘要。";
 "Global Shared Stories" = "全局分享的文章";
 "Go to feed" = "前往订阅源";
-"Go to the %@ feed in NewsBlur." = "前往 NewsBlur 中的 %@ 订阅源。";
-"Go to the %@ folder in NewsBlur." = "前往 NewsBlur 中的 %@ 文件夹。";
+"Go to the %@ feed in NewsNative." = "前往 NewsNative 中的 %@ 订阅源。";
+"Go to the %@ folder in NewsNative." = "前往 NewsNative 中的 %@ 文件夹。";
 "Good Reads" = "优质阅读";
 "Gray" = "灰色";
 "Grid" = "网格";
@@ -674,10 +674,10 @@
 "New posts from feeds you recently read" = "你最近阅读的订阅源发布了新文章";
 "New to NewsBlur? Create an account" = "初次使用 NewsBlur？创建账户";
 "Newest first" = "最新优先";
-"NewsBlur Dashboard" = "NewsBlur 控制面板";
+"NewsNative Dashboard" = "NewsNative 控制面板";
 "NewsBlur Premium" = "NewsBlur 高级版";
 "NewsBlur checks for changes and delivers new stories to your feed." = "NewsBlur 会检查变化，并将新文章推送到你的订阅源。";
-"NewsBlur detected %@ from your device." = "NewsBlur 检测到你的设备使用的是 %@。";
+"NewsNative detected %@ from your device." = "NewsNative 检测到你的设备使用的是 %@。";
 "NewsBlur password" = "NewsBlur 密码";
 "Next" = "下一步";
 "Next Folder" = "下一个文件夹";
@@ -775,8 +775,8 @@
 "Pause Listening" = "暂停收听";
 "Percentage of the visible story scrolled by Space or Shift-Space" = "按空格键或 Shift-Space 滚动可见文章的百分比";
 "Permanently delete account" = "永久删除账户";
-"Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "选择你希望 NewsBlur 使用的语言。你可以随时在“偏好设置”中更改。";
-"Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "选择你希望 NewsBlur 使用的语言。你可以随时在 NewsBlur 菜单中更改。";
+"Pick the language you'd like NewsNative to use. You can change this anytime in Preferences." = "选择你希望 NewsNative 使用的语言。你可以随时在“偏好设置”中更改。";
+"Pick the language you'd like NewsNative to use. You can change this anytime in the NewsNative menu." = "选择你希望 NewsNative 使用的语言。你可以随时在 NewsNative 菜单中更改。";
 "Pick which model writes your Daily Briefing" = "选择用于撰写每日简报的模型";
 "Pitch stays natural at every speed." = "任何速度下，音调都保持自然。";
 "Place the story list controls above or below the stories" = "将文章列表控件放在文章上方或下方";
@@ -850,7 +850,7 @@
 "Reduce motion" = "减少动态效果";
 "Refine with a hint" = "添加提示以优化";
 "Refine with this title" = "使用此标题优化";
-"Refresh NewsBlur" = "刷新 NewsBlur";
+"Refresh NewsNative" = "刷新 NewsNative";
 "Refresh site" = "刷新网站";
 "Regex" = "正则表达式";
 "Regex Patterns" = "正则表达式模式";
@@ -1153,7 +1153,7 @@
 "Top" = "顶部";
 "Top Level" = "顶层";
 "Top stories" = "热门文章";
-"Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "按住 NewsBlur 小组件，或在 Mac 上右键点击，然后选择“编辑小组件”。为每个小组件选择一个文件夹或网站。";
+"Touch and hold a NewsNative widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "按住 NewsNative 小组件，或在 Mac 上右键点击，然后选择“编辑小组件”。为每个小组件选择一个文件夹或网站。";
 "Train" = "训练";
 "Train This Story" = "训练此文章";
 "Train This Story…" = "训练此文章…";

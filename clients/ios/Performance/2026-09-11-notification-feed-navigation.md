@@ -110,7 +110,7 @@ That fixture now waits for actual restoration completion, asserts the halfway of
 
 The normal signed Release builds succeed in `/tmp/newsblur-device-release-build-123.log` and `/tmp/newsblur-mac-release-build-123.log`. Both bundles pass strict recursive signature verification and contain no XCTest bundle. The Mac Release entitlements retain the normal outgoing-network allowance and omit the test fixture's incoming-network allowance. No production source changes were made after validation.
 
-- ClayPad Air: `claypad-install-123.json` confirms installation of `com.newsblur.NB-Alpha`; `claypad-launch-123.json` confirms successful launch with performance instrumentation disabled. A subsequent process query confirms PID 1879 is still running (`claypad-processes-123.json`).
+- ClayPad Air: `claypad-install-123.json` confirms installation of `tk.waters.newsnative.alpha`; `claypad-launch-123.json` confirms successful launch with performance instrumentation disabled. A subsequent process query confirms PID 1879 is still running (`claypad-processes-123.json`).
 - ClayPhone SE 3: `clayphone-install-123.json` confirms installation. The device still requires its passcode at 15:09:22, so launch is pending unlock. An unlock request was sent while independent work continued.
 - Mac: `/Users/sclay/Applications/NB Alpha.app` is replaced with the final Release build. Its executable SHA-256 matches the built bundle: `dfe8c81b173f54814be8955a088cff13e3e8d20338a1ca09fa17d3f220a0670a`. The prior user-folder build is preserved at `/tmp/newsblur-mac-before-notifications-123.app`. The older root-owned `/Applications` copy remains unchanged; use the user-folder app explicitly. The earlier desktop-control failure still limits manual launch verification.
 

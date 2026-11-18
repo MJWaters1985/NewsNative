@@ -407,7 +407,7 @@ final class Test_DiscoverPanePresentation: XCTestCase {
         throw XCTSkip("Run explicitly on a connected iPad with NewsBlur Alpha")
 #else
         guard UIDevice.current.userInterfaceIdiom == .pad,
-              Bundle.main.bundleIdentifier == "com.newsblur.NB-Alpha" else {
+              Bundle.main.bundleIdentifier == "tk.waters.newsnative.alpha" else {
             throw XCTSkip("Requires NewsBlur Alpha on iPad")
         }
         let app = try XCTUnwrap(NewsBlurAppDelegate.shared())

@@ -532,7 +532,7 @@ final class ListenPlayer: NSObject, ObservableObject {
         case "saved_stories": return NBLocalization.text("Saved Stories")
         case "read_stories": return NBLocalization.text("Read Stories")
         case "daily_briefing": return NBLocalization.text("Daily Briefing")
-        case "dashboard": return NBLocalization.text("NewsBlur Dashboard")
+        case "dashboard": return NBLocalization.text("NewsNative Dashboard")
         case "": return nil
         case let folder: return appDelegate.extractFolderName(folder) ?? folder
         }
@@ -1277,7 +1277,7 @@ final class ListenPlayer: NSObject, ObservableObject {
         var info: [String: Any] = [
             MPMediaItemPropertyTitle: storyTitle,
             MPMediaItemPropertyArtist: feedTitle,
-            MPMediaItemPropertyAlbumTitle: "NewsBlur",
+            MPMediaItemPropertyAlbumTitle: "NewsNative",
             MPMediaItemPropertyPlaybackDuration: previewLimit.map { min($0, duration) } ?? duration,
             MPNowPlayingInfoPropertyElapsedPlaybackTime: elapsed,
             MPNowPlayingInfoPropertyPlaybackRate: status == .playing ? speed : 0,

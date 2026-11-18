@@ -97,7 +97,7 @@
 "AI finds the stories" = "الذكاء الاصطناعي يعثر على القصص";
 "ALL" = "الكل";
 "ALL NOTIFICATIONS" = "كل الإشعارات";
-"About NewsBlur" = "حول NewsBlur";
+"About NewsNative" = "حول NewsNative";
 "Accent [voice filter]" = "اللهجة";
 "Account" = "الحساب";
 "Add" = "إضافة";
@@ -449,8 +449,8 @@
 "Get a summary of your top stories, delivered on your schedule." = "احصل على ملخص لأهم قصصك، في الوقت الذي يناسبك.";
 "Global Shared Stories" = "القصص المشتركة عالميًا";
 "Go to feed" = "الانتقال إلى الخلاصة";
-"Go to the %@ feed in NewsBlur." = "انتقل إلى خلاصة %@ في NewsBlur.";
-"Go to the %@ folder in NewsBlur." = "انتقل إلى مجلد %@ في NewsBlur.";
+"Go to the %@ feed in NewsNative." = "انتقل إلى خلاصة %@ في NewsNative.";
+"Go to the %@ folder in NewsNative." = "انتقل إلى مجلد %@ في NewsNative.";
 "Good Reads" = "قراءات جيدة";
 "Gray" = "رمادي";
 "Grid" = "شبكة";
@@ -674,10 +674,10 @@
 "New posts from feeds you recently read" = "منشورات جديدة من الخلاصات التي قرأتها مؤخرًا";
 "New to NewsBlur? Create an account" = "هل أنت جديد على NewsBlur؟ أنشئ حسابًا";
 "Newest first" = "الأحدث أولًا";
-"NewsBlur Dashboard" = "لوحة تحكم NewsBlur";
+"NewsNative Dashboard" = "لوحة تحكم NewsNative";
 "NewsBlur Premium" = "NewsBlur Premium";
 "NewsBlur checks for changes and delivers new stories to your feed." = "يتحقق NewsBlur من التغييرات ويعرض القصص الجديدة في خلاصتك.";
-"NewsBlur detected %@ from your device." = "اكتشف NewsBlur أن لغة جهازك هي %@.";
+"NewsNative detected %@ from your device." = "اكتشف NewsNative أن لغة جهازك هي %@.";
 "NewsBlur password" = "كلمة مرور NewsBlur";
 "Next" = "التالي";
 "Next Folder" = "المجلد التالي";
@@ -775,8 +775,8 @@
 "Pause Listening" = "إيقاف الاستماع مؤقتًا";
 "Percentage of the visible story scrolled by Space or Shift-Space" = "النسبة المئوية من القصة الظاهرة التي يمرّرها مفتاح المسافة أو مفتاح المسافة مع Shift";
 "Permanently delete account" = "حذف الحساب نهائيًا";
-"Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "اختر اللغة التي تريد أن يستخدمها NewsBlur. يمكنك تغيير ذلك في أي وقت من التفضيلات.";
-"Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "اختر اللغة التي تريد أن يستخدمها NewsBlur. يمكنك تغيير ذلك في أي وقت من قائمة NewsBlur.";
+"Pick the language you'd like NewsNative to use. You can change this anytime in Preferences." = "اختر اللغة التي تريد أن يستخدمها NewsNative. يمكنك تغيير ذلك في أي وقت من التفضيلات.";
+"Pick the language you'd like NewsNative to use. You can change this anytime in the NewsNative menu." = "اختر اللغة التي تريد أن يستخدمها NewsNative. يمكنك تغيير ذلك في أي وقت من قائمة NewsNative.";
 "Pick which model writes your Daily Briefing" = "اختر النموذج الذي يكتب موجزك اليومي";
 "Pitch stays natural at every speed." = "تظل طبقة الصوت طبيعية مهما كانت السرعة.";
 "Place the story list controls above or below the stories" = "ضع عناصر التحكم بقائمة القصص أعلى القصص أو أسفلها";
@@ -850,7 +850,7 @@
 "Reduce motion" = "تقليل الحركة";
 "Refine with a hint" = "حسّن النتيجة بتلميح";
 "Refine with this title" = "تحسين النتيجة بهذا العنوان";
-"Refresh NewsBlur" = "تحديث NewsBlur";
+"Refresh NewsNative" = "تحديث NewsNative";
 "Refresh site" = "تحديث الموقع";
 "Regex" = "تعبير نمطي";
 "Regex Patterns" = "أنماط التعبيرات النمطية";
@@ -1153,7 +1153,7 @@
 "Top" = "الأعلى";
 "Top Level" = "المستوى الأعلى";
 "Top stories" = "أهم القصص";
-"Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "المس أداة NewsBlur مع الاستمرار، أو انقر عليها بزر الفأرة الأيمن على Mac، ثم اختر «تعديل الأداة». اختر مجلدًا أو موقعًا لكل أداة.";
+"Touch and hold a NewsNative widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "المس أداة NewsNative مع الاستمرار، أو انقر عليها بزر الفأرة الأيمن على Mac، ثم اختر «تعديل الأداة». اختر مجلدًا أو موقعًا لكل أداة.";
 "Train" = "تدريب";
 "Train This Story" = "درّب على هذه القصة";
 "Train This Story…" = "درّب على هذه القصة…";

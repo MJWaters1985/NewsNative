@@ -958,7 +958,7 @@ private struct OnboardingView: View {
             HStack(spacing: 8) {
                 Image(uiImage: UIImage(named: "logo_512.png") ?? UIImage(systemName: "sun.max.fill")!)
                     .resizable().frame(width: 36, height: 36)
-                Text(verbatim: "NewsBlur").font(.title3.bold())
+                Text(verbatim: "NewsNative").font(.title3.bold())
                 Spacer(minLength: 8)
                 Text("\(stepIndex + 1) / \(stepCount)").font(.subheadline.monospacedDigit())
                     .foregroundStyle(DiscoverColors.textSecondary)

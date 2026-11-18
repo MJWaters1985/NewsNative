@@ -1958,7 +1958,7 @@ import WebKit
         #if targetEnvironment(simulator)
         throw XCTSkip("Requires the connected iPad Alpha app")
         #else
-        guard UIDevice.current.userInterfaceIdiom == .pad, Bundle.main.bundleIdentifier == "com.newsblur.NB-Alpha" else {
+        guard UIDevice.current.userInterfaceIdiom == .pad, Bundle.main.bundleIdentifier == "tk.waters.newsnative.alpha" else {
             throw XCTSkip("Requires NB Alpha on iPad")
         }
         let app = try XCTUnwrap(NewsBlurAppDelegate.shared())
@@ -2032,7 +2032,7 @@ import WebKit
         throw XCTSkip("Requires the connected iPad Alpha app")
         #else
         guard UIDevice.current.userInterfaceIdiom == .pad,
-              Bundle.main.bundleIdentifier == "com.newsblur.NB-Alpha" else {
+              Bundle.main.bundleIdentifier == "tk.waters.newsnative.alpha" else {
             throw XCTSkip("Requires NB Alpha on iPad")
         }
         let app = try XCTUnwrap(NewsBlurAppDelegate.shared())
@@ -2085,7 +2085,7 @@ import WebKit
         #if targetEnvironment(simulator)
         throw XCTSkip("Requires the physical SE landscape safe area")
         #else
-        guard Bundle.main.bundleIdentifier == "com.newsblur.NB-Alpha", UIDevice.current.userInterfaceIdiom == .phone else {
+        guard Bundle.main.bundleIdentifier == "tk.waters.newsnative.alpha", UIDevice.current.userInterfaceIdiom == .phone else {
             throw XCTSkip("Requires NB Alpha on iPhone")
         }
         let app = try XCTUnwrap(NewsBlurAppDelegate.shared())
@@ -2325,7 +2325,7 @@ import WebKit
         #if targetEnvironment(simulator)
         throw XCTSkip("Requires the connected NB Alpha device")
         #else
-        guard Bundle.main.bundleIdentifier == "com.newsblur.NB-Alpha" else {
+        guard Bundle.main.bundleIdentifier == "tk.waters.newsnative.alpha" else {
             throw XCTSkip("Requires NB Alpha")
         }
         let app = try XCTUnwrap(NewsBlurAppDelegate.shared())
@@ -2514,7 +2514,7 @@ import WebKit
         throw XCTSkip("Requires the connected iPad Alpha app")
         #else
         guard UIDevice.current.userInterfaceIdiom == .pad,
-              Bundle.main.bundleIdentifier == "com.newsblur.NB-Alpha" else {
+              Bundle.main.bundleIdentifier == "tk.waters.newsnative.alpha" else {
             throw XCTSkip("Requires NB Alpha on iPad")
         }
         let app = try XCTUnwrap(NewsBlurAppDelegate.shared())
@@ -2738,7 +2738,7 @@ import WebKit
         throw XCTSkip("Requires the connected iPad Alpha app")
 #else
         guard #available(iOS 27.0, *), UIDevice.current.userInterfaceIdiom == .pad,
-              Bundle.main.bundleIdentifier == "com.newsblur.NB-Alpha" else {
+              Bundle.main.bundleIdentifier == "tk.waters.newsnative.alpha" else {
             throw XCTSkip("Requires NewsBlur Alpha on iPad with iOS 27")
         }
         let app = try XCTUnwrap(NewsBlurAppDelegate.shared())

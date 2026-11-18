@@ -97,7 +97,7 @@
 "AI finds the stories" = "AI vindt de artikelen";
 "ALL" = "ALLES";
 "ALL NOTIFICATIONS" = "ALLE MELDINGEN";
-"About NewsBlur" = "Over NewsBlur";
+"About NewsNative" = "Over NewsNative";
 "Accent [voice filter]" = "Accent";
 "Account" = "Account";
 "Add" = "Toevoegen";
@@ -449,8 +449,8 @@
 "Get a summary of your top stories, delivered on your schedule." = "Ontvang volgens jouw schema een samenvatting van je belangrijkste artikelen.";
 "Global Shared Stories" = "Wereldwijd gedeelde artikelen";
 "Go to feed" = "Ga naar feed";
-"Go to the %@ feed in NewsBlur." = "Ga naar de feed %@ in NewsBlur.";
-"Go to the %@ folder in NewsBlur." = "Ga naar de map %@ in NewsBlur.";
+"Go to the %@ feed in NewsNative." = "Ga naar de feed %@ in NewsNative.";
+"Go to the %@ folder in NewsNative." = "Ga naar de map %@ in NewsNative.";
 "Good Reads" = "Goede leestips";
 "Gray" = "Grijs";
 "Grid" = "Raster";
@@ -674,10 +674,10 @@
 "New posts from feeds you recently read" = "Nieuwe berichten van feeds die je onlangs hebt gelezen";
 "New to NewsBlur? Create an account" = "Nieuw bij NewsBlur? Maak een account aan";
 "Newest first" = "Nieuwste eerst";
-"NewsBlur Dashboard" = "NewsBlur-dashboard";
+"NewsNative Dashboard" = "NewsNative-dashboard";
 "NewsBlur Premium" = "NewsBlur Premium";
 "NewsBlur checks for changes and delivers new stories to your feed." = "NewsBlur controleert op wijzigingen en voegt nieuwe artikelen toe aan je feed.";
-"NewsBlur detected %@ from your device." = "NewsBlur heeft %@ gedetecteerd op je apparaat.";
+"NewsNative detected %@ from your device." = "NewsNative heeft %@ gedetecteerd op je apparaat.";
 "NewsBlur password" = "NewsBlur-wachtwoord";
 "Next" = "Volgende";
 "Next Folder" = "Volgende map";
@@ -775,8 +775,8 @@
 "Pause Listening" = "Luisteren pauzeren";
 "Percentage of the visible story scrolled by Space or Shift-Space" = "Percentage van het zichtbare artikel waarover je scrolt met Spatie of Shift-Spatie";
 "Permanently delete account" = "Account definitief verwijderen";
-"Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "Kies de taal die NewsBlur moet gebruiken. Je kunt dit altijd wijzigen in Voorkeuren.";
-"Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "Kies de taal die je in NewsBlur wilt gebruiken. Je kunt deze op elk moment wijzigen via het NewsBlur-menu.";
+"Pick the language you'd like NewsNative to use. You can change this anytime in Preferences." = "Kies de taal die NewsNative moet gebruiken. Je kunt dit altijd wijzigen in Voorkeuren.";
+"Pick the language you'd like NewsNative to use. You can change this anytime in the NewsNative menu." = "Kies de taal die je in NewsNative wilt gebruiken. Je kunt deze op elk moment wijzigen via het NewsNative-menu.";
 "Pick which model writes your Daily Briefing" = "Kies welk model je dagelijkse briefing schrijft";
 "Pitch stays natural at every speed." = "De toonhoogte blijft bij elke snelheid natuurlijk.";
 "Place the story list controls above or below the stories" = "Plaats de bedieningselementen voor de artikellijst boven of onder de artikelen";
@@ -850,7 +850,7 @@
 "Reduce motion" = "Beweging verminderen";
 "Refine with a hint" = "Verfijn met een aanwijzing";
 "Refine with this title" = "Verfijnen met deze titel";
-"Refresh NewsBlur" = "NewsBlur vernieuwen";
+"Refresh NewsNative" = "NewsNative vernieuwen";
 "Refresh site" = "Site vernieuwen";
 "Regex" = "Regex";
 "Regex Patterns" = "Regex-patronen";
@@ -1153,7 +1153,7 @@
 "Top" = "Boven";
 "Top Level" = "Hoofdniveau";
 "Top stories" = "Topartikelen";
-"Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "Houd een NewsBlur-widget ingedrukt of klik er met de rechtermuisknop op op een Mac en kies Widget bewerken. Kies voor elke widget een map of site.";
+"Touch and hold a NewsNative widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "Houd een NewsNative-widget ingedrukt of klik er met de rechtermuisknop op op een Mac en kies Widget bewerken. Kies voor elke widget een map of site.";
 "Train" = "Trainen";
 "Train This Story" = "Dit artikel trainen";
 "Train This Story…" = "Dit artikel trainen…";

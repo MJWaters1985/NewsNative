@@ -176,7 +176,7 @@ static NSString *NBAccessibilitySlug(NSString *value) {
     NSString *folderTitle;
     BOOL isUserFolderName = NO;
     if (section == NewsBlurTopSectionDashboard) {
-        folderTitle = [NBLocalization text:@"NewsBlur Dashboard"];
+        folderTitle = [NBLocalization text:@"NewsNative Dashboard"];
     } else if (section == NewsBlurTopSectionDiscoverSites) {
         folderTitle = [NBLocalization text:@"Add + Discover Sites"];
     } else if (section == NewsBlurTopSectionInfrequentSiteStories) {

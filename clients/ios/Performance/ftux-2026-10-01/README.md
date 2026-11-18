@@ -92,7 +92,7 @@ Both physical cold-launch tests pass in `/tmp/newsblur-claypad-first-edge-fixed.
 Both provider changes were submitted with explicit approval and verified as saved:
 
 - Google project `newsblur`: web OAuth client **NewsBlur iOS sign-in backend**, with redirect `https://www.newsblur.com/api/social/google/callback`. The existing app audience is External and In production. Requests ask only for `openid email`.
-- Apple Developer team `HR7P97SD72`: **Sign In with Apple** enabled as a primary capability for `com.newsblur.NewsBlur`. Native Apple sign-in uses that bundle ID as its token audience. The server currently accepts the production bundle ID as the Apple audience; Alpha Apple authentication has not been verified.
+- Apple Developer team `HR7P97SD72`: **Sign In with Apple** enabled as a primary capability for `tk.waters.newsnative`. Native Apple sign-in uses that bundle ID as its token audience. The server currently accepts the production bundle ID as the Apple audience; Alpha Apple authentication has not been verified.
 
 Google credentials are stored outside Git in `/srv/secrets-newsblur/keys/google-signin-client.json` (mode 0600) and the existing `/srv/secrets-newsblur/settings/common_settings.py`. The worktree's ignored `newsblur_web/local_settings.py` also has them. No credentials are embedded in the iOS application.
 

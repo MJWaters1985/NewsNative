@@ -18,7 +18,7 @@ enum WidgetCacheError: String, Error {
 }
 
 class WidgetCache {
-    private static let logger = Logger(subsystem: "com.newsblur.widget", category: "stories")
+    private static let logger = Logger(subsystem: "tk.waters.newsnative.widget", category: "stories")
     let source: String
     private var cacheFilename = "Stories.json"
 
@@ -68,7 +68,7 @@ class WidgetCache {
     private var loaders = LoaderDictionary()
     
     struct Constant {
-        static let group = "group.com.newsblur.NewsBlur-Group"
+        static let group = "group.tk.waters.newsnative"
         static let token = "share:token"
         static let host = "share:host"
         static let feeds = "widget:feeds_array"

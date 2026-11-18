@@ -8,7 +8,7 @@ final class ReaderUITests: XCTestCase {
         try requireLiveSession()
         guard UIDevice.current.userInterfaceIdiom == .pad else { throw XCTSkip("Requires iPad") }
         XCUIDevice.shared.orientation = .portrait
-        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app = XCUIApplication(bundleIdentifier: "tk.waters.newsnative.alpha")
         app.launchArguments = ["-split_behavior", "auto"]
         app.launch()
         let story = app.webViews.firstMatch
@@ -498,7 +498,7 @@ final class ReaderUITests: XCTestCase {
 
     func test_liveAlphaImageViewer() throws {
         try requireLiveSession()
-        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app = XCUIApplication(bundleIdentifier: "tk.waters.newsnative.alpha")
         app.launch()
         attachScreenshot(named: "claypad-image-viewer-initial")
         XCTAssertTrue(app.tables["feeds-list"].firstMatch.waitForExistence(timeout: 20))
@@ -543,7 +543,7 @@ final class ReaderUITests: XCTestCase {
         throw XCTSkip("Requires the signed-in ClayPad")
         #else
         guard UIDevice.current.userInterfaceIdiom == .pad else { throw XCTSkip("Requires iPad") }
-        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app = XCUIApplication(bundleIdentifier: "tk.waters.newsnative.alpha")
         app.launch()
         XCUIDevice.shared.orientation = .portrait
         attachScreenshot(named: "claypad-before-edge-reproduction")
@@ -572,7 +572,7 @@ final class ReaderUITests: XCTestCase {
         #else
         guard UIDevice.current.userInterfaceIdiom == .pad else { throw XCTSkip("Requires iPad") }
         XCUIDevice.shared.orientation = .portrait
-        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app = XCUIApplication(bundleIdentifier: "tk.waters.newsnative.alpha")
         app.launch()
         let stories = app.tables["story-titles-list"].firstMatch
         XCTAssertTrue(stories.waitForExistence(timeout: 15))
@@ -597,7 +597,7 @@ final class ReaderUITests: XCTestCase {
         #else
         guard UIDevice.current.userInterfaceIdiom == .pad else { throw XCTSkip("Requires iPad") }
         XCUIDevice.shared.orientation = .portrait
-        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app = XCUIApplication(bundleIdentifier: "tk.waters.newsnative.alpha")
         app.launch()
         let stories = app.tables["story-titles-list"].firstMatch
         XCTAssertTrue(stories.waitForExistence(timeout: 15))
@@ -622,7 +622,7 @@ final class ReaderUITests: XCTestCase {
         #if targetEnvironment(simulator)
         throw XCTSkip("Requires the signed-in ClayPad and live catalog")
         #else
-        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app = XCUIApplication(bundleIdentifier: "tk.waters.newsnative.alpha")
         XCUIDevice.shared.orientation = .portrait
         app.launch()
         let settings = app.buttons["feed-list-settings"]
@@ -669,7 +669,7 @@ final class ReaderUITests: XCTestCase {
         #if targetEnvironment(simulator)
         throw XCTSkip("Requires the signed-in ClayPad and live discovery results")
         #else
-        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app = XCUIApplication(bundleIdentifier: "tk.waters.newsnative.alpha")
         XCUIDevice.shared.orientation = .portrait
         app.launch()
         let settings = app.buttons["feed-list-settings"]
@@ -708,7 +708,7 @@ final class ReaderUITests: XCTestCase {
         #if targetEnvironment(simulator)
         throw XCTSkip("Requires the signed-in ClayPad and live favicon endpoint")
         #else
-        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app = XCUIApplication(bundleIdentifier: "tk.waters.newsnative.alpha")
         XCUIDevice.shared.orientation = .portrait
         app.launch()
         let settings = app.buttons["feed-list-settings"]
@@ -740,7 +740,7 @@ final class ReaderUITests: XCTestCase {
         #if targetEnvironment(simulator)
         throw XCTSkip("Requires the signed-in ClayPad")
         #else
-        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app = XCUIApplication(bundleIdentifier: "tk.waters.newsnative.alpha")
         XCUIDevice.shared.orientation = .portrait
         app.launch()
         let settings = app.buttons["feed-list-settings"]
@@ -1044,7 +1044,7 @@ final class ReaderUITests: XCTestCase {
 
     func test_liveAlphaFeedTrainerStaysOpen() throws {
         try requireLiveSession()
-        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app = XCUIApplication(bundleIdentifier: "tk.waters.newsnative.alpha")
         app.launchArguments = ["-long_press_feed_title", "show_actions"]
         app.launch()
         let feeds = app.tables["feeds-list"].firstMatch
@@ -1068,7 +1068,7 @@ final class ReaderUITests: XCTestCase {
 
     func test_liveAlphaRowContextMenus() throws {
         try requireLiveSession()
-        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app = XCUIApplication(bundleIdentifier: "tk.waters.newsnative.alpha")
         app.launchArguments = ["-long_press_feed_title", "show_actions", "-long_press_story_title", "show_actions"]
         app.launch()
         attachScreenshot(named: "claypad-before-context-menus")
@@ -1197,7 +1197,7 @@ final class ReaderUITests: XCTestCase {
         #if targetEnvironment(simulator)
         launch(on: "reader")
         #else
-        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app = XCUIApplication(bundleIdentifier: "tk.waters.newsnative.alpha")
         app.launch()
         #endif
         let feeds = app.tables["feeds-list"].firstMatch
@@ -1255,7 +1255,7 @@ final class ReaderUITests: XCTestCase {
         throw XCTSkip("Requires NB Alpha on the physical iPhone")
         #else
         // ReaderUITests.swift checks rotation against the signed-in account without resetting preferences.
-        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app = XCUIApplication(bundleIdentifier: "tk.waters.newsnative.alpha")
         app.launch()
         defer { XCUIDevice.shared.orientation = .portrait }
         let feeds = app.tables["feeds-list"].firstMatch
@@ -1282,7 +1282,7 @@ final class ReaderUITests: XCTestCase {
         throw XCTSkip("Requires NB Alpha on the physical iPhone")
         #else
         // ReaderUITests.swift launches the real signed-in account without fixture or preference-reset arguments.
-        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app = XCUIApplication(bundleIdentifier: "tk.waters.newsnative.alpha")
         app.launchArguments = ["-newsblur-toolbar-transition-probe"]
         app.launch()
         let feeds = app.tables["feeds-list"].firstMatch

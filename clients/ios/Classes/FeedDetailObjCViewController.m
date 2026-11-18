@@ -2188,7 +2188,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 
     if (!self.storyPreviewPrefetchQueue) {
         self.storyPreviewPrefetchQueue = [[NSOperationQueue alloc] init];
-        self.storyPreviewPrefetchQueue.name = @"com.newsblur.story-preview-prefetch";
+        self.storyPreviewPrefetchQueue.name = @"tk.waters.newsnative.story-preview-prefetch";
         self.storyPreviewPrefetchQueue.maxConcurrentOperationCount = 1;
         self.storyPreviewPrefetchQueue.qualityOfService = NSQualityOfServiceUserInitiated;
     }
@@ -4932,7 +4932,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
             } else if ([storiesCollection.activeFolder isEqualToString:@"trending:good_reads"]) {
                 feedTitle = [NBLocalization text:@"Good Reads"];
             } else if ([storiesCollection.activeFolder isEqualToString:@"dashboard"]) {
-                feedTitle = [NBLocalization text:@"NewsBlur Dashboard"];
+                feedTitle = [NBLocalization text:@"NewsNative Dashboard"];
             } else if ([storiesCollection.activeFolder isEqualToString:@"everything"]) {
                 feedTitle = [NBLocalization text:@"All Stories"];
             } else if ([storiesCollection.activeFolder isEqualToString:@"infrequent"]) {

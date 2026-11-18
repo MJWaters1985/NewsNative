@@ -20,7 +20,7 @@ final class ReaderPerformance: NSObject {
     private static var recorder: ReaderPerformance?
     private var displayLink: CADisplayLink?
     private var events = [[String: Any]]()
-    private let writer = DispatchQueue(label: "com.newsblur.scroll-performance", qos: .utility)
+    private let writer = DispatchQueue(label: "tk.waters.newsnative.scroll-performance", qos: .utility)
     private let epoch = Date().timeIntervalSince1970 - CACurrentMediaTime()
     private var lastFlush = CACurrentMediaTime()
     private var lastFrame: (surface: String, time: Double)?

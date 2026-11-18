@@ -153,7 +153,7 @@ import UIKit
     private let pendingLimit = 24
 
     override convenience init() {
-        self.init(worker: DispatchQueue(label: "com.newsblur.story-text-layout", qos: .userInitiated))
+        self.init(worker: DispatchQueue(label: "tk.waters.newsnative.story-text-layout", qos: .userInitiated))
     }
 
     @nonobjc init(worker: DispatchQueue) {

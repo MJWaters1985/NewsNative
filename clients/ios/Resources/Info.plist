@@ -4,26 +4,26 @@
 <dict>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
-		<string>com.newsblur.NewsBlur.refresh</string>
+		<string>tk.waters.newsnative.refresh</string>
 	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleDisplayName</key>
-	<string>${PRODUCT_NAME}</string>
+	<string>$(APP_DISPLAY_NAME)</string>
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
 			<key>CFBundleTypeIconFiles</key>
 			<array/>
 			<key>CFBundleTypeName</key>
-			<string>NewsBlur Preferences</string>
+			<string>NewsNative Preferences</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>LSHandlerRank</key>
 			<string>Owner</string>
 			<key>LSItemContentTypes</key>
 			<array>
-				<string>newsblurprefs</string>
+				<string>newsnativeprefs</string>
 			</array>
 		</dict>
 	</array>
@@ -406,7 +406,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>NewsBlur</string>
+	<string>$(APP_DISPLAY_NAME)</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -417,7 +417,9 @@
 	<array>
 		<dict>
 			<key>CFBundleURLSchemes</key>
-			<array><string>newsblur-auth</string></array>
+			<array>
+				<string>newsblur-auth</string>
+			</array>
 		</dict>
 		<dict>
 			<key>CFBundleURLName</key>
@@ -431,10 +433,10 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>com.newsblur.NewsBlur</string>
+			<string>tk.waters.newsnative</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>newsblur</string>
+				<string>newsnative</string>
 				<string>feed</string>
 				<string>feeds</string>
 			</array>
@@ -457,10 +459,10 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>com.newsblur.NewsBlur.widget</string>
+			<string>tk.waters.newsnative.widget</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>newsblurwidget</string>
+				<string>newsnativewidget</string>
 			</array>
 		</dict>
 	</array>
@@ -474,7 +476,7 @@
 	<string>public.app-category.news</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
-		<string>newsblur</string>
+		<string>newsnative</string>
 		<string>opera-http</string>
 		<string>googlechrome-x-callback</string>
 	</array>
@@ -502,18 +504,18 @@
 		</dict>
 	</dict>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>NewsBlur uses the microphone to let you ask questions about stories using your voice.</string>
+	<string>NewsNative uses the microphone to let you ask questions about stories using your voice.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>NewsBlur saves story images to Photos when you choose Save Image.</string>
+	<string>NewsNative saves story images to Photos when you choose Save Image.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>NewsBlur lets you save images from stories to your photo library.</string>
+	<string>NewsNative lets you save images from stories to your photo library.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>NewsBlur uses speech recognition to transcribe your voice questions about stories.</string>
+	<string>NewsNative uses speech recognition to transcribe your voice questions about stories.</string>
 	<key>NSUserActivityTypes</key>
 	<array>
-		<string>com.newsblur.refresh</string>
-		<string>com.newsblur.gotoFolder</string>
-		<string>com.newsblur.gotoFeed</string>
+		<string>tk.waters.newsnative.refresh</string>
+		<string>tk.waters.newsnative.gotoFolder</string>
+		<string>tk.waters.newsnative.gotoFeed</string>
 		<string>INSendMessageIntent</string>
 	</array>
 	<key>UIAppFonts</key>
@@ -632,16 +634,16 @@
 				<string>public.text</string>
 			</array>
 			<key>UTTypeDescription</key>
-			<string>NewsBlur Preferences</string>
+			<string>NewsNative Preferences</string>
 			<key>UTTypeIconFiles</key>
 			<array/>
 			<key>UTTypeIdentifier</key>
-			<string>com.newsblur.preferences</string>
+			<string>tk.waters.newsnative.preferences</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>public.filename-extension</key>
 				<array>
-					<string>newsblurprefs</string>
+					<string>newsnativeprefs</string>
 				</array>
 			</dict>
 		</dict>

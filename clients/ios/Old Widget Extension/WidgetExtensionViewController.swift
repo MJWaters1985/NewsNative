@@ -44,7 +44,7 @@ class WidgetExtensionViewController: UITableViewController, NCWidgetProviding {
     }()
     
     struct Constant {
-        static let group = "group.com.newsblur.NewsBlur-Group"
+        static let group = "group.tk.waters.newsnative"
         static let token = "share:token"
         static let host = "share:host"
         static let feeds = "widget:feeds_array"

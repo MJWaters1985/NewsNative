@@ -97,7 +97,7 @@
 "AI finds the stories" = "ИИ находит статьи";
 "ALL" = "ВСЁ";
 "ALL NOTIFICATIONS" = "ВСЕ УВЕДОМЛЕНИЯ";
-"About NewsBlur" = "О NewsBlur";
+"About NewsNative" = "О NewsNative";
 "Accent [voice filter]" = "Акцент";
 "Account" = "Аккаунт";
 "Add" = "Добавить";
@@ -449,8 +449,8 @@
 "Get a summary of your top stories, delivered on your schedule." = "Получайте сводку самых важных статей в удобное для вас время.";
 "Global Shared Stories" = "Общие статьи сообщества";
 "Go to feed" = "Перейти к ленте";
-"Go to the %@ feed in NewsBlur." = "Перейти к ленте %@ в NewsBlur.";
-"Go to the %@ folder in NewsBlur." = "Перейдите в папку %@ в NewsBlur.";
+"Go to the %@ feed in NewsNative." = "Перейти к ленте %@ в NewsNative.";
+"Go to the %@ folder in NewsNative." = "Перейдите в папку %@ в NewsNative.";
 "Good Reads" = "Хорошие статьи";
 "Gray" = "Серая";
 "Grid" = "Сетка";
@@ -674,10 +674,10 @@
 "New posts from feeds you recently read" = "Новые публикации из недавно прочитанных вами лент";
 "New to NewsBlur? Create an account" = "Впервые в NewsBlur? Создать аккаунт";
 "Newest first" = "Сначала новые";
-"NewsBlur Dashboard" = "Панель управления NewsBlur";
+"NewsNative Dashboard" = "Панель управления NewsNative";
 "NewsBlur Premium" = "NewsBlur Premium";
 "NewsBlur checks for changes and delivers new stories to your feed." = "NewsBlur проверяет обновления и добавляет новые статьи в вашу ленту.";
-"NewsBlur detected %@ from your device." = "NewsBlur определил язык вашего устройства: %@.";
+"NewsNative detected %@ from your device." = "NewsNative определил язык вашего устройства: %@.";
 "NewsBlur password" = "Пароль NewsBlur";
 "Next" = "Далее";
 "Next Folder" = "Следующая папка";
@@ -775,8 +775,8 @@
 "Pause Listening" = "Приостановить прослушивание";
 "Percentage of the visible story scrolled by Space or Shift-Space" = "Процент видимой части статьи, прокручиваемый клавишами «Пробел» или Shift+Пробел";
 "Permanently delete account" = "Удалить аккаунт навсегда";
-"Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "Выберите язык, который будет использовать NewsBlur. Вы можете изменить его в любое время в настройках.";
-"Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "Выберите язык, который хотите использовать в NewsBlur. Его можно изменить в любой момент в меню NewsBlur.";
+"Pick the language you'd like NewsNative to use. You can change this anytime in Preferences." = "Выберите язык, который будет использовать NewsNative. Вы можете изменить его в любое время в настройках.";
+"Pick the language you'd like NewsNative to use. You can change this anytime in the NewsNative menu." = "Выберите язык, который хотите использовать в NewsNative. Его можно изменить в любой момент в меню NewsNative.";
 "Pick which model writes your Daily Briefing" = "Выберите модель для создания ежедневной сводки";
 "Pitch stays natural at every speed." = "Тембр остаётся естественным на любой скорости.";
 "Place the story list controls above or below the stories" = "Разместить панель управления списком статей над статьями или под ними";
@@ -850,7 +850,7 @@
 "Reduce motion" = "Уменьшить движение";
 "Refine with a hint" = "Уточнить с помощью подсказки";
 "Refine with this title" = "Уточнить по этому заголовку";
-"Refresh NewsBlur" = "Обновить NewsBlur";
+"Refresh NewsNative" = "Обновить NewsNative";
 "Refresh site" = "Обновить сайт";
 "Regex" = "Регулярное выражение";
 "Regex Patterns" = "Шаблоны регулярных выражений";
@@ -1153,7 +1153,7 @@
 "Top" = "Верх";
 "Top Level" = "Верхний уровень";
 "Top stories" = "Главные новости";
-"Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "Нажмите и удерживайте виджет NewsBlur или щёлкните по нему правой кнопкой мыши на Mac, затем выберите «Изменить виджет». Выберите папку или сайт для каждого виджета.";
+"Touch and hold a NewsNative widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "Нажмите и удерживайте виджет NewsNative или щёлкните по нему правой кнопкой мыши на Mac, затем выберите «Изменить виджет». Выберите папку или сайт для каждого виджета.";
 "Train" = "Обучить";
 "Train This Story" = "Обучить на этой статье";
 "Train This Story…" = "Обучить на этой статье…";

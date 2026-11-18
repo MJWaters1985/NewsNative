@@ -97,7 +97,7 @@
 "AI finds the stories" = "A IA encontra os artigos";
 "ALL" = "TODOS";
 "ALL NOTIFICATIONS" = "TODAS AS NOTIFICAÇÕES";
-"About NewsBlur" = "Sobre o NewsBlur";
+"About NewsNative" = "Sobre o NewsNative";
 "Accent [voice filter]" = "Sotaque";
 "Account" = "Conta";
 "Add" = "Adicionar";
@@ -449,8 +449,8 @@
 "Get a summary of your top stories, delivered on your schedule." = "Receba um resumo dos seus principais artigos no horário que preferir.";
 "Global Shared Stories" = "Artigos compartilhados globalmente";
 "Go to feed" = "Ir para o feed";
-"Go to the %@ feed in NewsBlur." = "Acesse o feed %@ no NewsBlur.";
-"Go to the %@ folder in NewsBlur." = "Acesse a pasta %@ no NewsBlur.";
+"Go to the %@ feed in NewsNative." = "Acesse o feed %@ no NewsNative.";
+"Go to the %@ folder in NewsNative." = "Acesse a pasta %@ no NewsNative.";
 "Good Reads" = "Boas leituras";
 "Gray" = "Cinza";
 "Grid" = "Grade";
@@ -674,10 +674,10 @@
 "New posts from feeds you recently read" = "Novas publicações de feeds que você leu recentemente";
 "New to NewsBlur? Create an account" = "Novo no NewsBlur? Crie uma conta";
 "Newest first" = "Mais recentes primeiro";
-"NewsBlur Dashboard" = "Painel do NewsBlur";
+"NewsNative Dashboard" = "Painel do NewsNative";
 "NewsBlur Premium" = "NewsBlur Premium";
 "NewsBlur checks for changes and delivers new stories to your feed." = "O NewsBlur verifica se há alterações e entrega novos artigos ao seu feed.";
-"NewsBlur detected %@ from your device." = "NewsBlur detectou %@ no seu dispositivo.";
+"NewsNative detected %@ from your device." = "NewsNative detectou %@ no seu dispositivo.";
 "NewsBlur password" = "senha do NewsBlur";
 "Next" = "Próximo";
 "Next Folder" = "Próxima pasta";
@@ -775,8 +775,8 @@
 "Pause Listening" = "Pausar leitura";
 "Percentage of the visible story scrolled by Space or Shift-Space" = "Porcentagem do artigo visível rolada pela barra de espaço ou por Shift+barra de espaço";
 "Permanently delete account" = "Excluir conta permanentemente";
-"Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "Escolha o idioma que você quer que NewsBlur use. Você pode mudar isso a qualquer momento em Preferências.";
-"Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "Escolha o idioma que você quer usar no NewsBlur. Você pode alterá-lo a qualquer momento no menu do NewsBlur.";
+"Pick the language you'd like NewsNative to use. You can change this anytime in Preferences." = "Escolha o idioma que você quer que NewsNative use. Você pode mudar isso a qualquer momento em Preferências.";
+"Pick the language you'd like NewsNative to use. You can change this anytime in the NewsNative menu." = "Escolha o idioma que você quer usar no NewsNative. Você pode alterá-lo a qualquer momento no menu do NewsNative.";
 "Pick which model writes your Daily Briefing" = "Escolha qual modelo escreve seu resumo diário";
 "Pitch stays natural at every speed." = "A entonação permanece natural em qualquer velocidade.";
 "Place the story list controls above or below the stories" = "Posicione os controles da lista de artigos acima ou abaixo dos artigos";
@@ -850,7 +850,7 @@
 "Reduce motion" = "Reduzir movimento";
 "Refine with a hint" = "Refinar com uma dica";
 "Refine with this title" = "Refinar com este título";
-"Refresh NewsBlur" = "Atualizar o NewsBlur";
+"Refresh NewsNative" = "Atualizar o NewsNative";
 "Refresh site" = "Atualizar site";
 "Regex" = "Expressão regular";
 "Regex Patterns" = "Padrões de regex";
@@ -1153,7 +1153,7 @@
 "Top" = "Superior";
 "Top Level" = "Nível superior";
 "Top stories" = "Principais artigos";
-"Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "Mantenha pressionado um widget do NewsBlur ou clique nele com o botão direito no Mac e escolha Editar widget. Escolha uma pasta ou um site para cada widget.";
+"Touch and hold a NewsNative widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "Mantenha pressionado um widget do NewsNative ou clique nele com o botão direito no Mac e escolha Editar widget. Escolha uma pasta ou um site para cada widget.";
 "Train" = "Treinar";
 "Train This Story" = "Treinar este artigo";
 "Train This Story…" = "Treinar este artigo…";

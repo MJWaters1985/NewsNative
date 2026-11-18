@@ -42,7 +42,7 @@ import ObjectiveC
     }
 
     @objc convenience init(appDelegate: NewsBlurAppDelegate) {
-        self.init(worker: DispatchQueue(label: "com.newsblur.thumbnail-prefetch", qos: .userInitiated)) {
+        self.init(worker: DispatchQueue(label: "tk.waters.newsnative.thumbnail-prefetch", qos: .userInitiated)) {
             [weak appDelegate] hash, operation in
             appDelegate?.prefetchCachedStoryImage(forStoryHash: hash, operation: operation)
         }

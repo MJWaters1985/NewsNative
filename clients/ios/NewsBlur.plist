@@ -33,7 +33,7 @@
 			<key>metadata</key>
 			<dict>
 				<key>bundle-identifier</key>
-				<string>com.newsblur.NewsBlur</string>
+				<string>tk.waters.newsnative</string>
 				<key>kind</key>
 				<string>software</string>
 				<key>title</key>

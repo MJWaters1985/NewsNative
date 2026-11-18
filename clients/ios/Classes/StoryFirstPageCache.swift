@@ -57,9 +57,9 @@ import UIKit
 
     private let directory: URL
     private let now: () -> Date
-    let queue = DispatchQueue(label: "com.newsblur.first-page-cache", qos: .utility)
+    let queue = DispatchQueue(label: "tk.waters.newsnative.first-page-cache", qos: .utility)
     private let lock = NSLock()
-    let markerQueue = DispatchQueue(label: "com.newsblur.first-page-session", qos: .userInitiated)
+    let markerQueue = DispatchQueue(label: "tk.waters.newsnative.first-page-session", qos: .userInitiated)
     private var previousSessionWasClean = false
     private var foregroundGeneration: UInt64 = 0
     private var isForeground = true

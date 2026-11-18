@@ -664,7 +664,7 @@ final class StoryImageViewerController: UIViewController, UIScrollViewDelegate, 
         guard let imageData else { return }
         PHPhotoLibrary.requestAuthorization(for: .addOnly) { [weak self] authorization in
             guard authorization == .authorized || authorization == .limited else {
-                DispatchQueue.main.async { self?.showError("Allow NewsBlur to add photos in Settings to save this image.") }; return
+                DispatchQueue.main.async { self?.showError("Allow NewsNative to add photos in Settings to save this image.") }; return
             }
             PHPhotoLibrary.shared().performChanges {
                 PHAssetCreationRequest.forAsset().addResource(with: .photo, data: imageData, options: nil)

@@ -397,6 +397,10 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)cancelRequests;
 - (void)resetNetworkManagerForTesting;
 - (void)setCustomDomainForTesting:(NSString *)urlString;
+// NewsBlurAppDelegate.m: saves the server address (blank uses the default) and resets connections if it changed.
+- (void)applyCustomServer:(NSString *)serverString;
++ (NSString *)normalizedServerURL:(NSString *)serverString;
++ (NSString *)defaultServerURL;
 - (void)setNetworkProtocolClassesForTesting:(NSArray<Class> *)protocolClasses;
 - (void)replaceUnreadCountsForTesting:(NSArray<NSDictionary *> *)unreadRows;
 - (NSString *)beginNetworkOperation;

@@ -1455,7 +1455,7 @@ static BOOL NBBoolPreferenceValue(id value) {
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     NSString *preview = [userPreferences stringForKey:@"story_list_preview_images_size"];
-    NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.newsblur.NewsBlur-Group"];
+    NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.tk.waters.newsnative"];
     [defaults setObject:[results objectForKey:@"share_ext_token"] forKey:@"share:token"];
     [defaults setObject:self.appDelegate.url forKey:@"share:host"];
     [defaults setObject:appDelegate.activeUsername forKey:@"share:username"];
@@ -1727,7 +1727,7 @@ static BOOL NBBoolPreferenceValue(id value) {
     
     // Add Widget Site Stories folder to bottom
 //    [appDelegate.dictFoldersArray removeObject:@"widget_stories"];
-//    NSUserDefaults *groupDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.newsblur.NewsBlur-Group"];
+//    NSUserDefaults *groupDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.tk.waters.newsnative"];
 //    NSMutableArray *feeds = [groupDefaults objectForKey:@"widget:feeds_array"];
 //    if (feeds.count) {
 //        [appDelegate.dictFoldersArray insertObject:@"widget_stories" atIndex:appDelegate.dictFoldersArray.count];
@@ -2512,7 +2512,7 @@ static BOOL NBBoolPreferenceValue(id value) {
     } else if ([identifier isEqual:@"story_list_preview_images_size"]) {
         NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
         NSString *preview = [userPreferences stringForKey:@"story_list_preview_images_size"];
-        NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.newsblur.NewsBlur-Group"];
+        NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.tk.waters.newsnative"];
         [defaults setObject:preview forKey:@"widget:preview_images_size"];
         [self.appDelegate.storyPagesViewController reloadWidget];
     }

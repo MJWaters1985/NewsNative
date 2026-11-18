@@ -36,6 +36,6 @@ If an old idb companion cannot find SimulatorKit after an Xcode update, restart 
 
 ## Account isolation
 
-The existing UI harness replaces the account database, but normal feed loading still writes standard preferences and shared extension preferences. Before using a simulator with an existing account, preserve BOTH its app data/preferences and its `group.com.newsblur.NewsBlur-Group` shared data/preferences. Restore both after the capture session. `run_ios.py restoreprefs:<plist>` restores the standard preference domain only. Do not treat it as a complete shared-container backup.
+The existing UI harness replaces the account database, but normal feed loading still writes standard preferences and shared extension preferences. Before using a simulator with an existing account, preserve BOTH its app data/preferences and its `group.tk.waters.newsnative` shared data/preferences. Restore both after the capture session. `run_ios.py restoreprefs:<plist>` restores the standard preference domain only. Do not treat it as a complete shared-container backup.
 
 No production account is created or modified. The visible account name `Alex` belongs to this synthetic dataset. This folder is not automatically bundled into a release build.

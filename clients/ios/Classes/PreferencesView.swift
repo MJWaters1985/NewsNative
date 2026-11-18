@@ -1108,7 +1108,7 @@ class PreferencesViewModel: ObservableObject {
 
             // MARK: About Section
             PreferenceSection(
-                title: NBLocalization.text("About NewsBlur"),
+                title: NBLocalization.text("About NewsNative"),
                 icon: "info.circle",
                 iconColor: .gray,
                 items: [

@@ -73,7 +73,7 @@ struct WidgetEntryView : View {
 //            }
             
             if let error = entry.cache.error {
-                Link(destination: URL(string: "newsblurwidget://?error=\(error)")!) {
+                Link(destination: URL(string: "newsnativewidget://?error=\(error)")!) {
                         Text(message(for: error))
                         .font(.headline)
                         .foregroundStyle(.secondary)
@@ -84,7 +84,7 @@ struct WidgetEntryView : View {
                     let stories = entry.cache.stories(count: isCompact ? 3 : 6)
                     
                     ForEach(Array(stories.enumerated()), id: \.element.id) { index, story in
-                        Link(destination: URL(string: entry.isPlaceholder ? "newsblurwidget://open" : "newsblurwidget://?feedId=\(story.feed)&storyHash=\(story.id)")!) {
+                        Link(destination: URL(string: entry.isPlaceholder ? "newsnativewidget://open" : "newsnativewidget://?feedId=\(story.feed)&storyHash=\(story.id)")!) {
                             WidgetStoryView(cache: entry.cache, story: story)
                         }
                         if index < stories.count - 1 {
@@ -97,7 +97,7 @@ struct WidgetEntryView : View {
                 .containerBackground(for: .widget) {
                     Color("WidgetBackground")
                 }
-                .widgetURL(URL(string: "newsblurwidget://open"))
+                .widgetURL(URL(string: "newsnativewidget://open"))
             }
         }
 //        .environment(\.colorScheme, colorScheme)
@@ -129,8 +129,8 @@ struct WidgetExtension: Widget {
         AppIntentConfiguration(kind: kind, intent: NewsBlurWidgetConfiguration.self, provider: Provider()) { entry in
             WidgetEntryView(entry: entry)
         }
-        .configurationDisplayName("NewsBlur")
-        .description("The latest stories from NewsBlur.")
+        .configurationDisplayName("NewsNative")
+        .description("The latest stories from NewsNative.")
         .supportedFamilies([.systemMedium, .systemLarge])
         .contentMarginsDisabled()
     }

@@ -22,13 +22,13 @@ class ToolbarDelegate: NSObject {
 }
 
 extension NSToolbarItem.Identifier {
-    static let reloadFeeds = NSToolbarItem.Identifier("com.newsblur.reloadFeeds")
-    static let toggleFullScreen = NSToolbarItem.Identifier("com.newsblur.toggleFullScreen")
-    static let feedDetailUnread = NSToolbarItem.Identifier("com.newsblur.feedDetailUnread")
-    static let feedDetailSettings = NSToolbarItem.Identifier("com.newsblur.feedDetailSettings")
-    static let storyPagesSettings = NSToolbarItem.Identifier("com.newsblur.storyPagesSettings")
-    static let storyPagesBrowser = NSToolbarItem.Identifier("com.newsblur.storyPagesBrowser")
-    static let listenPlayPause = NSToolbarItem.Identifier("com.newsblur.listenPlayPause")
+    static let reloadFeeds = NSToolbarItem.Identifier("tk.waters.newsnative.reloadFeeds")
+    static let toggleFullScreen = NSToolbarItem.Identifier("tk.waters.newsnative.toggleFullScreen")
+    static let feedDetailUnread = NSToolbarItem.Identifier("tk.waters.newsnative.feedDetailUnread")
+    static let feedDetailSettings = NSToolbarItem.Identifier("tk.waters.newsnative.feedDetailSettings")
+    static let storyPagesSettings = NSToolbarItem.Identifier("tk.waters.newsnative.storyPagesSettings")
+    static let storyPagesBrowser = NSToolbarItem.Identifier("tk.waters.newsnative.storyPagesBrowser")
+    static let listenPlayPause = NSToolbarItem.Identifier("tk.waters.newsnative.listenPlayPause")
 }
 
 extension ToolbarDelegate: NSToolbarDelegate {

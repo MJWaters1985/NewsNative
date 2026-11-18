@@ -1,12 +1,12 @@
 # iPhone Duo simulator testing
 
-Use the **NewsBlur Alpha** scheme (`com.newsblur.NB-Alpha`) and the existing logged-in Duo simulator. This guide describes repeatable checks; commit-specific results and recordings belong in the pull request and its test artifacts.
+Use the **NewsBlur Alpha** scheme (`tk.waters.newsnative.alpha`) and the existing logged-in Duo simulator. This guide describes repeatable checks; commit-specific results and recordings belong in the pull request and its test artifacts.
 
 ## Device Hub and simulator setup
 
 Run `python3 clients/ios/run_ios.py list` from the repository root and reuse the booted Duo's UDID. Do not erase, clone, or replace the logged-in device. Device Hub supplies the actual Closed, Partially Open, and Open poses. Resizing a window or overriding size classes does not establish fold coverage.
 
-Use `run_ios.py` for simulator installation, launch, screenshots, and recording. Set `IOS_BUNDLE_ID=com.newsblur.NB-Alpha`. For this simulator, `IOS_SIM_DISPLAY=1` selects the outer display and `IOS_SIM_DISPLAY=3` selects the inner display. An inactive display can return a black image; check the selected pose before diagnosing an app failure.
+Use `run_ios.py` for simulator installation, launch, screenshots, and recording. Set `IOS_BUNDLE_ID=tk.waters.newsnative.alpha`. For this simulator, `IOS_SIM_DISPLAY=1` selects the outer display and `IOS_SIM_DISPLAY=3` selects the inner display. An inactive display can return a black image; check the selected pose before diagnosing an app failure.
 
 Focus Device Hub before sending input. Refresh its window bounds before translating screenshots into pointer coordinates, accounting for Retina scaling. Confirm each requested pose or rotation in the visible device; a command reporting success is not enough. A locked Mac prevents reliable Device Hub interaction and window recording.
 

@@ -26,7 +26,7 @@ final class Test_DuoLiveUI: XCTestCase {
             throw XCTSkip("Requires the existing iPhone Duo simulator, got \(deviceName)")
         }
         // DuoLiveUITests.swift activates the existing Alpha session without fixture arguments or a relaunch.
-        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app = XCUIApplication(bundleIdentifier: "tk.waters.newsnative.alpha")
         app.activate()
         XCTAssertTrue(app.wait(for: .runningForeground, timeout: 10))
         capture("duo-live-before-audit")

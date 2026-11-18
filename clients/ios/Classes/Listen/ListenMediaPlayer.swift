@@ -615,7 +615,7 @@ final class ListenMediaPlayer: NSObject, ObservableObject {
         var info: [String: Any] = [
             MPMediaItemPropertyTitle: item.title,
             MPMediaItemPropertyArtist: feedTitle,
-            MPMediaItemPropertyAlbumTitle: "NewsBlur",
+            MPMediaItemPropertyAlbumTitle: "NewsNative",
             MPMediaItemPropertyPlaybackDuration: duration,
             MPNowPlayingInfoPropertyElapsedPlaybackTime: elapsed,
             MPNowPlayingInfoPropertyPlaybackRate: status == .playing ? speed : 0,

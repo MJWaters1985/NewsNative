@@ -31,9 +31,9 @@ import UniformTypeIdentifiers
 
 private extension ImportExportPreferences {
     struct Constant {
-        static let fileType = UTType(exportedAs: "com.newsblur.preferences")
-        static let fileName = "NewsBlur Preferences"
-        static let fileExtension = "newsblurprefs"
+        static let fileType = UTType(exportedAs: "tk.waters.newsnative.preferences")
+        static let fileName = "NewsNative Preferences"
+        static let fileExtension = "newsnativeprefs"
         /// System settings and the account-owned interface language never move between devices.
         static let excludedKeyPrefixes = ["Apple", "NS", NBLocalization.preferenceKey]
     }

@@ -16,7 +16,7 @@ import ObjectiveC
     private var needsReload = false
     private var errorMessage: String?
 
-    init(app: NewsBlurAppDelegate, defaults: UserDefaults? = UserDefaults(suiteName: "group.com.newsblur.NewsBlur-Group")) {
+    init(app: NewsBlurAppDelegate, defaults: UserDefaults? = UserDefaults(suiteName: "group.tk.waters.newsnative")) {
         self.app = app
         self.defaults = defaults
     }
@@ -138,7 +138,7 @@ import ObjectiveC
                 return
             }
             guard let response = response as? [String: Any], let feedID = FeedSubscriptionURL.feedID(in: response) else {
-                self.showError((response as? [String: Any])?["message"] as? String ?? "NewsBlur could not subscribe to this feed.")
+                self.showError((response as? [String: Any])?["message"] as? String ?? "NewsNative could not subscribe to this feed.")
                 return
             }
             self.confirmedFeedID = feedID
@@ -161,7 +161,7 @@ import ObjectiveC
                 self.resume()
                 return
             }
-            self.showError(error?.localizedDescription ?? "NewsBlur could not subscribe to this feed.")
+            self.showError(error?.localizedDescription ?? "NewsNative could not subscribe to this feed.")
         })
     }
 

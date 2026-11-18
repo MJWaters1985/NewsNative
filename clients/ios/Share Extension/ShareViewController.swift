@@ -19,7 +19,7 @@ class ShareViewController: UIViewController {
     
     /// The group preferences, shared with the main app.
     lazy var prefs: UserDefaults = {
-        return UserDefaults(suiteName: "group.com.newsblur.NewsBlur-Group") ?? UserDefaults.standard
+        return UserDefaults(suiteName: "group.tk.waters.newsnative") ?? UserDefaults.standard
     }()
     
     /// Whether we are saving the story privately or sharing publicly.
@@ -274,7 +274,7 @@ private extension ShareViewController {
                             self.prefs.set(["feed_id": feedID, "username": username, "host": host],
                                            forKey: "subscription:pending-feed")
                             self.setSubscribing(false)
-                            let alert = UIAlertController(title: "Subscribed", message: "Open NewsBlur to read this feed.", preferredStyle: .alert)
+                            let alert = UIAlertController(title: "Subscribed", message: "Open NewsNative to read this feed.", preferredStyle: .alert)
                             alert.addAction(UIAlertAction(title: "Done", style: .default) { [weak self] _ in
                                 self?.didFinish = true
                                 self?.extensionContext?.completeRequest(returningItems: [])
@@ -379,7 +379,7 @@ private extension ShareViewController {
         request.httpBody = postBody.data(using: .utf8)
         
         let config = URLSessionConfiguration.background(withIdentifier: UUID().uuidString)
-        config.sharedContainerIdentifier = "group.com.newsblur.NewsBlur-Group"
+        config.sharedContainerIdentifier = "group.tk.waters.newsnative"
         
         let session = URLSession(configuration: config, delegate: self, delegateQueue: nil)
         let task = session.dataTask(with: request as URLRequest)
@@ -468,7 +468,7 @@ extension ShareViewController: URLSessionTaskDelegate {
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         guard mode == .save || mode == .share else { return }
         let content = UNMutableNotificationContent()
-        content.title = "NewsBlur"
+        content.title = "NewsNative"
 
         if let error {
             NSLog("task completed with error: \(error)")

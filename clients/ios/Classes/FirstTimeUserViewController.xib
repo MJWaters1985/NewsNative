@@ -85,7 +85,7 @@
 						<int key="IBUIContentMode">7</int>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
-						<string key="IBUIText">Welcome to NewsBlur</string>
+						<string key="IBUIText">Welcome to NewsNative</string>
 						<nil key="IBUIHighlightedColor"/>
 						<reference key="IBUIShadowColor" ref="624486295"/>
 						<string key="IBUIShadowOffset">{0, 1}</string>

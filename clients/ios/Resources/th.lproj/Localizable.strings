@@ -97,7 +97,7 @@
 "AI finds the stories" = "AI ค้นหาบทความให้";
 "ALL" = "ทั้งหมด";
 "ALL NOTIFICATIONS" = "การแจ้งเตือนทั้งหมด";
-"About NewsBlur" = "เกี่ยวกับ NewsBlur";
+"About NewsNative" = "เกี่ยวกับ NewsNative";
 "Accent [voice filter]" = "สำเนียง";
 "Account" = "บัญชี";
 "Add" = "เพิ่ม";
@@ -449,8 +449,8 @@
 "Get a summary of your top stories, delivered on your schedule." = "รับสรุปเรื่องเด่นของคุณตามเวลาที่กำหนด";
 "Global Shared Stories" = "บทความที่แชร์ทั่วโลก";
 "Go to feed" = "ไปยังฟีด";
-"Go to the %@ feed in NewsBlur." = "ไปที่ฟีด %@ ใน NewsBlur";
-"Go to the %@ folder in NewsBlur." = "ไปที่โฟลเดอร์ %@ ใน NewsBlur";
+"Go to the %@ feed in NewsNative." = "ไปที่ฟีด %@ ใน NewsNative";
+"Go to the %@ folder in NewsNative." = "ไปที่โฟลเดอร์ %@ ใน NewsNative";
 "Good Reads" = "บทความน่าอ่าน";
 "Gray" = "สีเทา";
 "Grid" = "ตาราง";
@@ -674,10 +674,10 @@
 "New posts from feeds you recently read" = "โพสต์ใหม่จากฟีดที่คุณเพิ่งอ่าน";
 "New to NewsBlur? Create an account" = "เพิ่งเริ่มใช้ NewsBlur ใช่ไหม? สร้างบัญชี";
 "Newest first" = "ใหม่ล่าสุดก่อน";
-"NewsBlur Dashboard" = "แดชบอร์ด NewsBlur";
+"NewsNative Dashboard" = "แดชบอร์ด NewsNative";
 "NewsBlur Premium" = "NewsBlur Premium";
 "NewsBlur checks for changes and delivers new stories to your feed." = "NewsBlur ตรวจสอบการเปลี่ยนแปลงและส่งบทความใหม่ไปยังฟีดของคุณ";
-"NewsBlur detected %@ from your device." = "NewsBlur ตรวจพบว่าอุปกรณ์ของคุณใช้ %@";
+"NewsNative detected %@ from your device." = "NewsNative ตรวจพบว่าอุปกรณ์ของคุณใช้ %@";
 "NewsBlur password" = "รหัสผ่าน NewsBlur";
 "Next" = "ถัดไป";
 "Next Folder" = "โฟลเดอร์ถัดไป";
@@ -775,8 +775,8 @@
 "Pause Listening" = "หยุดฟังชั่วคราว";
 "Percentage of the visible story scrolled by Space or Shift-Space" = "เปอร์เซ็นต์ของบทความที่แสดงซึ่งเลื่อนด้วย Space หรือ Shift-Space";
 "Permanently delete account" = "ลบบัญชีอย่างถาวร";
-"Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "เลือกภาษาที่คุณต้องการให้ NewsBlur ใช้ คุณเปลี่ยนภาษาได้ทุกเมื่อในการตั้งค่า";
-"Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "เลือกภาษาที่คุณต้องการให้ NewsBlur ใช้ คุณเปลี่ยนภาษาได้ทุกเมื่อในเมนู NewsBlur";
+"Pick the language you'd like NewsNative to use. You can change this anytime in Preferences." = "เลือกภาษาที่คุณต้องการให้ NewsNative ใช้ คุณเปลี่ยนภาษาได้ทุกเมื่อในการตั้งค่า";
+"Pick the language you'd like NewsNative to use. You can change this anytime in the NewsNative menu." = "เลือกภาษาที่คุณต้องการให้ NewsNative ใช้ คุณเปลี่ยนภาษาได้ทุกเมื่อในเมนู NewsNative";
 "Pick which model writes your Daily Briefing" = "เลือกโมเดลที่จะเขียนสรุปข่าวประจำวันของคุณ";
 "Pitch stays natural at every speed." = "ระดับเสียงยังคงเป็นธรรมชาติในทุกความเร็ว";
 "Place the story list controls above or below the stories" = "วางตัวควบคุมรายการบทความไว้เหนือหรือใต้บทความ";
@@ -850,7 +850,7 @@
 "Reduce motion" = "ลดการเคลื่อนไหว";
 "Refine with a hint" = "ปรับให้ละเอียดด้วยคำใบ้";
 "Refine with this title" = "ปรับการค้นหาด้วยชื่อนี้";
-"Refresh NewsBlur" = "รีเฟรช NewsBlur";
+"Refresh NewsNative" = "รีเฟรช NewsNative";
 "Refresh site" = "รีเฟรชเว็บไซต์";
 "Regex" = "Regex";
 "Regex Patterns" = "รูปแบบ Regex";
@@ -1153,7 +1153,7 @@
 "Top" = "ด้านบน";
 "Top Level" = "ระดับบนสุด";
 "Top stories" = "เรื่องเด่น";
-"Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "แตะค้างที่วิดเจ็ต NewsBlur หรือคลิกขวาที่วิดเจ็ตบน Mac แล้วเลือกแก้ไขวิดเจ็ต จากนั้นเลือกโฟลเดอร์หรือเว็บไซต์สำหรับแต่ละวิดเจ็ต";
+"Touch and hold a NewsNative widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "แตะค้างที่วิดเจ็ต NewsNative หรือคลิกขวาที่วิดเจ็ตบน Mac แล้วเลือกแก้ไขวิดเจ็ต จากนั้นเลือกโฟลเดอร์หรือเว็บไซต์สำหรับแต่ละวิดเจ็ต";
 "Train" = "ฝึก";
 "Train This Story" = "ฝึกระบบด้วยบทความนี้";
 "Train This Story…" = "ฝึกระบบด้วยบทความนี้…";

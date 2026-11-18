@@ -1,7 +1,31 @@
 {
   "images" : [
     {
-      "filename" : "App icon.png",
+      "filename" : "NewsNative-light.png",
+      "idiom" : "universal",
+      "platform" : "ios",
+      "size" : "1024x1024"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
+      "filename" : "NewsNative-dark.png",
+      "idiom" : "universal",
+      "platform" : "ios",
+      "size" : "1024x1024"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "tinted"
+        }
+      ],
+      "filename" : "NewsNative-tinted.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"

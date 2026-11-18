@@ -97,7 +97,7 @@
 "AI finds the stories" = "AI가 스토리를 찾아냅니다";
 "ALL" = "전체";
 "ALL NOTIFICATIONS" = "모든 알림";
-"About NewsBlur" = "NewsBlur 소개";
+"About NewsNative" = "NewsNative 소개";
 "Accent [voice filter]" = "억양";
 "Account" = "계정";
 "Add" = "추가";
@@ -449,8 +449,8 @@
 "Get a summary of your top stories, delivered on your schedule." = "인기 스토리를 요약해 원하는 일정에 받아보세요.";
 "Global Shared Stories" = "전체 공유 스토리";
 "Go to feed" = "피드로 이동";
-"Go to the %@ feed in NewsBlur." = "NewsBlur에서 %@ 피드로 이동합니다.";
-"Go to the %@ folder in NewsBlur." = "NewsBlur에서 %@ 폴더로 이동하세요.";
+"Go to the %@ feed in NewsNative." = "NewsNative에서 %@ 피드로 이동합니다.";
+"Go to the %@ folder in NewsNative." = "NewsNative에서 %@ 폴더로 이동하세요.";
 "Good Reads" = "좋은 글";
 "Gray" = "회색";
 "Grid" = "그리드";
@@ -674,10 +674,10 @@
 "New posts from feeds you recently read" = "최근에 읽은 피드의 새 게시물";
 "New to NewsBlur? Create an account" = "NewsBlur가 처음이신가요? 계정 만들기";
 "Newest first" = "최신순";
-"NewsBlur Dashboard" = "NewsBlur 대시보드";
+"NewsNative Dashboard" = "NewsNative 대시보드";
 "NewsBlur Premium" = "NewsBlur 프리미엄";
 "NewsBlur checks for changes and delivers new stories to your feed." = "NewsBlur가 변경 사항을 확인해 새 스토리를 피드로 전달합니다.";
-"NewsBlur detected %@ from your device." = "NewsBlur에서 기기의 %@ 언어를 감지했습니다.";
+"NewsNative detected %@ from your device." = "NewsNative에서 기기의 %@ 언어를 감지했습니다.";
 "NewsBlur password" = "NewsBlur 비밀번호";
 "Next" = "다음";
 "Next Folder" = "다음 폴더";
@@ -775,8 +775,8 @@
 "Pause Listening" = "듣기 일시 중지";
 "Percentage of the visible story scrolled by Space or Shift-Space" = "스페이스 또는 Shift-스페이스로 스크롤할 표시된 스토리의 비율";
 "Permanently delete account" = "계정 영구 삭제";
-"Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "NewsBlur에서 사용할 언어를 선택하세요. 이 설정은 언제든지 환경설정에서 변경할 수 있습니다.";
-"Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "NewsBlur에서 사용할 언어를 선택하세요. 이 설정은 언제든지 NewsBlur 메뉴에서 변경할 수 있습니다.";
+"Pick the language you'd like NewsNative to use. You can change this anytime in Preferences." = "NewsNative에서 사용할 언어를 선택하세요. 이 설정은 언제든지 환경설정에서 변경할 수 있습니다.";
+"Pick the language you'd like NewsNative to use. You can change this anytime in the NewsNative menu." = "NewsNative에서 사용할 언어를 선택하세요. 이 설정은 언제든지 NewsNative 메뉴에서 변경할 수 있습니다.";
 "Pick which model writes your Daily Briefing" = "데일리 브리핑을 작성할 모델을 선택하세요";
 "Pitch stays natural at every speed." = "모든 속도에서 음높이가 자연스럽게 유지됩니다.";
 "Place the story list controls above or below the stories" = "스토리 목록 컨트롤을 스토리 위나 아래에 배치";
@@ -850,7 +850,7 @@
 "Reduce motion" = "동작 줄이기";
 "Refine with a hint" = "힌트로 다듬기";
 "Refine with this title" = "이 제목으로 조건 좁히기";
-"Refresh NewsBlur" = "NewsBlur 새로고침";
+"Refresh NewsNative" = "NewsNative 새로고침";
 "Refresh site" = "사이트 새로고침";
 "Regex" = "정규식";
 "Regex Patterns" = "정규식 패턴";
@@ -1153,7 +1153,7 @@
 "Top" = "상단";
 "Top Level" = "최상위";
 "Top stories" = "주요 스토리";
-"Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "NewsBlur 위젯을 길게 누르거나 Mac에서 마우스 오른쪽 버튼을 클릭한 다음 ‘위젯 수정’을 선택하세요. 각 위젯에 사용할 폴더 또는 사이트를 선택하세요.";
+"Touch and hold a NewsNative widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "NewsNative 위젯을 길게 누르거나 Mac에서 마우스 오른쪽 버튼을 클릭한 다음 ‘위젯 수정’을 선택하세요. 각 위젯에 사용할 폴더 또는 사이트를 선택하세요.";
 "Train" = "학습";
 "Train This Story" = "이 스토리 학습시키기";
 "Train This Story…" = "이 스토리 학습시키기…";

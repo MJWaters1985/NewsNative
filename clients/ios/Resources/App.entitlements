@@ -2,18 +2,11 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>com.apple.developer.applesignin</key>
-	<array><string>Default</string></array>
 	<key>aps-environment</key>
 	<string>production</string>
-	<key>com.apple.developer.associated-domains</key>
-	<array>
-		<string>webcredentials:newsblur.com</string>
-		<string>applinks:newsblur.com</string>
-	</array>
 	<key>com.apple.developer.icloud-container-identifiers</key>
 	<array>
-		<string>iCloud.com.newsblur.NewsBlur</string>
+		<string>iCloud.tk.waters.newsnative</string>
 	</array>
 	<key>com.apple.developer.icloud-services</key>
 	<array>
@@ -21,13 +14,13 @@
 	</array>
 	<key>com.apple.developer.ubiquity-container-identifiers</key>
 	<array>
-		<string>iCloud.com.newsblur.NewsBlur</string>
+		<string>iCloud.tk.waters.newsnative</string>
 	</array>
 	<key>com.apple.developer.usernotifications.communication</key>
 	<true/>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.com.newsblur.NewsBlur-Group</string>
+		<string>group.tk.waters.newsnative</string>
 	</array>
 </dict>
 </plist>
