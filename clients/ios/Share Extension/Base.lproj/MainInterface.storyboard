@@ -40,7 +40,6 @@
                                 <rect key="frame" x="5" y="64" width="365" height="32"/>
                                 <segments>
                                     <segment title="Save This Story"/>
-                                    <segment title="Share This Story"/>
                                     <segment title="Subscribe"/>
                                 </segments>
                                 <connections>

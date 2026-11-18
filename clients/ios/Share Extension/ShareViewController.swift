@@ -88,7 +88,7 @@ class ShareViewController: UIViewController {
         super.viewDidLoad()
 
         if Bundle.main.bundleIdentifier?.hasSuffix(".Subscribe-Extension") == true {
-            modeSegmentedControl.selectedSegmentIndex = 2
+            modeSegmentedControl.selectedSegmentIndex = 1
             mode = .add
         }
         
@@ -192,11 +192,9 @@ class ShareViewController: UIViewController {
     }
     
     @IBAction func changedMode(_ sender: Any) {
+        // ShareViewController.swift offers Save and Subscribe; NewsNative sets aside sharing to your shared stories.
         switch modeSegmentedControl.selectedSegmentIndex {
         case 1:
-            mode = .share
-            navigationItem.rightBarButtonItem?.title = "Share"
-        case 2:
             mode = .add
             navigationItem.rightBarButtonItem?.title = "Subscribe"
         default:
