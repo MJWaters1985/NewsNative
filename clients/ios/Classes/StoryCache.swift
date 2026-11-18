@@ -166,13 +166,9 @@ import SwiftUI
         }
         
         if isNonGridStoryTitlesLayout {
-            before = beforeSelection.flatMap { visibleRows(for: $0, selectedIndex: selectedIndex) }
+            before = beforeSelection.compactMap { visibleRow(for: $0) }
             selected = selectedIndex >= 0 ? Story(index: selectedIndex) : nil
-            after = afterSelection.flatMap { visibleRows(for: $0, selectedIndex: selectedIndex) }
-
-            if let selected {
-                after = visibleClusterRows(for: selected.index) + after
-            }
+            after = afterSelection.compactMap { visibleRow(for: $0) }
         } else {
             before = beforeSelection.map { Story(index: $0) }
             selected = selectedIndex >= 0 ? Story(index: selectedIndex) : nil
@@ -195,11 +191,6 @@ import SwiftUI
     }
     
     func reload(story: Story) {
-        guard !story.isClusterStory else {
-            reload()
-            return
-        }
-
         if story == selected {
             selected = Story(index: story.index)
         } else if let index = before.firstIndex(of: story) {
@@ -279,55 +270,12 @@ import SwiftUI
         return dashes
     }
 
-    private func visibleRows(for location: Int, selectedIndex: Int) -> [Story] {
+    private func visibleRow(for location: Int) -> Story? {
         guard let storyDictionary = storyDictionary(at: location) else {
-            return []
+            return nil
         }
 
-        var rows = [Story(index: location, dictionary: storyDictionary)]
-
-        if selectedIndex < 0 || location != selectedIndex {
-            rows.append(contentsOf: visibleClusterRows(for: location, parentStory: storyDictionary))
-        }
-
-        return rows
-    }
-
-    private func visibleClusterRows(for location: Int) -> [Story] {
-        guard let storyDictionary = storyDictionary(at: location) else {
-            return []
-        }
-
-        return visibleClusterRows(for: location, parentStory: storyDictionary)
-    }
-
-    private func visibleClusterRows(for location: Int, parentStory: AnyDictionary) -> [Story] {
-        guard isNonGridStoryTitlesLayout else {
-            return []
-        }
-
-        // StoryCache.swift: clustering uses AI embeddings, set aside in NewsNativeFeatures.swift.
-        guard NewsNativeFeatures.aiFeatures, UserDefaults.standard.bool(forKey: "story_clustering") else {
-            return []
-        }
-
-        guard let clusterStories = parentStory["cluster_stories"] as? [NSDictionary], !clusterStories.isEmpty else {
-            return []
-        }
-
-        let visibleClusterStories = StoryClusterDisplayDecision.visibleClusterStories(
-            clusterStories as NSArray,
-            subscribedFeedIds: appDelegate.subscribedFeedIdsForStoryClusters() as NSSet,
-            isPremiumArchive: appDelegate.isPremiumArchive
-        ) as? [NSDictionary] ?? []
-
-        return visibleClusterStories.compactMap { clusterStory in
-            guard let clusterDictionary = clusterStory as? AnyDictionary else {
-                return nil
-            }
-
-            return Story(parentIndex: location, clusterDictionary: clusterDictionary, parentStory: parentStory)
-        }
+        return Story(index: location, dictionary: storyDictionary)
     }
 
     private func storyDictionary(at location: Int) -> AnyDictionary? {

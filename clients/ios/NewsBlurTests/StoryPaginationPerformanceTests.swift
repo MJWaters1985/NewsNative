@@ -10,7 +10,6 @@ import QuartzCore
         "story_list_preview_text_size": "medium",
         "story_list_preview_images_size": "small",
         "feed_list_spacing": "comfortable",
-        "story_clustering": true,
     ]
     private var savedPreferences: [String: Any] = [:]
 
@@ -51,69 +50,6 @@ import QuartzCore
         XCTAssertEqual(repeatedHashes.count, 0, "An unchanged cached story should not parse its HTML again when a later page arrives.")
         XCTAssertEqual(try snapshot(fixture, locations: [0, 40, 99]), before)
         XCTAssertEqual(fixture.stories.storyLocationsCount, 112)
-    }
-
-    func test_compareFullReloadAndTailInsertionAtIncreasingStoryCounts() throws {
-        try XCTSkipUnless(NewsNativeFeatures.aiFeatures, "NewsNativeFeatures.swift sets AI features aside, including clustering, AI labels and related sites.")
-        for count in [100, 1_000, 5_000] {
-            for mode in [PaginationApplyMode.productionReload, .experimentalTailInsertion] {
-                let fixture = makeFixture(storyCount: count)
-                let locations = [0, count / 2, count - 1]
-                let before = try snapshot(fixture, locations: locations)
-                let oldRows = fixture.table.numberOfRows(inSection: 0)
-                let oldOffset = fixture.table.contentOffset
-                let oldHeight = fixture.table.contentSize.height
-                let page = makeStories(count..<(count + 12))
-                fixture.resetMeasurements()
-
-                let started = CACurrentMediaTime()
-                if mode == .productionReload {
-                    fixture.controller.renderStories(page)
-                } else {
-                    fixture.stories.addStories(page)
-                    try insertTailForExperiment(fixture, oldRows: oldRows)
-                }
-                fixture.table.layoutIfNeeded()
-                let applyMilliseconds = (CACurrentMediaTime() - started) * 1_000
-                let measurements: [String: Any] = [
-                    "existing_stories": count,
-                    "appended_stories": 12,
-                    "mode": mode.rawValue,
-                    "apply_ms": applyMilliseconds,
-                    "model_append_ms": fixture.stories.appendMilliseconds,
-                    "height_calls": fixture.controller.heightCalls,
-                    "preview_normalizations": fixture.previews.storedKeys.count,
-                    "preview_cache_misses": fixture.previews.misses,
-                    "height_cache_misses": fixture.heights.misses,
-                    "reload_data_calls": fixture.table.reloadCalls,
-                    "inserted_rows": fixture.table.insertedRows,
-                ]
-                let report = try JSONSerialization.data(withJSONObject: measurements, options: [.sortedKeys])
-                print("PAGINATION_BENCHMARK \(String(decoding: report, as: UTF8.self))")
-
-                XCTAssertEqual(try snapshot(fixture, locations: locations), before)
-                XCTAssertEqual(fixture.table.contentOffset.y, oldOffset.y, accuracy: 0.5)
-                XCTAssertGreaterThan(fixture.table.contentSize.height, oldHeight)
-                XCTAssertEqual(fixture.stories.storyLocationsCount, Int32(count + 12))
-                XCTAssertEqual(fixture.table.numberOfRows(inSection: 0), expectedRowCount(storyCount: count + 12))
-                try verifyRowMappings(fixture, storyCount: count + 12)
-                let appended = try snapshot(fixture, locations: Array(count..<(count + 12)))
-                XCTAssertTrue(appended.allSatisfy { $0.preview.contains("café") })
-            }
-        }
-    }
-
-    func test_appendPreservesScrollMarkReadAnchor() throws {
-        try XCTSkipUnless(NewsNativeFeatures.aiFeatures, "NewsNativeFeatures.swift sets AI features aside, including clustering, AI labels and related sites.")
-        let fixture = makeFixture(storyCount: 100)
-        fixture.controller.setValue(40, forKey: "scrollingMarkReadRow")
-        fixture.resetMeasurements()
-
-        fixture.controller.renderStories(makeStories(100..<112))
-
-        XCTAssertEqual(fixture.controller.value(forKey: "scrollingMarkReadRow") as? Int, 40)
-        XCTAssertEqual(fixture.table.reloadCalls, 0)
-        XCTAssertEqual(fixture.table.insertedRows, 14)
     }
 
     func test_fetchingLaterNativeRiverPageDoesNotRestartListPresentation() {
@@ -240,117 +176,6 @@ import QuartzCore
         }
     }
 
-    func test_changedClusterPreferenceOrSubscriptionsFallsBackToReload() throws {
-        try XCTSkipUnless(NewsNativeFeatures.aiFeatures, "NewsNativeFeatures.swift sets AI features aside, including clustering, AI labels and related sites.")
-        for changeSubscriptions in [false, true] {
-            let fixture = makeFixture(storyCount: 100)
-            if changeSubscriptions {
-                fixture.controller.appDelegate.dictFeeds.removeObject(forKey: "2")
-            } else {
-                defaults.set(false, forKey: "story_clustering")
-            }
-            fixture.resetMeasurements()
-
-            fixture.controller.renderStories(makeStories(100..<112))
-            fixture.table.layoutIfNeeded()
-
-            XCTAssertEqual(fixture.table.reloadCalls, 1)
-            XCTAssertEqual(fixture.table.insertedRows, 0)
-            XCTAssertEqual(fixture.table.numberOfRows(inSection: 0), 113)
-            defaults.set(true, forKey: "story_clustering")
-        }
-    }
-
-    func test_pageContainingOnlyHiddenStoriesPreservesNativeRowsAndReaderPosition() throws {
-        try XCTSkipUnless(NewsNativeFeatures.aiFeatures, "NewsNativeFeatures.swift sets AI features aside, including clustering, AI labels and related sites.")
-        let fixture = makeFixture(storyCount: 100)
-        let footer = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 36))
-        fixture.table.tableFooterView = footer
-        fixture.table.layoutIfNeeded()
-        fixture.table.contentOffset.y = fixture.table.contentSize.height - fixture.table.bounds.height
-        fixture.table.layoutIfNeeded()
-        let selectedPath = try XCTUnwrap(fixture.controller.indexPath(forStoryLocation: 99))
-        fixture.table.selectRow(at: selectedPath, animated: false, scrollPosition: .none)
-        let loadingPath = IndexPath(row: fixture.table.numberOfRows(inSection: 0) - 1, section: 0)
-        let loadingCell = try XCTUnwrap(fixture.table.cellForRow(at: loadingPath))
-        let visibleCells = fixture.table.visibleCells
-        let originalRows = try XCTUnwrap(fixture.controller.value(forKey: "visibleStoryRows") as? NSArray)
-        let originalIDs = fixture.stories.activeFeedStoryLocationIds
-        let originalHeight = fixture.table.contentSize.height
-        let originalOffset = fixture.table.contentOffset
-        let before = try snapshot(fixture, locations: [0, 40, 99])
-        fixture.controller.setValue(40, forKey: "scrollingMarkReadRow")
-        fixture.resetMeasurements()
-
-        fixture.controller.renderStories(makeHiddenStories(100..<112))
-        fixture.table.layoutIfNeeded()
-
-        XCTAssertEqual(fixture.stories.activeFeedStories.count, 112)
-        XCTAssertEqual(fixture.stories.storyLocationsCount, 100)
-        XCTAssertEqual(fixture.stories.activeFeedStoryLocationIds, originalIDs)
-        XCTAssertEqual(fixture.table.reloadCalls, 0, "A filtered append changes the raw model without changing the displayed rows.")
-        XCTAssertEqual(fixture.table.insertedRows, 0)
-        XCTAssertEqual(fixture.controller.heightCalls, 0)
-        XCTAssertEqual(fixture.previews.storedKeys.count, 0)
-        XCTAssertEqual(fixture.controller.value(forKey: "visibleStoryRows") as? NSArray, originalRows)
-        XCTAssertEqual(fixture.table.visibleCells, visibleCells)
-        XCTAssertTrue(fixture.table.cellForRow(at: loadingPath) === loadingCell)
-        XCTAssertTrue(fixture.table.tableFooterView === footer)
-        XCTAssertEqual(fixture.table.indexPathForSelectedRow, selectedPath)
-        XCTAssertEqual(fixture.table.contentSize.height, originalHeight)
-        XCTAssertEqual(fixture.table.contentOffset, originalOffset)
-        XCTAssertEqual(fixture.controller.value(forKey: "scrollingMarkReadRow") as? Int, 40)
-        XCTAssertFalse(fixture.controller.pageFinished)
-        XCTAssertFalse(fixture.controller.pageFetching)
-        XCTAssertEqual(try snapshot(fixture, locations: [0, 40, 99]), before)
-        try verifyRowMappings(fixture, storyCount: 100)
-    }
-
-    func test_filteredPagesAdvanceOnceAndLaterVisiblePageUsesCorrectModelLocations() throws {
-        try XCTSkipUnless(NewsNativeFeatures.aiFeatures, "NewsNativeFeatures.swift sets AI features aside, including clustering, AI labels and related sites.")
-        let fixture = makeFixture(storyCount: 100)
-        let window = try showPaginationFixture(fixture)
-        defer { window.isHidden = true }
-        fixture.controller.isOnline = false
-        fixture.controller.setValue(40, forKey: "scrollingMarkReadRow")
-        fixture.resetMeasurements()
-
-        for (page, indices) in [(3, 100..<112), (4, 112..<124)] {
-            let nextPage = expectation(description: "Request page \(page) after a filtered response")
-            fixture.controller.onOfflinePageLoad = { nextPage.fulfill() }
-            fixture.controller.renderStories(makeHiddenStories(indices))
-            wait(for: [nextPage], timeout: SimulatorTestTiming.realWorkTimeout)
-            fixture.controller.onOfflinePageLoad = nil
-
-            XCTAssertEqual(fixture.controller.offlinePageLoads, page - 2)
-            XCTAssertEqual(fixture.stories.feedPage, Int32(page))
-            XCTAssertTrue(fixture.controller.pageFetching)
-            XCTAssertFalse(fixture.controller.pageFinished)
-            XCTAssertEqual(fixture.controller.value(forKey: "scrollingMarkReadRow") as? Int, 40)
-            fixture.controller.fetchRiverPage(Int32(page + 1), withCallback: nil)
-            XCTAssertEqual(fixture.controller.offlinePageLoads, page - 2, "The pending request still coalesces repeated fetch attempts.")
-        }
-
-        fixture.controller.renderStories(makeStories(124..<136))
-        fixture.table.layoutIfNeeded()
-
-        XCTAssertEqual(fixture.table.reloadCalls, 0)
-        XCTAssertEqual(fixture.stories.activeFeedStories.count, 136)
-        XCTAssertEqual(fixture.stories.storyLocationsCount, 112)
-        XCTAssertEqual(fixture.table.insertedRows, 13)
-        XCTAssertEqual(fixture.controller.getStoryAtLocation(100)?["story_hash"] as? String, "pagination-124")
-        XCTAssertEqual(fixture.controller.getStoryAtLocation(111)?["story_hash"] as? String, "pagination-135")
-        let parentPath = try XCTUnwrap(fixture.controller.indexPath(forStoryLocation: 106))
-        let cluster = try XCTUnwrap(fixture.controller.tableView(fixture.table, cellForRowAt: IndexPath(row: parentPath.row + 1, section: 0)) as? FeedDetailTableCell)
-        XCTAssertEqual(cluster.storyHash, "related-130")
-        XCTAssertEqual(fixture.controller.value(forKey: "scrollingMarkReadRow") as? Int, 40)
-
-        fixture.controller.renderStories([])
-        fixture.table.layoutIfNeeded()
-        XCTAssertTrue(fixture.controller.pageFinished)
-        XCTAssertEqual(fixture.table.reloadCalls, 1, "An actually empty response still updates the completion row.")
-    }
-
     func test_filteredPageDoesNotAdvanceFarFromTheViewportOrAfterNavigation() throws {
         for changeFeed in [false, true] {
             let fixture = makeFixture(storyCount: 100)
@@ -374,29 +199,6 @@ import QuartzCore
             XCTAssertEqual(fixture.controller.offlinePageLoads, 0)
             XCTAssertEqual(fixture.stories.feedPage, 2)
             XCTAssertEqual(fixture.table.reloadCalls, 0)
-        }
-    }
-
-    func test_filteredAppendReloadsWhenExistingVisibleStoryOrClusterRowsChanged() throws {
-        try XCTSkipUnless(NewsNativeFeatures.aiFeatures, "NewsNativeFeatures.swift sets AI features aside, including clustering, AI labels and related sites.")
-        for changeCluster in [false, true] {
-            let fixture = makeFixture(storyCount: 100)
-            var stories = try XCTUnwrap(fixture.stories.activeFeedStories as? [[String: Any]])
-            if changeCluster {
-                stories[0].removeValue(forKey: "cluster_stories")
-            } else {
-                stories[0]["intelligence"] = ["feed": -1, "author": 0, "tags": 0, "title": 0]
-            }
-            fixture.stories.activeFeedStories = stories
-            fixture.resetMeasurements()
-
-            fixture.controller.renderStories(makeHiddenStories(100..<112))
-            fixture.table.layoutIfNeeded()
-
-            XCTAssertEqual(fixture.table.reloadCalls, 1)
-            XCTAssertEqual(fixture.table.insertedRows, 0)
-            XCTAssertEqual(fixture.stories.storyLocationsCount, changeCluster ? 100 : 99)
-            XCTAssertEqual(fixture.table.numberOfRows(inSection: 0), changeCluster ? 110 : 109)
         }
     }
 
@@ -490,27 +292,6 @@ import QuartzCore
         XCTAssertEqual(fixture.controller.tableView(fixture.table, heightForRowAt: loadingPath), 40)
     }
 
-    func test_fullPayloadRefreshInvalidatesPreviewAndGeometryBeforeAppend() throws {
-        let fixture = makeFixture(storyCount: 100)
-        let path = try XCTUnwrap(fixture.controller.indexPath(forStoryLocation: 0))
-        let initialHeight = fixture.controller.tableView(fixture.table, heightForRowAt: path)
-        var updated = try XCTUnwrap(fixture.controller.getStoryAtLocation(0))
-        updated["story_title"] = "Updated"
-        updated["story_content"] = "<p>short</p>"
-        let shareType = try XCTUnwrap(NSClassFromString("ShareViewController") as? UIViewController.Type)
-        let share = shareType.init(nibName: nil, bundle: nil)
-        share.setValue(fixture.appDelegate, forKey: "appDelegate")
-        // StoryPaginationPerformanceTests.swift uses the real share/reply replacement entry point, without sending a request.
-        share.perform(NSSelectorFromString("replaceStory:withReplyId:"), with: updated, with: nil)
-        fixture.controller.renderStories(makeStories(100..<112))
-        fixture.table.layoutIfNeeded()
-
-        let cell = try XCTUnwrap(fixture.controller.tableView(fixture.table, cellForRowAt: path) as? FeedDetailTableCell)
-        XCTAssertEqual(cell.storyTitle, "Updated")
-        XCTAssertEqual(cell.storyContent, "short")
-        XCTAssertLessThan(fixture.controller.tableView(fixture.table, heightForRowAt: path), initialHeight)
-    }
-
     private func showPaginationFixture(_ fixture: PaginationFixture) throws -> UIWindow {
         let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
         let window = UIWindow(windowScene: scene)
@@ -592,17 +373,6 @@ import QuartzCore
                 "intelligence": ["feed": 0, "author": 0, "tags": 0, "title": 0],
                 "image_urls": index % 3 == 0 ? ["https://example.test/images/\(index).jpg"] : [],
             ]
-            if index % 10 == 0 {
-                story["cluster_stories"] = [[
-                    "story_hash": "related-\(index)",
-                    "story_feed_id": 2,
-                    "story_title": "Related \(index) &amp; coverage",
-                    "story_timestamp": 1_800_000_000 - index,
-                    "cluster_tier": "semantic",
-                    "read_status": 0,
-                    "image_urls": ["https://example.test/images/related-\(index).jpg"],
-                ]]
-            }
             return story
         }
     }
@@ -612,17 +382,6 @@ import QuartzCore
             var hidden = story
             hidden["intelligence"] = ["feed": -1, "author": 0, "tags": 0, "title": 0]
             return hidden
-        }
-    }
-
-    private func insertTailForExperiment(_ fixture: PaginationFixture, oldRows: Int) throws {
-        // StoryPaginationPerformanceTests.swift changes only the test instance, using the real row builder and UITableView.
-        let result = fixture.controller.perform(NSSelectorFromString("buildVisibleStoryRows"))?.takeUnretainedValue()
-        let descriptors = try XCTUnwrap(result as? [[String: Any]])
-        fixture.controller.setValue(descriptors, forKey: "visibleStoryRows")
-        let paths = ((oldRows - 1)..<descriptors.count).map { IndexPath(row: $0, section: 0) }
-        UIView.performWithoutAnimation {
-            fixture.table.insertRows(at: paths, with: .none)
         }
     }
 
@@ -640,23 +399,6 @@ import QuartzCore
         }
     }
 
-    private func verifyRowMappings(_ fixture: PaginationFixture, storyCount: Int) throws {
-        let descriptors = try XCTUnwrap(fixture.controller.value(forKey: "visibleStoryRows") as? [[String: Any]])
-        let storyRows = descriptors.filter { ($0["type"] as? Int) == 0 }
-        XCTAssertEqual(storyRows.compactMap { $0["story_location"] as? Int }, Array(0..<storyCount))
-        for location in stride(from: 0, to: storyCount, by: 10) {
-            let parentPath = try XCTUnwrap(fixture.controller.indexPath(forStoryLocation: location))
-            let clusterPath = IndexPath(row: parentPath.row + 1, section: 0)
-            let cluster = try XCTUnwrap(fixture.controller.tableView(fixture.table, cellForRowAt: clusterPath) as? FeedDetailTableCell)
-            XCTAssertTrue(cluster.isClusterStory)
-            XCTAssertEqual(cluster.storyHash, "related-\(location)")
-            XCTAssertEqual(cluster.storyTitle, "Related \(location) & coverage")
-        }
-    }
-
-    private func expectedRowCount(storyCount: Int) -> Int {
-        storyCount + (storyCount + 9) / 10 + 1
-    }
 }
 
 private enum PaginationApplyMode: String {

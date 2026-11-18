@@ -53,13 +53,11 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 
 typedef NS_ENUM(NSUInteger, FeedDetailVisibleRowType)
 {
-    FeedDetailVisibleRowTypeStory = 0,
-    FeedDetailVisibleRowTypeCluster
+    FeedDetailVisibleRowTypeStory = 0
 };
 
 static NSString * const FeedDetailVisibleRowTypeKey = @"type";
 static NSString * const FeedDetailVisibleRowStoryLocationKey = @"story_location";
-static NSString * const FeedDetailVisibleRowClusterStoryKey = @"cluster_story";
 static const NSInteger NBTryFeedTitleFallbackPageCount = 5;
 
 @interface FeedDetailObjCViewController () <UITableViewDataSourcePrefetching>
@@ -142,9 +140,6 @@ static const NSInteger NBTryFeedTitleFallbackPageCount = 5;
 @property (nonatomic, strong) UIBarButtonItem *verticalMarkReadItem;
 @property (nonatomic, strong) UIBarButtonItem *verticalMarkReadOptionsItem;
 
-- (BOOL)isClusterMarkReadEnabled;
-- (BOOL)isClusterStoryRead:(NSDictionary *)clusterStory parentStory:(NSDictionary *)parentStory;
-- (NSArray<NSIndexPath *> *)indexPathsForStoryLocationIncludingClusterRows:(NSInteger)location;
 - (void)reloadStoryRowsForLocation:(NSInteger)location rowAnimation:(UITableViewRowAnimation)rowAnimation;
 - (void)clearTryFeedSearchState;
 - (void)clearStoryRenderCaches;
@@ -705,41 +700,6 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     [self reload];
 }
 
-- (BOOL)shouldShowStoryClustering {
-    if (!self.isLegacyTable) {
-        return NO;
-    }
-
-    // FeedDetailObjCViewController.m: clustering uses AI embeddings, set aside in NewsNativeFeatures.swift.
-    return NewsNativeFeatures.aiFeatures && [[NSUserDefaults standardUserDefaults] boolForKey:@"story_clustering"];
-}
-
-- (NSArray<NSDictionary *> *)visibleClusterStoriesForStory:(NSDictionary *)story {
-    NSArray *clusterStories = [story[@"cluster_stories"] isKindOfClass:[NSArray class]] ? story[@"cluster_stories"] : nil;
-    if (!clusterStories.count || ![self shouldShowStoryClustering]) {
-        return @[];
-    }
-
-    return [StoryClusterDisplayDecision visibleClusterStories:clusterStories
-                                            subscribedFeedIds:[appDelegate subscribedFeedIdsForStoryClusters]
-                                             isPremiumArchive:appDelegate.isPremiumArchive];
-}
-
-- (BOOL)isClusterMarkReadEnabled {
-    return appDelegate.isPremiumArchive &&
-        [StoryClusterDisplayDecision isClusterMarkReadEnabledWithUserProfile:appDelegate.dictUserProfile];
-}
-
-- (BOOL)isClusterStoryRead:(NSDictionary *)clusterStory parentStory:(NSDictionary *)parentStory {
-    BOOL isClusterRead = [clusterStory[@"read_status"] boolValue];
-    BOOL isParentRead = parentStory ? ![storiesCollection isStoryUnread:parentStory] : NO;
-
-    return [StoryClusterDisplayDecision effectiveClusterReadStatusWithIsClusterRead:isClusterRead
-                                                                         parentRead:isParentRead
-                                                             clusterMarkReadEnabled:[self isClusterMarkReadEnabled]
-                                                                   isPremiumArchive:appDelegate.isPremiumArchive];
-}
-
 - (NSArray<NSDictionary *> *)buildVisibleStoryRows {
     return [self buildVisibleStoryRowsFromLocation:0];
 }
@@ -756,19 +716,6 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
             FeedDetailVisibleRowTypeKey: @(FeedDetailVisibleRowTypeStory),
             FeedDetailVisibleRowStoryLocationKey: @(location)
         }];
-
-        if (![self shouldShowStoryClustering]) {
-            continue;
-        }
-
-        NSDictionary *story = [self getStoryAtLocation:location];
-        for (NSDictionary *clusterStory in [self visibleClusterStoriesForStory:story]) {
-            [rows addObject:@{
-                FeedDetailVisibleRowTypeKey: @(FeedDetailVisibleRowTypeCluster),
-                FeedDetailVisibleRowStoryLocationKey: @(location),
-                FeedDetailVisibleRowClusterStoryKey: clusterStory
-            }];
-        }
     }
 
     return rows;
@@ -788,10 +735,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         @"intelligence": @(appDelegate.selectedIntelligence),
         @"saved_intelligence": @(appDelegate.isSavedStoriesIntelligenceMode),
         @"show_hidden": @(storiesCollection.showHiddenStories),
-        @"clustering": @([self shouldShowStoryClustering]),
-        @"cluster_mark_read": @([self isClusterMarkReadEnabled]),
         @"archive": @(appDelegate.isPremiumArchive),
-        @"subscribed_feeds": [appDelegate subscribedFeedIdsForStoryClusters] ?: [NSSet set],
         @"river": @(storiesCollection.isRiverView),
         @"social": @(storiesCollection.isSocialView),
         @"social_river": @(storiesCollection.isSocialRiverView),
@@ -837,7 +781,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 
     NSArray<NSDictionary *> *newRows = [self buildVisibleStoryRowsFromLocation:previousStoryCount];
     if (!newRows.count) {
-        // FeedDetailObjCViewController.m preserves a filtered page only when the existing cluster rows also match.
+        // FeedDetailObjCViewController.m preserves a filtered page only when the existing rows also match.
         return [self.visibleStoryRows isEqualToArray:[self buildVisibleStoryRows]];
     }
     NSInteger firstRow = self.visibleStoryRows.count;
@@ -882,15 +826,6 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     return rowDescriptors[(NSUInteger)indexPath.row];
 }
 
-- (NSDictionary *)clusterStoryForIndexPath:(NSIndexPath *)indexPath {
-    NSDictionary *rowDescriptor = [self storyRowDescriptorForIndexPath:indexPath];
-    if ([rowDescriptor[FeedDetailVisibleRowTypeKey] integerValue] != FeedDetailVisibleRowTypeCluster) {
-        return nil;
-    }
-
-    return rowDescriptor[FeedDetailVisibleRowClusterStoryKey];
-}
-
 - (NSInteger)storyLocationForScrollingAtIndexPath:(NSIndexPath *)indexPath {
     NSDictionary *rowDescriptor = [self storyRowDescriptorForIndexPath:indexPath];
     NSNumber *targetLocation = [FeedRowScrollReadDecision targetStoryLocationWithRowStoryLocation:rowDescriptor[FeedDetailVisibleRowStoryLocationKey]
@@ -900,19 +835,6 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     }
 
     return [targetLocation integerValue];
-}
-
-- (void)openClusterStory:(NSDictionary *)clusterStory {
-    NSString *feedId = [NSString stringWithFormat:@"%@", clusterStory[@"story_feed_id"] ?: @""];
-    NSString *storyHash = [NSString stringWithFormat:@"%@", clusterStory[@"story_hash"] ?: @""];
-    NSString *storyTitle = [clusterStory[@"story_title"] isKindOfClass:[NSString class]] ?
-        [clusterStory[@"story_title"] stringByDecodingHTMLEntities] : nil;
-
-    if (!feedId.length || !storyHash.length || ![self.appDelegate isSubscribedFeedIdForStoryClusters:feedId]) {
-        return;
-    }
-
-    [self.appDelegate loadFeed:feedId withStory:storyHash storyTitle:storyTitle animated:NO];
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
@@ -2236,17 +2158,6 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
             NSString *storyHash = story[@"story_hash"];
             NSArray *imageURLs = story[@"image_urls"];
             [self cacheImageURLs:imageURLs forStoryHash:storyHash withManager:manager];
-
-            NSArray *clusterStories = [story[@"cluster_stories"] isKindOfClass:[NSArray class]] ? story[@"cluster_stories"] : nil;
-            for (NSDictionary *clusterStory in clusterStories) {
-                NSString *clusterStoryHash = clusterStory[@"story_hash"];
-                NSArray *clusterImageURLs = clusterStory[@"image_urls"];
-                if (!clusterStoryHash.length || !clusterImageURLs.count) {
-                    continue;
-                }
-
-                [self cacheImageURLs:clusterImageURLs forStoryHash:clusterStoryHash withManager:manager];
-            }
         }
     }];
     [cacheImagesOperation setQualityOfService:NSQualityOfServiceUtility];
@@ -2756,7 +2667,6 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     NSString *openHash = appDelegate.activeStory[@"story_hash"];
     NSIndexPath *selection = table.indexPathForSelectedRow;
     NSString *selectedHash = selection ? [self getStoryAtLocation:[self storyLocationForScrollingAtIndexPath:selection]][@"story_hash"] : nil;
-    NSString *selectedChildHash = selection ? [self clusterStoryForIndexPath:selection][@"story_hash"] : nil;
     NSIndexPath *anchorPath = selection && CGRectIntersectsRect([table rectForRowAtIndexPath:selection], table.bounds) ? selection :
         [[table.indexPathsForVisibleRows sortedArrayUsingSelector:@selector(compare:)] firstObject];
     NSInteger anchorLocation = anchorPath ? [self storyLocationForScrollingAtIndexPath:anchorPath] : NSNotFound;
@@ -2801,11 +2711,6 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         location = selectedHash ? [storiesCollection locationOfStoryId:selectedHash] : -1;
         if (location >= 0) {
             NSIndexPath *path = [self indexPathForStoryLocation:location];
-            if (selectedChildHash) {
-                for (NSIndexPath *candidate in [self indexPathsForStoryLocationIncludingClusterRows:location]) {
-                    if ([[self clusterStoryForIndexPath:candidate][@"story_hash"] isEqualToString:selectedChildHash]) { path = candidate; break; }
-                }
-            }
             [table selectRowAtIndexPath:path animated:NO scrollPosition:UITableViewScrollPositionNone];
         }
     }
@@ -2928,7 +2833,6 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     NSDictionary *updated = [cache overlayResponse:response request:load.request revision:load.revision];
     NSString *anchorHash;
     NSString *selectedHash;
-    NSString *selectedChildHash;
     NSString *openArticleHash = load.displayedSnapshot ? appDelegate.activeStory[@"story_hash"] : nil;
     CGFloat pixelOffset = 0;
     if (load.displayedSnapshot) {
@@ -2942,7 +2846,6 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         NSIndexPath *selection = self.storyTitlesTable.indexPathForSelectedRow;
         if (selection) {
             selectedHash = [self getStoryAtLocation:[self storyLocationForScrollingAtIndexPath:selection]][@"story_hash"];
-            selectedChildHash = [self clusterStoryForIndexPath:selection][@"story_hash"];
         }
         NSString *activeHash = appDelegate.activeStory[@"story_hash"];
         NSInteger activeLocation = [storiesCollection locationOfStoryId:activeHash];
@@ -2983,11 +2886,6 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         NSInteger selectedLocation = selectedHash ? [storiesCollection locationOfStoryId:selectedHash] : -1;
         if (selectedLocation >= 0) {
             NSIndexPath *selection = [self indexPathForStoryLocation:selectedLocation];
-            if (selectedChildHash) {
-                for (NSIndexPath *candidate in [self indexPathsForStoryLocationIncludingClusterRows:selectedLocation]) {
-                    if ([[self clusterStoryForIndexPath:candidate][@"story_hash"] isEqualToString:selectedChildHash]) { selection = candidate; break; }
-                }
-            }
             [self.storyTitlesTable selectRowAtIndexPath:selection animated:NO scrollPosition:UITableViewScrollPositionNone];
         }
         self.scrollingMarkReadRow = NSNotFound;
@@ -4281,7 +4179,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     for (NSIndexPath *indexPath in [indexPaths subarrayWithRange:NSMakeRange(0, MIN(indexPaths.count, 24))]) {
         NSDictionary *descriptor = [self storyRowDescriptorForIndexPath:indexPath];
         if (!descriptor) continue;
-        NSDictionary *story = [self clusterStoryForIndexPath:indexPath] ?: [self getStoryAtLocation:[self storyLocationForIndexPath:indexPath]];
+        NSDictionary *story = [self getStoryAtLocation:[self storyLocationForIndexPath:indexPath]];
         NSString *storyHash = story[@"story_hash"];
         if ([storyHash isKindOfClass:[NSString class]] && storyHash.length) [storyHashes addObject:storyHash];
     }
@@ -4296,10 +4194,10 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 - (void)prefetchStoryFaviconsForRows:(NSArray<NSIndexPath *> *)indexPaths {
     NSMutableArray<FeedIconPreparationRequest *> *requests = [NSMutableArray array];
     NSMutableSet<NSString *> *seen = [NSMutableSet set];
-    // FeedDetailObjCViewController.m snapshots the exact feed IDs of nearby regular and cluster rows without loading originals.
+    // FeedDetailObjCViewController.m snapshots the exact feed IDs of nearby rows without loading originals.
     for (NSIndexPath *indexPath in [indexPaths subarrayWithRange:NSMakeRange(0, MIN(indexPaths.count, 24))]) {
         if (![self storyRowDescriptorForIndexPath:indexPath]) continue;
-        NSDictionary *story = [self clusterStoryForIndexPath:indexPath] ?: [self getStoryAtLocation:[self storyLocationForIndexPath:indexPath]];
+        NSDictionary *story = [self getStoryAtLocation:[self storyLocationForIndexPath:indexPath]];
         id rawFeedID = story[@"story_feed_id"];
         if (!rawFeedID || rawFeedID == NSNull.null) continue;
         NSString *feedID = [appDelegate feedIdWithoutSearchQuery:[NSString stringWithFormat:@"%@", rawFeedID]];
@@ -4361,7 +4259,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     self.storyLayoutPreviewOverrides = preparedPreviews;
     @try {
 
-        // FeedDetailObjCViewController.m snapshots only nearby regular rows; clusters keep their existing drawing path.
+        // FeedDetailObjCViewController.m snapshots only nearby story rows.
         for (NSIndexPath *indexPath in [indexPaths subarrayWithRange:NSMakeRange(0, MIN(indexPaths.count, 24))]) {
             NSDictionary *descriptor = [self storyRowDescriptorForIndexPath:indexPath];
             if (!descriptor || [descriptor[FeedDetailVisibleRowTypeKey] integerValue] != FeedDetailVisibleRowTypeStory) continue;
@@ -4444,9 +4342,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
          cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSInteger storyCount = storiesCollection.storyLocationsCount;
     NSDictionary *rowDescriptor = self.isLegacyTable ? [self storyRowDescriptorForIndexPath:indexPath] : nil;
-    BOOL isClusterRow = [rowDescriptor[FeedDetailVisibleRowTypeKey] integerValue] == FeedDetailVisibleRowTypeCluster;
     NSInteger location = [self storyLocationForIndexPath:indexPath];
-    NSInteger parentLocation = isClusterRow ? [self storyLocationForScrollingAtIndexPath:indexPath] : location;
     
     NSString *cellIdentifier;
     NSDictionary *feed ;
@@ -4482,7 +4378,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
             break;
         }
     }
-    NSDictionary *story = isClusterRow ? rowDescriptor[FeedDetailVisibleRowClusterStoryKey] : [self getStoryAtLocation:location];
+    NSDictionary *story = [self getStoryAtLocation:location];
     if (!story) {
         return [self makeLoadingCell];
     }
@@ -4500,24 +4396,22 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     NSString *title = [story objectForKey:@"story_title"];
     cell.storyTitle = [title stringByDecodingHTMLEntities];
     
-    cell.storyDate = isClusterRow ? [Utilities formatClusterDateFromTimestamp:[[story objectForKey:@"story_timestamp"] integerValue]]
-                                 : [story objectForKey:@"short_parsed_date"];
+    cell.storyDate = [story objectForKey:@"short_parsed_date"];
     cell.storyTimestamp = [[story objectForKey:@"story_timestamp"] integerValue];
-    cell.isSaved = !isClusterRow && [[story objectForKey:@"starred"] boolValue];
-    cell.isShared = !isClusterRow && [[story objectForKey:@"shared"] boolValue];
+    cell.isSaved = [[story objectForKey:@"starred"] boolValue];
+    cell.isShared = [[story objectForKey:@"shared"] boolValue];
     cell.storyHash = story[@"story_hash"];
-    cell.clusterTier = isClusterRow ? [StoryClusterDisplayDecision normalizedClusterTierValue:story[@"cluster_tier"]] : nil;
     NSString *storyIdentifier = [story[@"story_hash"] isKindOfClass:[NSString class]] ? story[@"story_hash"] : [NSString stringWithFormat:@"%@", @(location)];
     cell.accessibilityIdentifier = [NSString stringWithFormat:@"story-row-%@", storyIdentifier];
     
-    if (!isClusterRow && [[story objectForKey:@"story_authors"] class] != [NSNull class]) {
+    if ([[story objectForKey:@"story_authors"] class] != [NSNull class]) {
         cell.storyAuthor = [[story objectForKey:@"story_authors"] stringByReplacingOccurrencesOfString:@"\"" withString:@""];
     } else {
         cell.storyAuthor = @"";
     }
     
     cell.storyContent = nil;
-    if (!isClusterRow && self.textSize != FeedDetailTextSizeTitleOnly) {
+    if (self.textSize != FeedDetailTextSizeTitleOnly) {
         NSString *content = [self cachedPreviewTextForStory:story location:location];
         cell.storyContent = [content length] ? content : nil;
     }
@@ -4552,18 +4446,14 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     
     // undread indicator
 
-    NSDictionary *parentStory = isClusterRow && parentLocation != NSNotFound ? [self getStoryAtLocation:parentLocation] : nil;
-    int score = isClusterRow ?
-        ([story[@"score"] respondsToSelector:@selector(integerValue)] ? [story[@"score"] integerValue] : 0) :
-        [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
+    int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
     cell.storyScore = score;
 
-    cell.isRead = isClusterRow ? [self isClusterStoryRead:story parentStory:parentStory] : ![storiesCollection isStoryUnread:story];
-    cell.isReadAvailable = !isClusterRow && ![storiesCollection.activeFolder isEqualToString:@"saved_stories"];
+    cell.isRead = ![storiesCollection isStoryUnread:story];
+    cell.isReadAvailable = ![storiesCollection.activeFolder isEqualToString:@"saved_stories"];
     cell.textSize = self.textSize;
     cell.isShort = NO;
-    cell.isClusterStory = isClusterRow;
-    cell.storyTextLayoutCache = self.isLegacyTable && !isClusterRow ?
+    cell.storyTextLayoutCache = self.isLegacyTable ?
         self.storyTextLayoutCache : nil;
     
     UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
@@ -4574,7 +4464,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     }
     
     cell.isRiverOrSocial = NO;
-    if (!isClusterRow && (storiesCollection.isRiverView ||
+    if ((storiesCollection.isRiverView ||
         storiesCollection.isSavedView ||
         storiesCollection.isReadView ||
         storiesCollection.isWidgetView ||
@@ -4585,7 +4475,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 
     if (!self.isPhoneOrCompact) {
         NSInteger rowIndex = [storiesCollection locationOfActiveStory];
-        if (!isClusterRow && rowIndex == location) {
+        if (rowIndex == location) {
             [self tableView:tableView selectRowAtIndexPath:indexPath animated:NO];
         }
     }
@@ -4730,53 +4620,9 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     [cell setNeedsDisplay];
 }
 
-- (NSArray<NSIndexPath *> *)indexPathsForStoryLocationIncludingClusterRows:(NSInteger)location {
-    if (!self.isLegacyTable || location == NSNotFound) {
-        return @[];
-    }
-
-    NSArray<NSDictionary *> *rowDescriptors = [self storyRowDescriptors];
-    NSMutableArray<NSIndexPath *> *indexPaths = [NSMutableArray array];
-
-    for (NSInteger row = 0; row < (NSInteger)rowDescriptors.count; row++) {
-        NSDictionary *rowDescriptor = rowDescriptors[(NSUInteger)row];
-        if ([rowDescriptor[FeedDetailVisibleRowStoryLocationKey] integerValue] != location) {
-            continue;
-        }
-
-        [indexPaths addObject:[NSIndexPath indexPathForRow:row inSection:FeedSectionBefore]];
-    }
-
-    return indexPaths;
-}
-
 - (void)reloadStoryRowsForLocation:(NSInteger)location rowAnimation:(UITableViewRowAnimation)rowAnimation {
     if (location == NSNotFound) {
         return;
-    }
-
-    if (self.isLegacyTable) {
-        // FeedDetailObjCViewController.m may rebuild cluster positions while reloading an individual story.
-        self.storyRowHeightCache = nil;
-        self.visibleStoryRows = [self buildVisibleStoryRows];
-        NSArray<NSIndexPath *> *indexPaths = [self indexPathsForStoryLocationIncludingClusterRows:location];
-        if (indexPaths.count) {
-            NSArray<NSNumber *> *targetRows = [indexPaths valueForKey:@"row"];
-            NSInteger currentTableRowCount = [self.storyTitlesTable numberOfRowsInSection:FeedSectionBefore];
-            if ([StoryClusterDisplayDecision canSafelyReloadClusterRowsWithCurrentTableRowCount:currentTableRowCount
-                                                                            visibleStoryRowCount:self.visibleStoryRows.count
-                                                                                      targetRows:targetRows]) {
-                [self.storyTitlesTable reloadRowsAtIndexPaths:indexPaths withRowAnimation:rowAnimation];
-            } else {
-                NSLog(@"Skipping clustered row reload due to table/model row mismatch. table=%ld visible=%ld location=%ld rows=%@",
-                      (long)currentTableRowCount,
-                      (long)self.visibleStoryRows.count,
-                      (long)location,
-                      targetRows);
-                [self.storyTitlesTable reloadData];
-            }
-            return;
-        }
     }
 
     NSIndexPath *indexPath = [self indexPathForStoryLocation:location];
@@ -4801,20 +4647,6 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 //}
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSDictionary *clusterStory = [self clusterStoryForIndexPath:indexPath];
-    if (clusterStory) {
-        [tableView deselectRowAtIndexPath:indexPath animated:YES];
-
-        NSInteger location = storiesCollection.locationOfActiveStory;
-        NSIndexPath *activeIndexPath = [self indexPathForStoryLocation:location];
-        if (activeIndexPath && location >= 0 && ![activeIndexPath isEqual:indexPath]) {
-            [tableView selectRowAtIndexPath:activeIndexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
-        }
-
-        [self openClusterStory:clusterStory];
-        return;
-    }
-
     NSInteger selectedLocation = [self storyLocationForIndexPath:indexPath];
     if (selectedLocation < storiesCollection.storyLocationsCount) {
         // mark the cell as read
@@ -5036,15 +4868,10 @@ leadingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
         if (cachedRowHeight) return cachedRowHeight.doubleValue;
     }
     NSInteger storyCount = storiesCollection.storyLocationsCount;
-    NSDictionary *clusterStory = [self clusterStoryForIndexPath:indexPath];
     NSInteger location = [self storyLocationForIndexPath:indexPath];
     CGFloat rowHeight;
 
-    if (clusterStory) {
-        NSString *spacing = [[NSUserDefaults standardUserDefaults] objectForKey:@"feed_list_spacing"];
-        BOOL isComfortable = ![spacing isEqualToString:@"compact"];
-        rowHeight = isComfortable ? 42.0f : 36.0f;
-    } else if (storyCount && location == storyCount) {
+    if (storyCount && location == storyCount) {
         if (!self.pageFinished) {
             rowHeight = 40;
         } else {
@@ -5654,10 +5481,8 @@ finish_height_measurement:
         if (nextLocation == NSNotFound) return;
         NSDictionary *row = [self storyRowDescriptorForIndexPath:indexPath];
         if (row) {
-            // FeedDetailObjCViewController.m measures the parent cell, including its preview.
-            // Every Match/Related row follows that parent, so its midpoint is already behind us.
-            BOOL isChild = [row[FeedDetailVisibleRowTypeKey] integerValue] == FeedDetailVisibleRowTypeCluster;
-            if (isChild || visibleTop >= CGRectGetMidY([table rectForRowAtIndexPath:indexPath])) {
+            // FeedDetailObjCViewController.m measures the story cell, including its preview.
+            if (visibleTop >= CGRectGetMidY([table rectForRowAtIndexPath:indexPath])) {
                 nextLocation += 1;
             }
         }
@@ -5692,7 +5517,7 @@ finish_height_measurement:
     }
 
     // FeedDetailObjCViewController.m: read state changes no row geometry. Redraw the
-    // existing cells once instead of rebuilding every story/cluster row during a scroll.
+    // existing cells once instead of rebuilding every story row during a scroll.
     for (NSIndexPath *indexPath in self.storyTitlesTable.indexPathsForVisibleRows) {
         NSInteger location = [self storyLocationForScrollingAtIndexPath:indexPath];
         if (location == NSNotFound || ![locations containsIndex:location]) {
@@ -5705,20 +5530,9 @@ finish_height_measurement:
         }
 
         NSDictionary *story = [self getStoryAtLocation:location];
-        NSDictionary *clusterStory = [self clusterStoryForIndexPath:indexPath];
-        NSString *clusterHash = [clusterStory[@"story_hash"] isKindOfClass:NSString.class] ? clusterStory[@"story_hash"] : nil;
-        if (clusterHash.length && [story[@"cluster_stories"] isKindOfClass:NSArray.class]) {
-            // FeedDetailObjCViewController.m refreshes replaced child state without rebuilding the visible row descriptors.
-            for (id candidate in story[@"cluster_stories"]) {
-                if ([candidate isKindOfClass:NSDictionary.class] && [clusterHash isEqual:candidate[@"story_hash"]]) {
-                    clusterStory = candidate;
-                    break;
-                }
-            }
-        }
-        BOOL isRead = clusterStory ? [self isClusterStoryRead:clusterStory parentStory:story] : ![storiesCollection isStoryUnread:story];
-        BOOL isSaved = !clusterStory && [story[@"starred"] boolValue];
-        BOOL isShared = !clusterStory && [story[@"shared"] boolValue];
+        BOOL isRead = ![storiesCollection isStoryUnread:story];
+        BOOL isSaved = [story[@"starred"] boolValue];
+        BOOL isShared = [story[@"shared"] boolValue];
         BOOL badgesChanged = cell.isSaved != isSaved || cell.isShared != isShared;
         cell.isSaved = isSaved;
         cell.isShared = isShared;
@@ -5763,10 +5577,6 @@ finish_height_measurement:
         NSDictionary *rowDescriptor = [self storyRowDescriptorForIndexPath:indexPath];
         if (rowDescriptor == nil) {
             return storiesCollection.storyLocationsCount;
-        }
-
-        if ([rowDescriptor[FeedDetailVisibleRowTypeKey] integerValue] == FeedDetailVisibleRowTypeCluster) {
-            return NSNotFound;
         }
 
         return [rowDescriptor[FeedDetailVisibleRowStoryLocationKey] integerValue];

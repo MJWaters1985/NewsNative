@@ -33,13 +33,7 @@ struct CardView: View {
     
     var body: some View {
         ZStack {
-            if story.isClusterStory {
-                clusterCardBody
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        feedDetailInteraction.tapped(story: story, in: dash)
-                    }
-            } else if usesCustomSwipes && swipeActionsEnabled {
+            if usesCustomSwipes && swipeActionsEnabled {
                 StoryTitleSwipeView(cache: cache, storyID: story.id,
                                       rightAction: rightAction, leftAction: leftAction,
                                       isSaved: story.isSaved, isRead: story.isRead,
@@ -67,7 +61,7 @@ struct CardView: View {
             }
         }
         .modifier(ReaderEntrance(session: cache.motionSession, key: story.hash))
-        .if(!story.isClusterStory && !cache.isNonGridStoryTitlesLayout && !usesCustomSwipes && swipeActionsEnabled) { view in
+        .if(!cache.isNonGridStoryTitlesLayout && !usesCustomSwipes && swipeActionsEnabled) { view in
             view.swipeActions(edge: .trailing, allowsFullSwipe: true) {
                 Button {
                     toggleReadState()
@@ -98,14 +92,14 @@ struct CardView: View {
                 .tint(Color.themed([0x8E8E93, 0x847A6E, 0x545458, 0x48484A]))
             }
         }
-        .if(!story.isClusterStory && (longPressAction == "show_actions" || cache.appDelegate.isMac)) { view in
+        .if(longPressAction == "show_actions" || cache.appDelegate.isMac) { view in
             view.contextMenu {
                 RowMenuContent(groups: RowActionMenus.story(story, controller: cache.appDelegate.feedDetailViewController,
                                                             source: cache.appDelegate.feedDetailViewController.view,
                                                             dashboard: cache.isDashboard))
             }
         }
-        .if(!story.isClusterStory && longPressAction != "show_actions" && !cache.appDelegate.isMac) { view in
+        .if(longPressAction != "show_actions" && !cache.appDelegate.isMac) { view in
             view.onLongPressGesture {
                 RowActionMenus.performStoryShortcut(story, controller: cache.appDelegate.feedDetailViewController)
             }
@@ -213,76 +207,6 @@ struct CardView: View {
         )
     }
 
-    private var clusterCardBody: some View {
-        ZStack(alignment: .leading) {
-            Rectangle()
-                .foregroundColor(clusterListBackgroundColor)
-
-            ZStack(alignment: .leading) {
-                RoundedRectangle(cornerRadius: cache.settings.spacing == .compact ? 6 : 8)
-                    .foregroundColor(clusterBackgroundColor)
-
-                CardFeedBarView(cache: cache, story: story)
-                    .padding(.leading, 2)
-
-                HStack(spacing: 8) {
-                    if let indicatorImage = clusterIndicatorImage {
-                        Image(uiImage: indicatorImage)
-                            .resizable()
-                            .frame(width: story.score == 0 ? 10 : 12, height: story.score == 0 ? 10 : 12)
-                            .opacity(story.isRead ? 0.15 : 1)
-                    }
-
-                    if let favicon = story.feed?.image {
-                        Image(uiImage: favicon)
-                            .resizable()
-                            .frame(width: 16, height: 16)
-                            .opacity(story.isRead ? 0.4 : 1)
-                    }
-
-                    Text(story.title)
-                        .font(Font.custom("WhitneySSm-Medium", size: 13, relativeTo: .caption))
-                        .foregroundColor(clusterTitleColor)
-                        .lineLimit(1)
-                        .truncationMode(.tail)
-
-                    if !clusterBadgeText.isEmpty {
-                        Text(clusterBadgeText)
-                            .font(Font.custom("WhitneySSm-Medium", size: 9, relativeTo: .caption2))
-                            .foregroundColor(clusterBadgeColor)
-                            .kerning(0.45)
-                            .padding(.horizontal, 7)
-                            .frame(height: 16)
-                            .overlay(
-                                Capsule()
-                                    .stroke(clusterBadgeColor, lineWidth: 1)
-                            )
-                    }
-
-                    Spacer(minLength: 4)
-
-                    if let previewImage = clusterPreviewImage {
-                        Image(uiImage: previewImage)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 24, height: 24)
-                            .clipShape(RoundedRectangle(cornerRadius: 4))
-                            .opacity(story.isRead ? 0.55 : 1)
-                    }
-
-                    Text(story.dateString)
-                        .font(Font.custom("WhitneySSm-Medium", size: 10, relativeTo: .caption2))
-                        .foregroundColor(clusterMetaColor)
-                        .lineLimit(1)
-                }
-                .padding(.leading, 13)
-                .padding(.trailing, 12)
-            }
-            .padding(.leading, 18)
-            .padding(.trailing, 10)
-        }
-        .frame(height: cache.settings.spacing == .compact ? 36 : 42)
-    }
     
     var highlightColor: Color {
         if cache.isGrid || cache.isDashboard {
@@ -298,54 +222,6 @@ struct CardView: View {
         }
 
         return image
-    }
-
-    var clusterPreviewImage: UIImage? {
-        guard let image = cache.appDelegate.cachedImage(forStoryHash: story.hash), image.isKind(of: UIImage.self) else {
-            return nil
-        }
-
-        return image
-    }
-
-    var clusterIndicatorImage: UIImage? {
-        UIImage(named: StoryClusterDisplayDecision.indicatorImageName(forScore: story.score))
-    }
-
-    var clusterBadgeText: String {
-        StoryClusterDisplayDecision.clusterTierBadgeText(forValue: story.clusterTier)
-    }
-
-    var clusterListBackgroundColor: Color {
-        Color.themed([0xF4F4F4, 0xF3E2CB, 0x4F4F4F, 0x000000])
-    }
-
-    var clusterBackgroundColor: Color {
-        Color.themed([0xE8F0F8, 0xECDEC9, 0x363C43, 0x101418])
-    }
-
-    var clusterTitleColor: Color {
-        if story.isRead {
-            return Color.themed([0x585858, 0x585858, 0x989898, 0x888888])
-        } else {
-            return Color.themed([0x202020, 0x333333, 0xD8D8D8, 0xD0D0D0])
-        }
-    }
-
-    var clusterMetaColor: Color {
-        if story.isRead {
-            return Color.themed([0x9A9A9A, 0x8B7B6B, 0x7F7F7F, 0x707070])
-        } else {
-            return Color.themed([0x808080, 0x8B7B6B, 0xA0A0A0, 0x8F8F8F])
-        }
-    }
-
-    var clusterBadgeColor: Color {
-        if story.clusterTier == "title" {
-            return Color.themed([0x5A8C6A, 0x6E865F, 0x7DC99A, 0x7DC99A])
-        } else {
-            return Color.themed([0xA88246, 0x9B7540, 0xD2A76B, 0xD2A76B])
-        }
     }
 
     private var swipeOffset: CGFloat {

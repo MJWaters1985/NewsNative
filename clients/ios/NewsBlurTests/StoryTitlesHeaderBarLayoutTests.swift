@@ -1949,33 +1949,6 @@ import UIKit
         XCTAssertFalse(gesture.isEnabled, "The visible reader must still apply its own edge-swipe preference")
     }
 
-    func test_narrowSidebarShortensFilterBeforeCompressingOtherControls() throws {
-        try XCTSkipUnless(NewsNativeFeatures.aiFeatures, "NewsNativeFeatures.swift sets AI features aside, including clustering, AI labels and related sites.")
-        let (bar, parent) = makeBar(width: 320)
-        // StoryTitlesHeaderBarLayoutTests.swift hosts glass in a window before checking its event routing.
-        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
-        let previousWindow = scene.windows.first(where: \.isKeyWindow)
-        let window = UIWindow(windowScene: scene)
-        let controller = UIViewController()
-        window.rootViewController = controller
-        controller.view.addSubview(parent)
-        window.makeKeyAndVisible()
-        defer { window.isHidden = true; previousWindow?.makeKey() }
-        window.layoutIfNeeded()
-        // StoryTitlesHeaderBarLayoutTests.swift gives this synthetic sidebar 320 usable points even when the phone remains in landscape.
-        parent.frame.origin = controller.view.safeAreaLayoutGuide.layoutFrame.origin
-        settle(bar, parent: parent)
-        attach(bar, name: "header-narrow-unread")
-
-        XCTAssertEqual(bar.headerContainer.safeAreaLayoutGuide.layoutFrame.width, 320, accuracy: 0.5)
-        XCTAssertEqual(title(of: bar.optionsPill), "UNREAD")
-        assertVisibleControlsFit(bar)
-        let center = bar.searchPill.convert(CGPoint(x: bar.searchPill.bounds.midX, y: bar.searchPill.bounds.midY), to: parent)
-        let hit = parent.hitTest(center, with: nil)
-        XCTAssertTrue(hit === bar.searchPill || hit?.isDescendant(of: bar.searchPill) == true,
-                      "Search must receive touches through its glass group, got \(String(describing: hit))")
-    }
-
     func test_wideSidebarKeepsFilterAndSortOrder() {
         let (bar, parent) = makeBar(width: 600)
         withExtendedLifetime(parent) {

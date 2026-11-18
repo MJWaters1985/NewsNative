@@ -430,8 +430,7 @@ function newsblurAnimateStoryEntrance(reduceMotion) {
     }
     var elements = document.querySelectorAll('.NB-story-title, .NB-story-date, #NB-story-author, #NB-story, ' +
         '.NB-share-button, .NB-story-shares, .NB-story-comment, .NB-story-comment-reply, ' +
-        '.NB-story-comments-friends-header, .NB-story-comments-public-header, ' +
-        '.NB-story-cluster-detail-header, .NB-story-cluster-detail-item');
+        '.NB-story-comments-friends-header, .NB-story-comments-public-header');
     var positions = new Map();
     var pending = Array.prototype.filter.call(elements, function(element) {
         // storyDetailView.js preserves identity when native refreshSideOptions/refreshComments replaces innerHTML.

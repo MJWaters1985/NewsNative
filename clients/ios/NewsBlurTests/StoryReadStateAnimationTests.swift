@@ -50,26 +50,6 @@ import SwiftUI
     }
 
 #if targetEnvironment(macCatalyst)
-    func test_macRelatedReadTitleAndDateUseTheSameGray() throws {
-        let fixture = makeFixture(markRelated: true)
-        defer { fixture.window.isHidden = true }
-        (fixture.app as? ReadFadeAppDelegate)?.image = nil
-        let cell = fixture.table.related
-        cell.storyTitle = "MMMMMM"
-        cell.storyDate = "MMMMMM"
-        cell.clusterTier = nil
-        cell.isRead = true
-        for theme in ["light", "sepia", "medium", "dark"] {
-            defaults.set(theme, forKey: "theme_style")
-            for selected in [false, true] {
-                cell.setSelected(selected, animated: false)
-                let image = drawTypography(cell)
-                let title = try dominantInk(in: image, rect: CGRect(x: 72, y: 75, width: 90, height: 30))
-                let date = try dominantInk(in: image, rect: CGRect(x: 315, y: 75, width: 50, height: 30))
-                XCTAssertEqual(title, date, "Related read title/date must match: \(theme) selected=\(selected)")
-            }
-        }
-    }
 
     func test_macBylineUsesTheRegularPreviewWeight() throws {
         defaults.set("none", forKey: "story_list_preview_images_size")
@@ -180,85 +160,6 @@ import SwiftUI
         return try XCTUnwrap(ranked.dropFirst().first?.key)
     }
 #endif
-
-    func test_selectedStoryRefreshPreservesReadSaveShareAndRelatedArtworkWithoutReloading() {
-        for markRelated in [false, true] {
-            let fixture = makeFixture(markRelated: markRelated)
-            defer { fixture.window.isHidden = true }
-            let stories = fixture.controller.storiesCollection!
-            fixture.app.storiesCollection = stories
-            fixture.app.activeStory = stories.activeFeedStories[0] as? [AnyHashable: Any]
-            fixture.app.recentlyReadStories["read-fade-parent"] = true
-            var updated = fixture.app.activeStory!
-            updated["starred"] = true
-            updated["shared"] = true
-            stories.setStories([updated, stories.activeFeedStories[1]])
-            stories.calculateStoryLocations()
-            fixture.app.activeStory = updated
-            fixture.table.parent.isSaved = false
-            fixture.table.parent.isShared = false
-            fixture.table.related.isSaved = false
-            fixture.table.related.isShared = false
-
-            fixture.controller.redrawUnreadStory()
-
-            XCTAssertEqual(fixture.table.reloadCount, 0)
-            XCTAssertTrue(fixture.table.parent.isRead)
-            XCTAssertTrue(fixture.table.parent.isSaved)
-            XCTAssertTrue(fixture.table.parent.isShared)
-            XCTAssertEqual(fixture.table.related.isRead, markRelated)
-            XCTAssertFalse(fixture.table.related.isSaved)
-            XCTAssertFalse(fixture.table.related.isShared)
-            XCTAssertFalse(fixture.table.other.isRead)
-            updated["starred"] = false
-            updated["shared"] = false
-            stories.setStories([updated, stories.activeFeedStories[1]])
-            fixture.app.activeStory = updated
-
-            fixture.controller.redrawUnreadStory()
-
-            XCTAssertFalse(fixture.table.parent.isSaved)
-            XCTAssertFalse(fixture.table.parent.isShared)
-            XCTAssertEqual(fixture.table.reloadCount, 0)
-        }
-    }
-
-    func test_selectedStoryRefreshUsesLatestIndividualRelatedReadStatus() {
-        let fixture = makeFixture(markRelated: false)
-        defer { fixture.window.isHidden = true }
-        let stories = fixture.controller.storiesCollection!
-        fixture.app.storiesCollection = stories
-        var parent = stories.activeFeedStories[0] as! [String: Any]
-        parent["cluster_stories"] = [["story_hash": "related-changed", "read_status": 1]]
-        stories.setStories([parent, stories.activeFeedStories[1]])
-        stories.calculateStoryLocations()
-        fixture.app.activeStory = parent
-        fixture.controller.setValue([
-            ["type": 0, "story_location": 0],
-            ["type": 1, "story_location": 0,
-             "cluster_story": ["story_hash": "related-changed", "read_status": 0]],
-            ["type": 0, "story_location": 1]
-        ], forKey: "visibleStoryRows")
-
-        fixture.controller.redrawUnreadStory()
-
-        XCTAssertFalse(fixture.table.parent.isRead)
-        XCTAssertTrue(fixture.table.related.isRead, "Related read updates must use the current model even when the parent remains unread")
-        XCTAssertEqual(fixture.table.reloadCount, 0)
-    }
-
-    func test_relatedPreferenceOffLeavesRelatedArtworkAndAnimationUntouched() {
-        let fixture = makeFixture(markRelated: false)
-        defer { fixture.window.isHidden = true }
-
-        fixture.markRead()
-
-        XCTAssertTrue(fixture.table.parent.isRead)
-        XCTAssertFalse(fixture.table.related.isRead)
-        XCTAssertFalse(activeAnimations(in: fixture.table.parent.layer).isEmpty)
-        XCTAssertTrue(activeAnimations(in: fixture.table.related.layer).isEmpty)
-        XCTAssertEqual(fixture.table.reloadCount, 0)
-    }
 
     func test_repeatedReadRefreshDoesNotRestartFade() {
         let fixture = makeFixture(markRelated: true)
@@ -510,7 +411,6 @@ import SwiftUI
         app.recentlyReadStories = NSMutableDictionary()
         app.selectedIntelligence = 0
         app.isPremiumArchive = true
-        app.dictUserProfile = ["preferences": ["cluster_mark_read": markRelated]]
         let stories = StoriesCollection()
         stories.appDelegate = app
         stories.setStories([
@@ -524,7 +424,7 @@ import SwiftUI
         controller.storyTitlesTable = table
         controller.setValue([
             ["type": 0, "story_location": 0],
-            ["type": 1, "story_location": 0, "cluster_story": ["read_status": 0]],
+            ["type": 0, "story_location": 0],
             ["type": 0, "story_location": 1]
         ], forKey: "visibleStoryRows")
 
@@ -557,9 +457,7 @@ import SwiftUI
             cell.isRead = false
             table.addSubview(cell)
         }
-        table.related.isClusterStory = true
         table.related.siteTitle = "Related source"
-        table.related.clusterTier = "title"
         window.isHidden = false
         host.view.layoutIfNeeded()
         CATransaction.flush()

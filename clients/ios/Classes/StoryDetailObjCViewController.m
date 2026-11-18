@@ -66,13 +66,6 @@
 
 - (NSString *)embedResourcesInCSS:(NSString *)css bundle:(NSBundle *)bundle;
 - (NSInteger)storyContentWidth;
-- (NSString *)clusterStoriesHTML;
-- (NSString *)dataURLForImage:(UIImage *)image mimeType:(NSString *)mimeType;
-- (BOOL)isClusterMarkReadEnabled;
-- (BOOL)isClusterStoryRead:(NSDictionary *)clusterStory;
-- (NSString *)clusterSentimentHTMLForScore:(NSInteger)score;
-- (NSString *)clusterTierBadgeHTMLForStory:(NSDictionary *)clusterStory;
-- (void)refreshClusterStories;
 - (void)invalidateStoryLoad;
 - (BOOL)isCurrentStoryLoad:(NSUInteger)generation;
 - (NSTimeInterval)fontPreparationTimeout;
@@ -559,176 +552,6 @@
     self.noStoryMessage.hidden = YES;
 }
 
-- (NSString *)dataURLForImage:(UIImage *)image mimeType:(NSString *)mimeType {
-    if (!image || !mimeType.length) {
-        return nil;
-    }
-
-    NSData *data = [mimeType isEqualToString:@"image/jpeg"] ? UIImageJPEGRepresentation(image, 0.82) : UIImagePNGRepresentation(image);
-    if (!data.length) {
-        return nil;
-    }
-
-    NSString *base64 = [data base64EncodedStringWithOptions:0];
-    return [NSString stringWithFormat:@"data:%@;base64,%@", mimeType, base64];
-}
-
-- (BOOL)isClusterMarkReadEnabled {
-    return appDelegate.isPremiumArchive &&
-        [StoryClusterDisplayDecision isClusterMarkReadEnabledWithUserProfile:appDelegate.dictUserProfile];
-}
-
-- (BOOL)isClusterStoryRead:(NSDictionary *)clusterStory {
-    BOOL isClusterRead = [clusterStory[@"read_status"] boolValue];
-    BOOL isParentRead = self.activeStory ? ![appDelegate.storiesCollection isStoryUnread:self.activeStory] : NO;
-
-    return [StoryClusterDisplayDecision effectiveClusterReadStatusWithIsClusterRead:isClusterRead
-                                                                         parentRead:isParentRead
-                                                             clusterMarkReadEnabled:[self isClusterMarkReadEnabled]
-                                                                   isPremiumArchive:appDelegate.isPremiumArchive];
-}
-
-- (NSString *)clusterSentimentHTMLForScore:(NSInteger)score {
-    UIImage *indicatorImage = [UIImage imageNamed:[StoryClusterDisplayDecision indicatorImageNameForScore:score]];
-    NSString *indicatorDataURL = [self dataURLForImage:indicatorImage mimeType:@"image/png"];
-    if (!indicatorDataURL.length) {
-        return @"";
-    }
-
-    NSString *sizeClass = score == 0 ? @" NB-cluster-sentiment-unread" : @"";
-    return [NSString stringWithFormat:@"<img class=\"NB-cluster-sentiment%@\" src=\"%@\" />",
-            sizeClass,
-            indicatorDataURL];
-}
-
-- (NSString *)clusterTierBadgeHTMLForStory:(NSDictionary *)clusterStory {
-    NSString *tierLabel = [StoryClusterDisplayDecision clusterTierLabelForValue:clusterStory[@"cluster_tier"]];
-    if (!tierLabel.length) {
-        return @"";
-    }
-
-    return [NSString stringWithFormat:@"<span class=\"NB-cluster-tier-badge\">%@</span>",
-            [tierLabel stringByEncodingHTMLEntities]];
-}
-
-- (NSString *)clusterStoriesHTML {
-    // StoryDetailObjCViewController.m: clustering uses AI embeddings, set aside in NewsNativeFeatures.swift.
-    if (!NewsNativeFeatures.aiFeatures || ![[NSUserDefaults standardUserDefaults] boolForKey:@"story_clustering"]) {
-        return @"";
-    }
-
-    NSArray<NSDictionary *> *clusterStories = [self.activeStory[@"cluster_stories"] isKindOfClass:[NSArray class]] ? self.activeStory[@"cluster_stories"] : nil;
-    if (!clusterStories.count) {
-        return @"";
-    }
-
-    NSArray<NSDictionary *> *allClusterStories = [StoryClusterDisplayDecision visibleClusterStories:clusterStories
-                                                                                   subscribedFeedIds:[appDelegate subscribedFeedIdsForStoryClusters]
-                                                                                    isPremiumArchive:YES];
-    if (!allClusterStories.count) {
-        return @"";
-    }
-
-    NSArray<NSDictionary *> *visibleClusterStories = [StoryClusterDisplayDecision visibleClusterStories:clusterStories
-                                                                                       subscribedFeedIds:[appDelegate subscribedFeedIdsForStoryClusters]
-                                                                                        isPremiumArchive:appDelegate.isPremiumArchive];
-    NSInteger hiddenCount = allClusterStories.count - visibleClusterStories.count;
-
-    // StoryDetailObjCViewController.m words the cluster counts with the interface language's plural rules.
-    NSMutableString *clusterHTML = [NSMutableString string];
-    [clusterHTML appendFormat:@"<div class=\"NB-story-cluster-detail\">"
-     "<div class=\"NB-story-cluster-detail-header\">"
-     "<span class=\"NB-story-cluster-detail-title\">%@</span>",
-     [[NBLocalization plural:@"Also published by %@ sites" groupedCount:allClusterStories.count] stringByEncodingHTMLEntities]];
-
-    [clusterHTML appendString:@"</div>"];
-
-    for (NSDictionary *clusterStory in visibleClusterStories) {
-        NSString *feedId = [NSString stringWithFormat:@"%@", clusterStory[@"story_feed_id"] ?: @""];
-        NSString *storyHash = [NSString stringWithFormat:@"%@", clusterStory[@"story_hash"] ?: @""];
-        NSString *storyTitle = [clusterStory[@"story_title"] isKindOfClass:[NSString class]] ?
-            [[clusterStory[@"story_title"] stringByDecodingHTMLEntities] stringByEncodingHTMLEntities] : @"";
-        NSString *encodedTitle = [clusterStory[@"story_title"] isKindOfClass:[NSString class]] ?
-            [[clusterStory[@"story_title"] stringByDecodingHTMLEntities] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]] : @"";
-        NSDictionary *feed = [appDelegate feedMetadataForStory:clusterStory preferActiveFeeds:NO];
-        NSString *borderOuter = [feed[@"favicon_color"] isKindOfClass:[NSString class]] ? feed[@"favicon_color"] : @"505050";
-        NSString *borderInner = [feed[@"favicon_fade"] isKindOfClass:[NSString class]] ? feed[@"favicon_fade"] : @"707070";
-        NSInteger score = [clusterStory[@"score"] respondsToSelector:@selector(integerValue)] ? [clusterStory[@"score"] integerValue] : 0;
-        NSString *scoreClass = score > 0 ? @"NB-story-positive" : (score < 0 ? @"NB-story-negative" : @"NB-story-neutral");
-        NSString *readClass = [self isClusterStoryRead:clusterStory] ? @" read" : @"";
-        NSString *tierClass = [NSString stringWithFormat:@" NB-cluster-tier-%@",
-                               [StoryClusterDisplayDecision normalizedClusterTierValue:clusterStory[@"cluster_tier"]]];
-        NSString *tierBadgeHTML = [self clusterTierBadgeHTMLForStory:clusterStory];
-        NSString *dateText = [Utilities formatClusterDateFromTimestamp:[clusterStory[@"story_timestamp"] integerValue]];
-        NSString *sentimentHTML = [self clusterSentimentHTMLForScore:score];
-
-        NSString *faviconDataURL = nil;
-        UIImage *favicon = [Utilities roundCorneredImage:[appDelegate getFavicon:feedId] radius:4 convertToSize:CGSizeMake(16, 16)];
-        if (favicon) {
-            faviconDataURL = [self dataURLForImage:favicon mimeType:@"image/png"];
-        }
-
-        NSString *imageHTML = @"";
-        UIImage *cachedStoryImage = [appDelegate cachedImageForStoryHash:storyHash];
-        NSString *clusterImageURL = nil;
-        if (cachedStoryImage && ![cachedStoryImage isKindOfClass:[NSNull class]]) {
-            clusterImageURL = [self dataURLForImage:cachedStoryImage mimeType:@"image/jpeg"];
-        } else {
-            NSArray *imageURLs = [clusterStory[@"image_urls"] isKindOfClass:[NSArray class]] ? clusterStory[@"image_urls"] : nil;
-            NSString *firstImageURL = imageURLs.firstObject;
-            if ([firstImageURL hasPrefix:@"http://"]) {
-                NSString *secureURL = [clusterStory[@"secure_image_thumbnails"] isKindOfClass:[NSDictionary class]] ? clusterStory[@"secure_image_thumbnails"][firstImageURL] : nil;
-                if ([secureURL isKindOfClass:[NSString class]] && secureURL.length) {
-                    firstImageURL = secureURL;
-                }
-            }
-            clusterImageURL = [[firstImageURL ?: @"" stringByReplacingOccurrencesOfString:@"'" withString:@"%27"] stringByEncodingHTMLEntities];
-        }
-
-        if (clusterImageURL.length) {
-            imageHTML = [NSString stringWithFormat:@"<span class=\"NB-cluster-detail-image\" style=\"background-image:url('%@');\"></span>", clusterImageURL];
-        }
-
-        [clusterHTML appendFormat:@"<a href=\"http://ios.newsblur.com/open-cluster-story?feed_id=%@&story_hash=%@&story_title=%@\" class=\"NB-story-cluster-detail-item %@%@%@\">"
-         "<span class=\"NB-cluster-feed-border-outer\" style=\"background-color:#%@;\"></span>"
-         "<span class=\"NB-cluster-feed-border-inner\" style=\"background-color:#%@;\"></span>"
-         "%@"
-         "%@"
-         "<span class=\"NB-cluster-detail-title-text\"%@>%@</span>"
-         "%@"
-         "%@"
-         "<span class=\"NB-cluster-detail-date\">%@</span>"
-         "</a>",
-         [feedId stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]] ?: @"",
-         [storyHash stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]] ?: @"",
-         encodedTitle ?: @"",
-         scoreClass,
-         readClass,
-         tierClass,
-         borderOuter,
-         borderInner,
-         sentimentHTML,
-         faviconDataURL.length ? [NSString stringWithFormat:@"<img class=\"NB-cluster-detail-favicon\" src=\"%@\" />", faviconDataURL] : @"<span class=\"NB-cluster-detail-favicon NB-cluster-detail-favicon-empty\"></span>",
-         [self contentDirectionAttribute],
-         storyTitle,
-         tierBadgeHTML,
-         imageHTML,
-         [dateText stringByEncodingHTMLEntities]];
-    }
-
-    if (!appDelegate.isPremiumArchive && hiddenCount > 0) {
-        // StoryDetailObjCViewController.m states how many sites are hidden without offering the Archive upgrade.
-        [clusterHTML appendFormat:@"<div class=\"NB-cluster-locked-upsell\">"
-         "<span class=\"NB-cluster-locked-text\">%@</span>"
-         "</div>",
-         [[NBLocalization plural:@"+ %@ more sites" groupedCount:hiddenCount] stringByEncodingHTMLEntities]];
-    }
-
-    [clusterHTML appendString:@"</div>"];
-
-    return clusterHTML;
-}
-
 - (void)drawStory {
     UIInterfaceOrientation orientation = (self.view.window ?: self.webView.window).windowScene.interfaceOrientation;
     [self drawStory:NO withOrientation:orientation];
@@ -763,7 +586,6 @@
     
     NSString *shareBarString = [self getShareBar];
     NSString *commentString = [self getComments];
-    NSString *clusterStoriesString = [self clusterStoriesHTML];
     NSString *headerString;
     NSString *sharingHtmlString;
     NSString *footerString;
@@ -976,7 +798,6 @@
     NSString *htmlContent = [NSString stringWithFormat:@
                              "%@" // header
                              "        <div id=\"NB-story\" class=\"NB-story%@\"%@>%@</div>"
-                             "        <div id=\"NB-cluster-stories-container\">%@</div>"
                              "        <div class=\"NB-text-view-premium-only\">%@</div>"
                              "        <div id=\"NB-sideoptions-container\">%@</div>"
                              "        <div id=\"NB-comments-wrapper\">"
@@ -988,7 +809,6 @@
                              storyClassSuffix,
                              [self contentDirectionAttribute],
                              storyContent,
-                             clusterStoriesString,
                              premiumTextString,
                              sharingHtmlString,
                              commentString,
@@ -2855,24 +2675,6 @@
                               height:[[urlComponents objectAtIndex:6] intValue]];
             decisionHandler(WKNavigationActionPolicyCancel);
             return;
-        } else if ([action isEqualToString:@"open-cluster-story"]) {
-            NSString *targetFeedId = nil;
-            NSString *storyHash = nil;
-            NSString *storyTitle = nil;
-            for (NSURLQueryItem *queryItem in components.queryItems) {
-                if ([queryItem.name isEqualToString:@"feed_id"]) {
-                    targetFeedId = queryItem.value;
-                } else if ([queryItem.name isEqualToString:@"story_hash"]) {
-                    storyHash = queryItem.value;
-                } else if ([queryItem.name isEqualToString:@"story_title"]) {
-                    storyTitle = queryItem.value;
-                }
-            }
-            if (targetFeedId.length && storyHash.length && [self.appDelegate isSubscribedFeedIdForStoryClusters:targetFeedId]) {
-                [self.appDelegate loadFeed:targetFeedId withStory:storyHash storyTitle:storyTitle animated:NO];
-            }
-            decisionHandler(WKNavigationActionPolicyCancel);
-            return;
         } else if ([action isEqualToString:@"show-profile"] && [urlComponents count] > 6) {
             appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]];
                         
@@ -3373,7 +3175,7 @@
                           "  var html = document.documentElement;"
                           "  if (rightToLeft) { html.setAttribute('dir', 'rtl'); html.setAttribute('lang', language); }"
                           "  else { html.removeAttribute('dir'); html.removeAttribute('lang'); }"
-                          "  var content = document.querySelectorAll('#NB-story, .NB-story-title, .NB-cluster-detail-title-text, .NB-story-comment-content, .NB-story-comment-reply-content');"
+                          "  var content = document.querySelectorAll('#NB-story, .NB-story-title, .NB-story-comment-content, .NB-story-comment-reply-content');"
                           "  for (var i = 0; i < content.length; i++) {"
                           "    if (rightToLeft) { content[i].setAttribute('dir', 'auto'); } else { content[i].removeAttribute('dir'); }"
                           "  }"
@@ -3957,17 +3759,6 @@
     NSString *jsString = [NSString stringWithFormat:@"var el = document.getElementById('NB-header-container'); if (el) { el.innerHTML = '%@'; }",
                           headerString];
     
-    [self.webView evaluateJavaScript:jsString completionHandler:^(id result, NSError *error) {
-        [self refreshClusterStories];
-    }];
-}
-
-- (void)refreshClusterStories {
-    NSString *clusterStoriesString = [[[self clusterStoriesHTML] stringByReplacingOccurrencesOfString:@"\'" withString:@"\\'"]
-                                      stringByReplacingOccurrencesOfString:@"\n" withString:@" "];
-    NSString *jsString = [NSString stringWithFormat:@"var el = document.getElementById('NB-cluster-stories-container'); if (el) { el.innerHTML = '%@'; }",
-                          clusterStoriesString];
-
     [self.webView evaluateJavaScript:jsString completionHandler:^(id result, NSError *error) {
         [self.webView evaluateJavaScript:@"if (typeof attachFastClick === 'function') { attachFastClick(); } newsblurRefreshStoryMotion();" completionHandler:nil];
         [self applyClassifierHighlights];

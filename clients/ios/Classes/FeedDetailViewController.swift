@@ -856,18 +856,6 @@ extension FeedDetailViewController: FeedDetailInteraction {
             return
         }
 
-        if story.isClusterStory {
-            guard let feedId = story.feed?.id ?? appDelegate.feedIdWithoutSearchQuery("\(story.dictionary["story_feed_id"] ?? "")"),
-                  !feedId.isEmpty,
-                  appDelegate.isSubscribedFeedId(forStoryClusters: feedId),
-                  !story.hash.isEmpty else {
-                return
-            }
-
-            appDelegate.loadFeed(feedId, withStory: story.hash, storyTitle: story.title, animated: false)
-            return
-        }
-        
         let indexPath = IndexPath(row: story.index, section: 0)
         
         suppressMarkAsRead = true
@@ -930,10 +918,6 @@ extension FeedDetailViewController: FeedDetailInteraction {
     }
     
     func read(story: Story) {
-        guard !story.isClusterStory else {
-            return
-        }
-
         if suppressMarkAsRead {
             return
         }
@@ -948,10 +932,6 @@ extension FeedDetailViewController: FeedDetailInteraction {
     }
     
     func unread(story: Story) {
-        guard !story.isClusterStory else {
-            return
-        }
-
         let dict = story.dictionary
         
         if isSwiftUI, !storiesCollection.isStoryUnread(dict) {

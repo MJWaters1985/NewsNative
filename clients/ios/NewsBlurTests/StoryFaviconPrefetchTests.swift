@@ -29,75 +29,6 @@ import UIKit
         super.tearDown()
     }
 
-    func test_deepNativePrefetchPreparesRegularAndClusterFaviconsWithoutForegroundDiskReads() throws {
-        try XCTSkipUnless(NewsNativeFeatures.aiFeatures, "NewsNativeFeatures.swift sets AI features aside, including clustering, AI labels and related sites.")
-        let fixture = try makeFixture()
-        defer { fixture.close() }
-        let paths = try fixture.nearbyPaths()
-        let prefetcher = try XCTUnwrap(fixture.controller as? UITableViewDataSourcePrefetching)
-
-        prefetcher.tableView(fixture.table, prefetchRowsAt: paths)
-        fixture.queue.sync {}
-
-        XCTAssertEqual(fixture.storage.diskCache.workerReads, 3, "Native prefetch must prepare the actual parent and cluster feed IDs, coalescing duplicate feeds.")
-        let started = CACurrentMediaTime()
-        for (path, key) in zip(paths, ["1", "2", "1", "3"]) {
-            let cell = try fixture.cell(at: path)
-            let rounded = try XCTUnwrap(cell.perform(NSSelectorFromString("roundedSiteFaviconImage"))?.takeUnretainedValue() as? UIImage)
-            let original = try XCTUnwrap(fixture.sources[key])
-            let expected = try XCTUnwrap(Utilities.roundCorneredImage(original, radius: 4, convertTo: CGSize(width: 16, height: 16)))
-            XCTAssertEqual(rounded.pngData(), expected.pngData())
-        }
-        print("STORY_FAVICON_PREFETCH_BENCHMARK loaded_stories=1000 worker_reads=\(fixture.storage.diskCache.workerReads) main_reads=\(fixture.storage.diskCache.mainReads) cell_and_icon_ms=\((CACurrentMediaTime() - started) * 1_000) original_worker_promotions=\(fixture.storage.memoryCache.workerWrites)")
-        XCTAssertEqual(fixture.storage.diskCache.mainReads, 0, "A prepared deep-scroll row must not enter PINDiskCache or its file timestamp write on main.")
-        XCTAssertEqual(fixture.storage.memoryCache.workerWrites, 0, "Preparing nearby artwork must not refill the raw original cache.")
-    }
-
-    func test_prefetchedCellPixelsMatchOriginalRoundingAcrossThemesReadStatesAndClusterRows() throws {
-        try XCTSkipUnless(NewsNativeFeatures.aiFeatures, "NewsNativeFeatures.swift sets AI features aside, including clustering, AI labels and related sites.")
-        let fixture = try makeFixture()
-        defer { fixture.close() }
-        let paths = try fixture.nearbyPaths()
-        let prefetcher = try XCTUnwrap(fixture.controller as? UITableViewDataSourcePrefetching)
-        prefetcher.tableView(fixture.table, prefetchRowsAt: paths)
-        fixture.queue.sync {}
-
-        for theme in ["light", "sepia", "medium", "dark"] {
-            defaults.set(theme, forKey: "theme_style")
-            for isRead in [false, true] {
-                for (path, key) in zip(paths, ["1", "2", "1", "3"]) {
-                    let cell = try fixture.cell(at: path)
-                    cell.isRead = isRead
-                    let actual = fixture.pixels(cell)
-                    // StoryFaviconPrefetchTests.swift restores the original source setter and existing cell rounding for the reference.
-                    cell.siteFavicon = fixture.sources[key]
-                    let reference = fixture.pixels(cell)
-                    XCTAssertEqual(actual, reference, "\(theme) read=\(isRead) row=\(path.row)")
-                }
-            }
-        }
-        XCTAssertEqual(fixture.storage.diskCache.mainReads, 0)
-    }
-
-    func test_nativeCancellationAndRenderResetDiscardQueuedFaviconPreparation() throws {
-        try XCTSkipUnless(NewsNativeFeatures.aiFeatures, "NewsNativeFeatures.swift sets AI features aside, including clustering, AI labels and related sites.")
-        for clearRenderState in [false, true] {
-            let fixture = try makeFixture()
-            defer { fixture.close() }
-            let paths = try fixture.nearbyPaths()
-            let prefetcher = try XCTUnwrap(fixture.controller as? UITableViewDataSourcePrefetching)
-            fixture.queue.suspend()
-            prefetcher.tableView(fixture.table, prefetchRowsAt: paths)
-            XCTAssertEqual(fixture.renderer.pendingPreparationCount, 3)
-            if clearRenderState { fixture.controller.perform(NSSelectorFromString("clearStoryRenderCaches")) }
-            else { prefetcher.tableView?(fixture.table, cancelPrefetchingForRowsAt: paths) }
-            XCTAssertEqual(fixture.renderer.pendingPreparationCount, 0)
-            fixture.queue.resume()
-            fixture.queue.sync {}
-            XCTAssertEqual(fixture.storage.diskCache.workerReads, 0)
-        }
-    }
-
     func test_faviconSaveDuringPrefetchCannotPublishTheOldSource() throws {
         let fixture = try makeFixture()
         defer { fixture.close() }
@@ -348,7 +279,7 @@ import UIKit
     }
 
     func pixels(_ cell: FeedDetailTableCell) -> Data? {
-        let view = FeedDetailTableCellView(frame: CGRect(x: 0, y: 0, width: 390, height: cell.isClusterStory ? 42 : 100))
+        let view = FeedDetailTableCellView(frame: CGRect(x: 0, y: 0, width: 390, height: 100))
         view.cell = cell
         view.appDelegate = app
         return UIGraphicsImageRenderer(size: view.bounds.size).image { _ in view.draw(view.bounds) }.pngData()

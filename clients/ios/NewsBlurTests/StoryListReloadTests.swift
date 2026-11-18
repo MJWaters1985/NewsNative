@@ -72,64 +72,6 @@ import WebKit
         XCTAssertEqual(controller.tableReloadCount, 0)
     }
 
-    func test_parentMidpointUsesActualCellGeometryRegardlessOfPreviewChildrenAndInsets() throws {
-        try XCTSkipUnless(NewsNativeFeatures.aiFeatures, "NewsNativeFeatures.swift sets AI features aside, including clustering, AI labels and related sites.")
-        try withGeometryPreferences {
-            var heights = Set<Int>()
-            for textSize in [FeedDetailTextSize.titleOnly, .short, .medium, .long] {
-                for childCount in [0, 1, 5] {
-                    for inset: CGFloat in [0, 47, 101] {
-                        let fixture = try makeGeometryFixture(children: [childCount], textSize: textSize, inset: inset)
-                        let parent = try XCTUnwrap(fixture.controller.indexPath(forStoryLocation: 0))
-                        let next = try XCTUnwrap(fixture.controller.indexPath(forStoryLocation: 1))
-                        let rect = fixture.table.rectForRow(at: parent)
-                        XCTAssertGreaterThan(rect.height, 0, "The real table must have measured its parent row")
-                        heights.insert(Int(rect.height.rounded()))
-                        XCTAssertEqual(next.row - parent.row - 1, childCount, "Use the production Match/Related row builder")
-                        XCTAssertEqual(fixture.table.adjustedContentInset.top, inset, accuracy: 0.01)
-                        XCTAssertGreaterThanOrEqual(rect.minY, fixture.table.tableHeaderView!.frame.height)
-                        fixture.scroll(top: rect.midY - 0.5)
-                        XCTAssertTrue(fixture.controller.marked.isEmpty, "Too early: size=\(textSize.rawValue), children=\(childCount), inset=\(inset)")
-                        fixture.scroll(top: rect.midY + 0.5)
-                        XCTAssertEqual(fixture.controller.marked, ["geometry-0"], "Too late: size=\(textSize.rawValue), children=\(childCount), inset=\(inset), height=\(rect.height)")
-                    }
-                }
-            }
-            XCTAssertGreaterThan(heights.count, 3, "Exercise real variable parent heights")
-        }
-    }
-
-    func test_parentMidpointPreservesRealClusterModelAndVisibleCells() throws {
-        try XCTSkipUnless(NewsNativeFeatures.aiFeatures, "NewsNativeFeatures.swift sets AI features aside, including clustering, AI labels and related sites.")
-        try withGeometryPreferences {
-            for clusterMarkRead in [true, false] {
-                for spacing in ["compact", "comfortable"] {
-                    UserDefaults.standard.set(spacing, forKey: "feed_list_spacing")
-                    let fixture = try makeGeometryFixture(children: [4], textSize: .long, clusterMarkRead: clusterMarkRead)
-                    let parentPath = try XCTUnwrap(fixture.controller.indexPath(forStoryLocation: 0))
-                    let paths = (0...4).map { IndexPath(row: parentPath.row + $0, section: 0) }
-                    let cells = try paths.map { try XCTUnwrap(fixture.table.cellForRow(at: $0) as? FeedDetailTableCell) }
-                    let reloadCount = fixture.table.reloadCount
-                    fixture.scroll(top: fixture.table.rectForRow(at: parentPath).midY + 0.5)
-                    XCTAssertEqual(fixture.controller.marked, ["geometry-0"])
-                    let parent = try XCTUnwrap(fixture.controller.getStoryAtLocation(0))
-                    XCTAssertEqual(parent["read_status"] as? Int, 1)
-                    let children = try XCTUnwrap(parent["cluster_stories"] as? [[String: Any]])
-                    XCTAssertEqual(children.map { $0["read_status"] as? Int }, Array(repeating: clusterMarkRead ? 1 : 0, count: 4))
-                    for (index, path) in paths.enumerated() {
-                        XCTAssertTrue(fixture.table.cellForRow(at: path) === cells[index])
-                        XCTAssertEqual(cells[index].isRead, index == 0 || clusterMarkRead)
-                    }
-                    XCTAssertEqual(fixture.table.reloadCount, reloadCount)
-                    XCTAssertEqual(fixture.table.rowReloadCount, 0)
-                    let next = try XCTUnwrap(fixture.controller.indexPath(forStoryLocation: 1))
-                    fixture.scroll(top: fixture.table.rectForRow(at: next).minY - 0.5)
-                    XCTAssertEqual(fixture.controller.marked, ["geometry-0"], "Children must not cause independent read operations")
-                }
-            }
-        }
-    }
-
     func test_fastScrollCrossesEachParentMidpointOnceAndReverseDoesNotRepeat() throws {
         try withGeometryPreferences {
             let fixture = try makeGeometryFixture(children: [5, 0, 2, 1], textSize: .medium, inset: 47)
@@ -143,17 +85,6 @@ import WebKit
             fixture.scroll(top: rect.midY + 0.5)
             XCTAssertEqual(fixture.controller.marked, ["geometry-0", "geometry-1", "geometry-2"])
             XCTAssertEqual(fixture.controller.getStoryAtLocation(3)?["read_status"] as? Int, 0)
-        }
-    }
-
-    func test_lastParentMarksBeforeItsRelatedChildrenAndLoadingRow() throws {
-        try XCTSkipUnless(NewsNativeFeatures.aiFeatures, "NewsNativeFeatures.swift sets AI features aside, including clustering, AI labels and related sites.")
-        try withGeometryPreferences {
-            let fixture = try makeGeometryFixture(children: [0, 5], textSize: .long, count: 2)
-            let last = try XCTUnwrap(fixture.controller.indexPath(forStoryLocation: 1))
-            fixture.scroll(top: fixture.table.rectForRow(at: last).midY + 0.5)
-            XCTAssertEqual(fixture.controller.marked, ["geometry-0", "geometry-1"])
-            XCTAssertEqual(fixture.table.numberOfRows(inSection: 0), 8, "Two parents, five children and the loading row")
         }
     }
 
@@ -248,26 +179,6 @@ import WebKit
             fixture.scroll(top: fixture.table.rectForRow(at: next).midY + 0.5)
             fixture.controller.checkScroll()
             XCTAssertEqual(fixture.controller.marked, ["geometry-0", "geometry-1"])
-        }
-    }
-
-    func test_scrollingPreservesClusterMarkReadPreference() throws {
-        try XCTSkipUnless(NewsNativeFeatures.aiFeatures, "NewsNativeFeatures.swift sets AI features aside, including clustering, AI labels and related sites.")
-        try withGeometryPreferences {
-            for clusterMarkRead in [true, false] {
-                let fixture = try makeGeometryFixture(children: [2], textSize: .short, clusterMarkRead: clusterMarkRead)
-                let parent = try XCTUnwrap(fixture.controller.indexPath(forStoryLocation: 0))
-                fixture.scroll(top: fixture.table.rectForRow(at: parent).midY + 0.5)
-                XCTAssertEqual(fixture.controller.marked, ["geometry-0"])
-                for row in 1...2 {
-                    let child = try XCTUnwrap(fixture.table.cellForRow(at: IndexPath(row: parent.row + row, section: 0)) as? FeedDetailTableCell)
-                    XCTAssertEqual(child.isRead, clusterMarkRead)
-                }
-                let next = try XCTUnwrap(fixture.controller.indexPath(forStoryLocation: 1))
-                let nextCell = try XCTUnwrap(fixture.table.cellForRow(at: next) as? FeedDetailTableCell)
-                XCTAssertFalse(nextCell.isRead)
-                XCTAssertEqual(fixture.table.rowReloadCount, 0)
-            }
         }
     }
 

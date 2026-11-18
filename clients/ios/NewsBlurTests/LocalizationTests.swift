@@ -460,7 +460,7 @@ final class Test_Localization: XCTestCase {
         XCTAssertFalse((page.getComments() ?? "").contains("A stranger's comment"), "Public comments must not be listed")
     }
 
-    func test_storyShareBarAndClusterBadgesUseTranslatedWords() {
+    func test_storyShareBarAndPluralsUseTranslatedWords() {
         let restore = rememberLanguage()
         defer { restore() }
         UserDefaults.standard.set("en", forKey: NBLocalization.preferenceKey)
@@ -471,21 +471,12 @@ final class Test_Localization: XCTestCase {
         let shareBar = page.getShareBar() ?? ""
         XCTAssertTrue(shareBar.contains("<b>1 comment</b>"), shareBar)
         XCTAssertTrue(shareBar.contains("<b>2 shares</b>"), shareBar)
-        XCTAssertEqual(NBLocalization.plural("Also published by %@ sites", groupedCount: 1), "Also published by 1 site")
-        XCTAssertEqual(NBLocalization.plural("+ %@ more sites", groupedCount: 1240), "+ 1,240 more sites")
-        XCTAssertEqual(StoryClusterDisplayDecision.clusterTierBadgeText(forValue: "title"), "MATCH")
         // LocalizationTests.swift checks plural forms that also name a folder (OnboardingViewController.swift).
         XCTAssertEqual(NBLocalization.plural("Add %1$@ feeds to “%2$@” folder", count: 1, with: "Science"),
                        "Add 1 feed to “Science” folder")
         XCTAssertEqual(NBLocalization.plural("Add %1$@ feeds to “%2$@” folder", count: 4, with: "Parenting"),
                        "Add 4 feeds to “Parenting” folder")
         XCTAssertEqual(NBLocalization.plural("Delete %@ sites?", groupedCount: 2), "Delete 2 sites?")
-
-        // LocalizationTests.swift catches the Turkish badge losing its dotted capital I.
-        UserDefaults.standard.set("tr", forKey: NBLocalization.preferenceKey)
-        let related = StoryClusterDisplayDecision.clusterTierBadgeText(forValue: "related")
-        XCTAssertEqual(related, NBLocalization.text("Related").uppercased(with: Locale(identifier: "tr")))
-        XCTAssertNotEqual(related, "RELATED")
     }
 
     func test_addSitePlaceholderKeepsTheURLSchemeLeftToRight() {

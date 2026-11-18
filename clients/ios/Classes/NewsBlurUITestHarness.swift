@@ -26,8 +26,6 @@ final class NewsBlurUITestHarness {
         case cultureFolder
         case swiftFeed
         case swiftStoryOne
-        case swiftClusterFeed
-        case swiftClusterStoryOne
         case cookingSaved
     }
 
@@ -480,14 +478,6 @@ final class NewsBlurUITestHarness {
 #endif
         case .cookingSaved:
             appDelegate.loadStarredDetailView(withStory: nil, showFindingStory: false)
-        case .swiftClusterFeed:
-            appDelegate.loadFeed(ReaderUITestFixtures.swiftClusterFeedId, withStory: nil, animated: false)
-        case .swiftClusterStoryOne:
-            appDelegate.loadFeed(
-                ReaderUITestFixtures.swiftClusterFeedId,
-                withStory: ReaderUITestFixtures.swiftClusterPrimaryStoryHash,
-                animated: false
-            )
         }
     }
 
@@ -528,10 +518,6 @@ final class NewsBlurUITestHarness {
             return .swiftFeed
         case "reader-story-swift-1":
             return .swiftStoryOne
-        case "reader-feed-swift-cluster":
-            return .swiftClusterFeed
-        case "reader-story-swift-cluster-1":
-            return .swiftClusterStoryOne
         case "cooking-saved" where CookingMarketingFixtures.enabled:
             return .cookingSaved
         default:
@@ -563,10 +549,8 @@ private enum ReaderUITestFixtures {
     static let techFeedId = "910001"
     static let swiftFeedId = "910002"
     static let cultureFeedId = "910003"
-    static let swiftClusterFeedId = "910004"
-    static let swiftClusterPrimaryStoryHash = "ui-story-swift-cluster-1"
-    static let swiftClusterMatchStoryHash = "ui-story-swift-cluster-match"
-    static let swiftClusterRelatedStoryHash = "ui-story-swift-cluster-related"
+    static let swiftWeeklyFeedId = "910004"
+    static let swiftWeeklyPrimaryStoryHash = "ui-story-swift-weekly-1"
     private static let bulkReadEnabled = ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-bulk-read")
     // NewsBlurUITestHarness.swift's natural language classifier fixtures (AIClassifiers.swift): saved prompts on Swift
     // Weekly, matched prompts on its first story, and a usage billing account unless -newsblur-ui-test-ai-unbilled.
@@ -656,8 +640,6 @@ private enum ReaderUITestFixtures {
         defaults.set(false, forKey: "show_widely_read_stories")
         defaults.set(false, forKey: "show_long_reads")
         defaults.set(false, forKey: "show_good_reads")
-        defaults.set(true, forKey: "story_clustering")
-        defaults.set("related", forKey: "cluster_mode")
 
         appDelegate.pendingFolder = nil
         appDelegate.tryFeedFeedId = nil
@@ -668,7 +650,6 @@ private enum ReaderUITestFixtures {
         appDelegate.selectedIntelligence = 0
         appDelegate.storiesCollection.reset()
 
-        cacheFixtureImages(on: appDelegate)
         cachePagingImages(on: appDelegate)
         if CookingMarketingFixtures.enabled {
             CookingMarketingFixtures.prepareImages(on: appDelegate)
@@ -717,7 +698,7 @@ private enum ReaderUITestFixtures {
             ["feed_id": techFeedId, "ps": 0, "nt": 2, "ng": 0],
             ["feed_id": swiftFeedId, "ps": 0, "nt": swiftUnreadCount, "ng": 0],
             ["feed_id": cultureFeedId, "ps": 0, "nt": 1, "ng": 0],
-            ["feed_id": swiftClusterFeedId, "ps": 0, "nt": 3, "ng": 0],
+            ["feed_id": swiftWeeklyFeedId, "ps": 0, "nt": 3, "ng": 0],
         ]
     }
 
@@ -734,10 +715,7 @@ private enum ReaderUITestFixtures {
                 "is_archive": 1,
                 "is_pro": 0,
                 "premium_expire": NSNull(),
-                "preferences": [
-                    "story_clustering": true,
-                    "cluster_mode": "related",
-                ],
+                "preferences": [:],
                 "is_usage_billing": aiClassifiersEnabled && !aiUnbilled,
                 "is_self_hosted_ai": false,
                 "can_use_ai_classifiers": aiClassifiersEnabled && !aiUnbilled,
@@ -749,11 +727,11 @@ private enum ReaderUITestFixtures {
             "flat_folders_with_inactive": swiftFeedAtTopLevel ? [
                 " ": [Int(swiftFeedId)!],
                 "Tech": [Int(techFeedId)!],
-                "Tech ▸ Swift": [Int(swiftClusterFeedId)!],
+                "Tech ▸ Swift": [Int(swiftWeeklyFeedId)!],
                 "Culture": [Int(cultureFeedId)!],
             ] : [
                 "Tech": [Int(techFeedId)!],
-                "Tech ▸ Swift": [Int(swiftFeedId)!, Int(swiftClusterFeedId)!],
+                "Tech ▸ Swift": [Int(swiftFeedId)!, Int(swiftWeeklyFeedId)!],
                 "Culture": [Int(cultureFeedId)!],
             ],
             "inactive_feeds": [:],
@@ -776,11 +754,11 @@ private enum ReaderUITestFixtures {
                     unreadCount: 1,
                     address: "https://ui-test.newsblur.example/design.xml"
                 ),
-                swiftClusterFeedId: feed(
-                    id: swiftClusterFeedId,
-                    title: "Swift Weekly Clustered",
+                swiftWeeklyFeedId: feed(
+                    id: swiftWeeklyFeedId,
+                    title: "Swift Weekly",
                     unreadCount: 3,
-                    address: "https://ui-test.newsblur.example/swift-cluster.xml"
+                    address: "https://ui-test.newsblur.example/swift-weekly.xml"
                 ),
             ],
             "folder_icons": [:],
@@ -817,7 +795,6 @@ private enum ReaderUITestFixtures {
             // NewsBlurUITestHarness.swift models the social endpoint's partial payload without publishing a share.
             var sharedStory = swiftStoriesPageOne[0]
             sharedStory.removeValue(forKey: "intelligence")
-            sharedStory.removeValue(forKey: "cluster_stories")
             sharedStory["shared"] = true
             sharedStory["shared_by_user"] = true
             sharedStory["read_status"] = 1
@@ -869,8 +846,8 @@ private enum ReaderUITestFixtures {
                 payload = feedStoriesResponse(feedID: swiftFeedId, stories: swiftStoriesPageOne)
             } else if pageNumber(from: url) == 2, requestedFeedID == swiftFeedId {
                 payload = feedStoriesResponse(feedID: swiftFeedId, stories: swiftStoriesPageTwo)
-            } else if pageNumber(from: url) == 1, requestedFeedID == swiftClusterFeedId {
-                payload = feedStoriesResponse(feedID: swiftClusterFeedId, stories: swiftClusterStoriesPageOne)
+            } else if pageNumber(from: url) == 1, requestedFeedID == swiftWeeklyFeedId {
+                payload = feedStoriesResponse(feedID: swiftWeeklyFeedId, stories: swiftWeeklyStoriesPageOne)
             } else if pageNumber(from: url) == 1, requestedFeedID == techFeedId {
                 payload = feedStoriesResponse(feedID: techFeedId, stories: techStoriesPageOne)
             } else if pageNumber(from: url) == 1, requestedFeedID == cultureFeedId {
@@ -891,7 +868,7 @@ private enum ReaderUITestFixtures {
                 techFeedId: unreadCount(ps: 0, nt: 2, ng: 0),
                 swiftFeedId: unreadCount(ps: 0, nt: swiftUnreadCount, ng: 0),
                 cultureFeedId: unreadCount(ps: 0, nt: 1, ng: 0),
-                swiftClusterFeedId: unreadCount(ps: 0, nt: 3, ng: 0),
+                swiftWeeklyFeedId: unreadCount(ps: 0, nt: 3, ng: 0),
             ],
             "social_feeds": [:],
         ]
@@ -978,7 +955,7 @@ private enum ReaderUITestFixtures {
 
         let feedIds = requestedFeedIds?.isEmpty == false
             ? requestedFeedIds ?? []
-            : [techFeedId, swiftFeedId, cultureFeedId, swiftClusterFeedId]
+            : [techFeedId, swiftFeedId, cultureFeedId, swiftWeeklyFeedId]
 
         return Dictionary(uniqueKeysWithValues: feedIds.map { ($0, NSNull()) })
     }
@@ -1178,8 +1155,6 @@ private enum ReaderUITestFixtures {
         date: String,
         timestamp: Int,
         author: String,
-        clusterStories: [[String: Any]] = [],
-        clusterTier: String? = nil,
         score: Int? = nil
     ) -> [String: Any] {
         // NewsBlurUITestHarness.swift holds only the fixture's DOM readiness signal while native reader navigation remains free.
@@ -1223,12 +1198,6 @@ private enum ReaderUITestFixtures {
 
         if ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-share-focus") {
             story["intelligence"] = ["feed": 1, "title": 0, "author": 0, "tags": 0]
-        }
-        if !clusterStories.isEmpty {
-            story["cluster_stories"] = clusterStories
-        }
-        if let clusterTier {
-            story["cluster_tier"] = clusterTier
         }
         if let score {
             story["score"] = score
@@ -1328,69 +1297,26 @@ private enum ReaderUITestFixtures {
         ),
     ]
 
-    private static let swiftClusterStoriesPageOne: [[String: Any]] = [
+    private static let swiftWeeklyStoriesPageOne: [[String: Any]] = [
         story(
-            hash: swiftClusterPrimaryStoryHash,
-            feedID: swiftClusterFeedId,
-            title: "Swift Cluster Fixture Headline",
-            content: "<p>This fixture keeps the article short so the bottom story clusters stay visible in a simulator screenshot.</p>",
+            hash: swiftWeeklyPrimaryStoryHash,
+            feedID: swiftWeeklyFeedId,
+            title: "Swift Weekly Fixture Headline",
+            content: "<p>This fixture keeps the article short for simulator screenshots.</p>",
             date: "3m",
             timestamp: 1_700_001_200,
-            author: "Swift Weekly",
-            clusterStories: [
-                story(
-                    hash: swiftClusterMatchStoryHash,
-                    feedID: techFeedId,
-                    title: "Swift Cluster Fixture Headline",
-                    content: "<p>A title match from another feed.</p>",
-                    date: "4m",
-                    timestamp: 1_700_001_180,
-                    author: "Arc News",
-                    clusterTier: "title",
-                    score: 1
-                ),
-                story(
-                    hash: swiftClusterRelatedStoryHash,
-                    feedID: cultureFeedId,
-                    title: "Swift Cluster Fixture Related Coverage",
-                    content: "<p>A related follow-up from a different feed.</p>",
-                    date: "6m",
-                    timestamp: 1_700_001_140,
-                    author: "Design Notes",
-                    clusterTier: "related",
-                    score: 0
-                ),
-            ]
+            author: "Swift Weekly"
         ),
         story(
-            hash: "ui-story-swift-cluster-2",
-            feedID: swiftClusterFeedId,
-            title: "Second Cluster Fixture Story",
+            hash: "ui-story-swift-weekly-2",
+            feedID: swiftWeeklyFeedId,
+            title: "Second Swift Weekly Story",
             content: "<p>A plain story to keep the feed layout realistic.</p>",
             date: "9m",
             timestamp: 1_700_001_100,
             author: "Swift Weekly"
         ),
     ]
-
-    private static func cacheFixtureImages(on appDelegate: NewsBlurAppDelegate) {
-        let fixtureImages: [(String, UIColor, UIColor)] = [
-            (
-                swiftClusterMatchStoryHash,
-                UIColor(red: 0.42, green: 0.67, blue: 0.53, alpha: 1.0),
-                UIColor(red: 0.20, green: 0.30, blue: 0.24, alpha: 1.0)
-            ),
-            (
-                swiftClusterRelatedStoryHash,
-                UIColor(red: 0.87, green: 0.69, blue: 0.42, alpha: 1.0),
-                UIColor(red: 0.34, green: 0.23, blue: 0.13, alpha: 1.0)
-            ),
-        ]
-
-        for (hash, primary, secondary) in fixtureImages {
-            appDelegate.cacheStoryImage(fixtureImage(primary: primary, secondary: secondary), forStoryHash: hash)
-        }
-    }
 
     private static var imageViewerContent: String {
         // StoryImageViewerTests.swift and ReaderUITests.swift use local images without account mutations.
@@ -1554,7 +1480,7 @@ private enum CookingMarketingFixtures {
             "social_profile": ["id": "social:1", "user_id": 1, "username": username, "shared_stories_count": 0],
             "social_services": [:], "activities": [], "dashboard_rivers": [], "social_feeds": [],
             "user_profile": ["is_premium": 1, "is_archive": 1, "is_pro": 0, "premium_expire": NSNull(),
-                             "preferences": ["language": language, "story_clustering": false]],
+                             "preferences": ["language": language]],
             "flat_folders_with_inactive": ["Cooking": feeds.map { Int($0["id"] as! String)! }],
             "inactive_feeds": [:], "feeds": feedMap, "folder_icons": [:], "feed_icons": [:],
             "saved_searches": [], "starred_count": saved.count, "starred_counts": []

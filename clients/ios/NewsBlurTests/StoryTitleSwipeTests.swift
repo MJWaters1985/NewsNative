@@ -369,13 +369,9 @@ import ObjectiveC.runtime
         }
     }
 
-    func test_disabledSwipesAndClusterRowsNeverPerformClassicActions() {
+    func test_disabledSwipesNeverPerformClassicActions() {
         selectActions()
         let cell = FeedDetailTableCell(style: .default, reuseIdentifier: nil)
-        cell.isClusterStory = true
-        cell.setupGestures()
-        XCTAssertFalse(cell.shouldDrag)
-        cell.isClusterStory = false
         UserDefaults.standard.set(false, forKey: keys[2])
         cell.setupGestures()
         XCTAssertFalse(cell.shouldDrag)

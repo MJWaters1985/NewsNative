@@ -486,8 +486,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (NSString *)feedIdWithoutSearchQuery:(NSString *)feedId;
 - (NSString *)searchQueryForFeedId:(NSString *)feedId;
 - (NSString *)searchFolderForFeedId:(NSString *)feedId;
-- (NSSet<NSString *> *)subscribedFeedIdsForStoryClusters;
-- (BOOL)isSubscribedFeedIdForStoryClusters:(NSString *)feedId;
+- (NSSet<NSString *> *)subscribedFeedIds;
 - (NSDictionary *)feedMetadataForStory:(NSDictionary *)story preferActiveFeeds:(BOOL)preferActiveFeeds;
 - (NSDictionary *)getFeedWithId:(id)feedId;
 - (NSDictionary *)getFeed:(NSString *)feedId;

@@ -55,7 +55,6 @@ static UIFont *indicatorFont = nil;
 @synthesize storyDate;
 @synthesize storyContent;
 @synthesize storyHash;
-@synthesize clusterTier;
 @synthesize storyTimestamp;
 @synthesize storyScore;
 @synthesize storyImage;
@@ -66,7 +65,6 @@ static UIFont *indicatorFont = nil;
 @synthesize isSaved;
 @synthesize textSize;
 @synthesize isRiverOrSocial;
-@synthesize isClusterStory;
 @synthesize feedColorBar;
 @synthesize feedColorBarTopBorder;
 @synthesize hasAlpha;
@@ -124,15 +122,6 @@ static UIFont *indicatorFont = nil;
     NSString *siteTitle = self.siteTitle ?: [NBLocalization text:@"no site"];
     NSString *storyTitle = self.storyTitle ?: [NBLocalization text:@"no story"];
     NSString *storyDate = self.storyDate ?: [NBLocalization text:@"no date"];
-    if (self.isClusterStory) {
-        NSString *tierLabel = [StoryClusterDisplayDecision clusterTierLabelForValue:self.clusterTier];
-        return [NSString stringWithFormat:@"%@, \"%@\", %@, %@",
-                siteTitle,
-                storyTitle,
-                tierLabel ?: [NBLocalization text:@"Related"],
-                storyDate];
-    }
-
     NSMutableString *output = [NSMutableString stringWithString:siteTitle];
     
     [output appendFormat:@", \"%@\"", storyTitle];
@@ -157,7 +146,7 @@ static UIFont *indicatorFont = nil;
     appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     BOOL right = [StoryTitleSwipePreference usesRowSwipeRight:YES canMarkRead:self.isReadAvailable];
     BOOL left = [StoryTitleSwipePreference usesRowSwipeRight:NO canMarkRead:self.isReadAvailable];
-    self.shouldDrag = (right || left) && !self.isClusterStory;
+    self.shouldDrag = right || left;
     self.mode = self.shouldDrag ? MCSwipeTableViewCellModeSwitch : MCSwipeTableViewCellModeNone;
     self.delegate = self.shouldDrag ? appDelegate.feedDetailViewController : nil;
     if (!self.shouldDrag) return;
@@ -351,15 +340,6 @@ static UIFont *indicatorFont = nil;
     self.cachedRegularContentGap = layout.contentGap;
 }
 
-- (UIColor *)clusterTierBadgeColorForTier:(NSString *)clusterTier {
-    NSString *normalizedTier = [StoryClusterDisplayDecision normalizedClusterTierValue:clusterTier];
-    if ([normalizedTier isEqualToString:@"title"]) {
-        return UIColorFromLightSepiaMediumDarkRGB(0x5A8C6A, 0x6E865F, 0x7DC99A, 0x7DC99A);
-    }
-
-    return UIColorFromLightSepiaMediumDarkRGB(0xA88246, 0x9B7540, 0xD2A76B, 0xD2A76B);
-}
-
 - (void)drawRect:(CGRect)r {
     if (!cell) {
         return;
@@ -382,220 +362,6 @@ static UIFont *indicatorFont = nil;
     }
 
     CGContextRef context = UIGraphicsGetCurrentContext();
-    if (cell.isClusterStory) {
-        NSString *spacing = [[NSUserDefaults standardUserDefaults] objectForKey:@"feed_list_spacing"];
-        BOOL isComfortable = ![spacing isEqualToString:@"compact"];
-        CGFloat comfortMargin = isComfortable ? 4 : 0;
-        UIColor *backgroundColor = isHighlighted ?
-            [ThemeManager.shared resolvedColor:UIColor.systemGray5Color] :
-            ThemeManager.shared.storyListBackgroundColor;
-        UIColor *clusterBackgroundColor = isHighlighted ?
-            UIColorFromLightSepiaMediumDarkRGB(0xEEF5FD, 0xE7D8C6, 0x38424B, 0x1A1F23) :
-            UIColorFromLightSepiaMediumDarkRGB(0xE8F0F8, 0xECDEC9, 0x363C43, 0x101418);
-        [backgroundColor set];
-        CGContextFillRect(context, r);
-
-        CGFloat clusterIndent = 18.0 + (isHighlighted ? 2.0 : 0);
-        CGFloat trailingInset = 10.0;
-        CGFloat verticalInset = 0.0;
-        CGRect clusterRect = CGRectMake(clusterIndent,
-                                        verticalInset,
-                                        MAX(r.size.width - clusterIndent - trailingInset, 40.0),
-                                        MAX(r.size.height - (verticalInset * 2.0), 1.0));
-        // FeedDetailTableCell.m lays out related rows with left-to-right coordinates and mirrors each frame within
-        // the row when the story list is right to left.
-        BOOL rightToLeft = self.nb_isRightToLeft;
-        UIBezierPath *clusterPath = [UIBezierPath bezierPathWithRoundedRect:[self nb_directionalRect:clusterRect within:r]
-                                                               cornerRadius:(isComfortable ? 8.0 : 6.0)];
-        [clusterBackgroundColor setFill];
-        [clusterPath fill];
-        CGContextSaveGState(context);
-        [clusterPath addClip];
-
-        UIFontDescriptor *fontDescriptor = [cell fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
-        UIFont *titleFont = [UIFont fontWithName:@"WhitneySSm-Medium" size:MAX(fontDescriptor.pointSize - 1, 11)];
-        UIFont *dateFont = [UIFont fontWithName:@"WhitneySSm-Medium" size:10];
-        UIColor *titleColor = cell.isRead ?
-            UIColorFromLightSepiaMediumDarkRGB(0x585858, 0x585858, 0x989898, 0x888888) :
-            UIColorFromLightSepiaMediumDarkRGB(0x202020, 0x333333, 0xD8D8D8, 0xD0D0D0);
-        UIColor *metaColor = cell.isRead ?
-            UIColorFromLightSepiaMediumDarkRGB(0x9A9A9A, 0x8B7B6B, 0x7F7F7F, 0x707070) :
-            UIColorFromLightSepiaMediumDarkRGB(0x808080, 0x8B7B6B, 0xA0A0A0, 0x8F8F8F);
-        if (isHighlighted) {
-            titleColor = UIColorFromLightSepiaMediumDarkRGB(0x444444, 0x444444, 0xC6C6C6, 0xBCBCBC);
-            metaColor = UIColorFromLightSepiaMediumDarkRGB(0x707070, 0x8B7B6B, 0x8F8F8F, 0x808080);
-        }
-#if TARGET_OS_MACCATALYST
-        if (cell.isRead) {
-            titleColor = readTextColor;
-            metaColor = readTextColor;
-        }
-#endif
-
-        NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
-        paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
-        if (rightToLeft) {
-            paragraphStyle.alignment = NSTextAlignmentRight;
-        }
-
-        CGFloat feedBarOffset = CGRectGetMinX(clusterRect) + 2.0;
-        // FeedDetailTableCell.m draws the feed color bars on the leading edge of the related row.
-        CGFloat feedBarDirection = rightToLeft ? -1.0 : 1.0;
-        feedBarOffset = [self nb_directionalX:feedBarOffset within:r];
-        CGContextSetStrokeColorWithColor(context, cell.feedColorBarTopBorder.CGColor);
-        CGContextSetAlpha(context, cell.isRead ? 0.15 : 1.0);
-        CGContextSetLineWidth(context, 4.0f);
-        CGContextBeginPath(context);
-        CGContextMoveToPoint(context, feedBarOffset, CGRectGetMinY(clusterRect));
-        CGContextAddLineToPoint(context, feedBarOffset, CGRectGetMaxY(clusterRect));
-        CGContextStrokePath(context);
-
-        CGContextSetStrokeColorWithColor(context, cell.feedColorBar.CGColor);
-        CGContextBeginPath(context);
-        CGContextMoveToPoint(context, feedBarOffset + 4.0f * feedBarDirection, CGRectGetMinY(clusterRect));
-        CGContextAddLineToPoint(context, feedBarOffset + 4.0f * feedBarDirection, CGRectGetMaxY(clusterRect));
-        CGContextStrokePath(context);
-        CGContextSetAlpha(context, 1.0);
-
-        CGFloat contentY = CGRectGetMinY(clusterRect) + comfortMargin;
-        CGFloat contentHeight = CGRectGetHeight(clusterRect) - comfortMargin * 2;
-        NSString *indicatorImageName = [StoryClusterDisplayDecision indicatorImageNameForScore:cell.storyScore];
-        UIImage *indicatorImage = [UIImage imageNamed:indicatorImageName];
-        CGFloat indicatorSize = cell.storyScore == 0 ? 10.0 : 12.0;
-        CGFloat indicatorX = CGRectGetMinX(clusterRect) + 11.0;
-        CGFloat indicatorY = contentY + (contentHeight - indicatorSize) / 2.0;
-        [indicatorImage drawInRect:[self nb_directionalRect:CGRectMake(indicatorX, indicatorY, indicatorSize, indicatorSize) within:r]
-                         blendMode:0
-                             alpha:(cell.isRead ? 0.15 : 1.0)];
-
-        UIImage *favicon = [cell roundedSiteFaviconImage];
-        CGFloat faviconY = contentY + (contentHeight - 16.0) / 2.0;
-        [favicon drawInRect:[self nb_directionalRect:CGRectMake(CGRectGetMinX(clusterRect) + 26.0, faviconY, 16.0, 16.0) within:r]
-                  blendMode:0
-                      alpha:(cell.isRead ? 0.4f : 1.0f)];
-
-        NSString *dateText = cell.storyDate ?: @"";
-        CGSize dateSize = [dateText sizeWithAttributes:@{NSFontAttributeName: dateFont}];
-#if TARGET_OS_MACCATALYST
-        // FeedDetailTableCell.m preserves the existing related-row date allocation and adjacent image/badge positions.
-        dateFont = [UIFont fontWithName:@"WhitneySSm-Book" size:10];
-#endif
-        CGFloat rightPadding = 12.0;
-        CGFloat dateX = CGRectGetMaxX(clusterRect) - rightPadding - dateSize.width;
-        CGFloat titleRightEdge = dateX - 8.0;
-        CGRect imageFrame = CGRectZero;
-        BOOL hasCachedImage = NO;
-
-        id cachedImage = [appDelegate cachedImageForStoryHash:cell.storyHash];
-        if (cachedImage && cachedImage != [NSNull null]) {
-            imageFrame = CGRectMake(dateX - 30.0, contentY + (contentHeight - 24.0) / 2.0, 24.0, 24.0);
-            hasCachedImage = YES;
-            titleRightEdge = CGRectGetMinX(imageFrame) - 8.0;
-
-            CGContextSaveGState(context);
-            CGRect drawnImageFrame = [self nb_directionalRect:imageFrame within:r];
-            [[UIBezierPath bezierPathWithRoundedRect:drawnImageFrame cornerRadius:4] addClip];
-            UIImage *cachedStoryImage = (UIImage *)cachedImage;
-            CGFloat aspect = cachedStoryImage.size.width / cachedStoryImage.size.height;
-            CGRect drawingFrame = imageFrame;
-            if (imageFrame.size.width / aspect > imageFrame.size.height) {
-                CGFloat height = imageFrame.size.width / aspect;
-                drawingFrame = CGRectMake(imageFrame.origin.x,
-                                          imageFrame.origin.y + ((imageFrame.size.height - height) / 2.0),
-                                          imageFrame.size.width,
-                                          height);
-            } else {
-                CGFloat width = imageFrame.size.height * aspect;
-                drawingFrame = CGRectMake(imageFrame.origin.x + ((imageFrame.size.width - width) / 2.0),
-                                          imageFrame.origin.y,
-                                          width,
-                                          imageFrame.size.height);
-            }
-
-            CGContextClipToRect(context, drawnImageFrame);
-            [cachedStoryImage drawInRect:[self nb_directionalRect:drawingFrame within:r] blendMode:kCGBlendModeNormal alpha:(cell.isRead ? 0.55 : 1.0)];
-            CGContextRestoreGState(context);
-        }
-
-        CGFloat titleX = CGRectGetMinX(clusterRect) + 50.0;
-        CGRect badgeFrame = CGRectZero;
-        NSString *badgeText = [[StoryClusterDisplayDecision clusterTierBadgeTextForValue:cell.clusterTier]
-            stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-        if (badgeText.length) {
-            UIFont *badgeFont = [UIFont fontWithName:@"WhitneySSm-Medium" size:9];
-            if (!badgeFont) {
-                badgeFont = [UIFont systemFontOfSize:9 weight:UIFontWeightSemibold];
-            }
-            NSDictionary *badgeAttributes = @{
-                NSFontAttributeName: badgeFont,
-                NSKernAttributeName: @0.45
-            };
-            CGSize badgeTextSize = [badgeText sizeWithAttributes:badgeAttributes];
-            CGFloat badgeWidth = ceil(badgeTextSize.width) + 14.0;
-            CGFloat badgeHeight = 16.0;
-            CGFloat badgeMaxX = hasCachedImage ? CGRectGetMinX(imageFrame) - 6.0 : dateX - 8.0;
-            CGFloat minimumTitleWidth = 48.0;
-            if ((badgeMaxX - badgeWidth) - titleX >= minimumTitleWidth) {
-                badgeFrame = CGRectMake(badgeMaxX - badgeWidth,
-                                        contentY + (contentHeight - badgeHeight) / 2.0,
-                                        badgeWidth,
-                                        badgeHeight);
-                titleRightEdge = CGRectGetMinX(badgeFrame) - 8.0;
-            }
-        }
-
-        CGRect titleFrame = CGRectMake(titleX,
-                                       contentY + (contentHeight - titleFont.lineHeight) / 2.0 - 1.0,
-                                       MAX(titleRightEdge - titleX, 40.0),
-                                       ceil(titleFont.lineHeight));
-        [cell.storyTitle drawWithRect:[self nb_directionalRect:titleFrame within:r]
-                              options:NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesLineFragmentOrigin
-                           attributes:@{NSFontAttributeName: titleFont,
-                                        NSForegroundColorAttributeName: titleColor,
-                                        NSParagraphStyleAttributeName: paragraphStyle}
-                              context:nil];
-
-        if (!CGRectIsEmpty(badgeFrame)) {
-            UIColor *badgeColor = [[self clusterTierBadgeColorForTier:cell.clusterTier]
-                                   colorWithAlphaComponent:(cell.isRead ? 0.45 : 1.0)];
-            badgeFrame = [self nb_directionalRect:badgeFrame within:r];
-            UIBezierPath *badgePath = [UIBezierPath bezierPathWithRoundedRect:badgeFrame
-                                                                 cornerRadius:(CGRectGetHeight(badgeFrame) / 2.0)];
-            CGContextSaveGState(context);
-            CGContextSetStrokeColorWithColor(context, badgeColor.CGColor);
-            CGContextSetLineWidth(context, 1.0);
-            [badgePath stroke];
-
-            UIFont *badgeFont = [UIFont fontWithName:@"WhitneySSm-Medium" size:9];
-            if (!badgeFont) {
-                badgeFont = [UIFont systemFontOfSize:9 weight:UIFontWeightSemibold];
-            }
-            NSDictionary *badgeAttributes = @{
-                NSFontAttributeName: badgeFont,
-                NSForegroundColorAttributeName: badgeColor,
-                NSKernAttributeName: @0.45
-            };
-            CGSize badgeTextSize = [badgeText sizeWithAttributes:badgeAttributes];
-            CGRect badgeTextFrame = CGRectMake(CGRectGetMidX(badgeFrame) - (badgeTextSize.width / 2.0),
-                                               CGRectGetMidY(badgeFrame) - (badgeFont.lineHeight / 2.0) - 0.5,
-                                               badgeTextSize.width,
-                                               ceil(badgeFont.lineHeight));
-            [badgeText drawInRect:badgeTextFrame withAttributes:badgeAttributes];
-            CGContextRestoreGState(context);
-        }
-
-        CGRect dateFrame = CGRectMake(dateX,
-                                      contentY + (contentHeight - dateFont.lineHeight) / 2.0,
-                                      dateSize.width,
-                                      ceil(dateFont.lineHeight));
-        [dateText drawInRect:[self nb_directionalRect:dateFrame within:r]
-              withAttributes:@{NSFontAttributeName: dateFont,
-                               NSForegroundColorAttributeName: metaColor}];
-
-        CGContextRestoreGState(context);
-
-        return;
-    }
     
     NSString *preview = [[NSUserDefaults standardUserDefaults] stringForKey:@"story_list_preview_images_size"];
     BOOL isPreviewShown = ![preview isEqualToString:@"none"];

@@ -2081,14 +2081,6 @@ final class ReaderUITests: XCTestCase {
         }
     }
 
-    func test_experimentalTitlesShowClusterRows() {
-        launch(on: "reader-feed-swift-cluster", storyTitlesStyle: "experimental")
-
-        XCTAssertTrue(waitForFixtureStoryTitles())
-        let storyList = fixtureStorySurface()
-        XCTAssertTrue(reveal(storyTitle("Swift Cluster Fixture Related Coverage"), in: storyList))
-    }
-
     func test_experimentalTitlesSupportSwipeActionsAndReadToggling() {
         launchSwipes(experimental: true, right: "back", left: "menu")
 

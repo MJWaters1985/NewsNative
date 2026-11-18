@@ -184,8 +184,7 @@ struct FeedDetailGridView: View {
                 $0.append(CardFrame(id: "\(story.id)", frame: reader[$1]))
             }
             .onPreferenceChange(CardKey.self) {
-                if !story.isClusterStory,
-                   feedDetailInteraction.isMarkReadOnScroll,
+                if feedDetailInteraction.isMarkReadOnScroll,
                    StoryScrollReadDecision.shouldMarkRead(storyID: "\(story.id)", frames: $0) {
                     NSLog("🐓 Scrolled off the top: \(story.debugTitle): \($0)")
                     
@@ -195,9 +194,7 @@ struct FeedDetailGridView: View {
                 }
             }
             .onAppear {
-                if !story.isClusterStory {
-                    feedDetailInteraction.visible(story: story)
-                }
+                feedDetailInteraction.visible(story: story)
             }
             .if(cache.isGrid) { view in
                 view.frame(height: cardHeight)

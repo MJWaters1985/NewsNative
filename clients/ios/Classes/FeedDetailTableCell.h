@@ -29,7 +29,6 @@ typedef NS_ENUM(NSUInteger, FeedDetailTextSize)
     NSString *storyDate;
     NSString *storyContent;
     NSString *storyHash;
-    NSString *clusterTier;
     UIImage *storyImage;
     NSInteger storyTimestamp;
     int storyScore;
@@ -61,7 +60,6 @@ typedef NS_ENUM(NSUInteger, FeedDetailTextSize)
 @property (nonatomic) NSString *storyDate;
 @property (nonatomic) NSString *storyContent;
 @property (nonatomic) NSString *storyHash;
-@property (nonatomic, copy) NSString *clusterTier;
 @property (nonatomic) UIImage *storyImage;
 @property (nonatomic) NSInteger storyTimestamp;
 
@@ -74,7 +72,6 @@ typedef NS_ENUM(NSUInteger, FeedDetailTextSize)
 @property (readwrite) BOOL isReadAvailable;
 @property (readwrite) BOOL isShort;
 @property (readwrite) BOOL isRiverOrSocial;
-@property (readwrite) BOOL isClusterStory;
 @property (readwrite) BOOL hasAlpha;
 
 @property (nonatomic) FeedDetailTextSize textSize;

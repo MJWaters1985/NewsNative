@@ -2112,37 +2112,6 @@ import XCTest
         XCTAssertEqual(pages.pageChanges, [2])
     }
 
-    func test_cachedClusterChildSelectionAndReadEditsSurviveAuthoritativeInsertion() async throws {
-        let preferences = UserDefaults.standard
-        let original = preferences.object(forKey: "story_clustering")
-        preferences.set(true, forKey: "story_clustering")
-        defer {
-            if let original { preferences.set(original, forKey: "story_clustering") }
-            else { preferences.removeObject(forKey: "story_clustering") }
-        }
-        let fixture = makeFixture()
-        fixture.app.dictUserProfile = ["preferences": ["cluster_mark_read": true]]
-        var cached = makeStories(0..<12)
-        cached[4]["cluster_stories"] = [["story_hash": "related-child", "story_feed_id": 1, "story_title": "Related child", "read_status": 0]]
-        try await prime(fixture, stories: cached)
-        fixture.open()
-        await settle()
-        let parent = try XCTUnwrap(fixture.controller.indexPath(forStoryLocation: 4))
-        let selected = IndexPath(row: parent.row + 1, section: parent.section)
-        fixture.table.selectRow(at: selected, animated: false, scrollPosition: .none)
-        let parentStory = try XCTUnwrap((fixture.stories.activeFeedStories as? [[AnyHashable: Any]])?[4])
-        fixture.stories.markStoryRead(parentStory, feed: nil)
-        fixture.app.releaseReadFlush()
-        fixture.app.releaseSavedFlush()
-        await settle()
-        fixture.app.reply(to: fixture.app.requests.count - 1, with: response(stories: makeStories(100..<103) + cached))
-        await settle()
-        let moved = try XCTUnwrap(fixture.controller.indexPath(forStoryLocation: 7))
-        XCTAssertEqual(fixture.table.indexPathForSelectedRow, IndexPath(row: moved.row + 1, section: moved.section))
-        let story = try XCTUnwrap((fixture.stories.activeFeedStories as? [[String: Any]])?[7])
-        XCTAssertEqual((story["cluster_stories"] as? [[String: Any]])?.first?["read_status"] as? Int, 1)
-    }
-
     func test_ignoredPageOneRequestDoesNotInstallAPermanentPaginationGate() async throws {
         let fixture = makeFixture()
         try await prime(fixture)

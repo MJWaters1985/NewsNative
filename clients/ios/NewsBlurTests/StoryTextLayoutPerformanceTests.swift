@@ -193,25 +193,6 @@ import ObjectiveC.runtime
         print("TEXT_PREFETCH_CONTEXT phase=\(phase) requested=0:0 table=\(ObjectIdentifier(table)) bound_table=\(boundTable) matches=\(table === controller.storyTitlesTable) width=\(table.bounds.width) legacy=\(controller.isLegacyTable) dashboard=\(controller.isDashboard) intelligence=\(controller.appDelegate.selectedIntelligence) visible_locations=\(controller.storiesCollection.activeFeedStoryLocations ?? []) descriptors=\(rows) story_present=\(story != nil) preview_cache=\(previewIdentity) preview_present=\(preview != nil) preview_length=\(preview?.length ?? 0) pending=\(cache.pendingRowCount) cached=\(cache.cachedEntryCount) main_normalizations=\(controller.normalizationCounts.counts.main) worker_normalizations=\(controller.normalizationCounts.counts.worker)")
     }
 
-    func test_clusterCellsKeepTheirDistinctDrawingPath() throws {
-        let app = TextLayoutAppDelegate()
-        app.fontDescriptorTitleSize = UIFontDescriptor.preferredFontDescriptor(withTextStyle: .caption1).withSize(13)
-        for theme in ["light", "sepia", "medium", "dark"] {
-            defaults.set(theme, forKey: "theme_style")
-            for tier in ["title", "semantic"] {
-                let cell = makeCell(app: app)
-                cell.isClusterStory = true
-                cell.clusterTier = tier
-                app.image = fixtureImage()
-                let view = makeContentView(cell, app: app, size: CGSize(width: 390, height: 42))
-                let actual = bitmap(view)
-                let expected = try withOldLayout { bitmap(makeContentView(cell, app: app, size: view.bounds.size)) }
-                XCTAssertEqual(actual, expected)
-                XCTAssertNil(view.value(forKey: "cachedRegularLayoutKey"))
-            }
-        }
-    }
-
     private func makeFixture() -> (controller: TextLayoutController, table: UITableView, app: TextLayoutAppDelegate,
                                   queue: DispatchQueue, cache: StoryTextLayoutCache) {
         let app = TextLayoutAppDelegate()

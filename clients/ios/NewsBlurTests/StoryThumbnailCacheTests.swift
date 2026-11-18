@@ -210,8 +210,6 @@ final class Test_StoryThumbnailCache: XCTestCase {
                                 cell.textSize = FeedDetailTextSize(rawValue: 0)!
                                 cell.isRead = state == 1 || state == 2 || state == 4
                                 cell.isHighlighted = state == 2
-                                cell.isClusterStory = state >= 3
-                                cell.clusterTier = "same"
                                 cell.feedColorBar = .blue
                                 cell.feedColorBarTopBorder = .cyan
                                 let view = FeedDetailTableCellView(frame: CGRect(x: 0, y: 0, width: 390, height: 180))
@@ -730,31 +728,6 @@ final class Test_StoryThumbnailCache: XCTestCase {
         appDelegate.cacheStoryImagePlaceholder("story")
 
         XCTAssertTrue(cache.object(forKey: "story") as? UIImage === image)
-    }
-
-    func test_existingStoryAndClusterThumbnailsRemainVisibleDuringFirstSessionRefresh() {
-        let (appDelegate, cache) = makeCache()
-        let storyImage = makeImage()
-        let clusterImage = makeImage()
-        cache.memoryCache.setObject(storyImage, forKey: "story")
-        cache.diskCache.setObject(clusterImage, forKey: "cluster")
-        let controller = makeController(appDelegate: appDelegate)
-
-        let stories: [[String: Any]] = [
-            ["story_hash": "story", "image_urls": ["https://example.test/story.jpg"],
-             "cluster_stories": [["story_hash": "cluster", "image_urls": ["https://example.test/cluster.jpg"]]]]
-        ]
-        cacheStories(stories, on: controller)
-        cacheStories(stories, on: controller)
-
-        XCTAssertEqual(controller.requestedStoryHashes, ["story", "cluster"])
-        XCTAssertTrue(cache.object(forKey: "story") as? UIImage === storyImage)
-        XCTAssertTrue(cache.object(forKey: "cluster") as? UIImage === clusterImage)
-
-        finish(controller.requests[0], with: storyImage, on: controller)
-        finish(controller.requests[1], with: clusterImage, on: controller)
-        cacheStories(stories, on: controller)
-        XCTAssertEqual(controller.requestedStoryHashes, ["story", "cluster"])
     }
 
     func test_missingThumbnailStillStartsDownload() {

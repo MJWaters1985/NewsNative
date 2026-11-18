@@ -39,14 +39,6 @@ private struct PreferencesColors {
     static var destructive: Color { Color(red: 0.9, green: 0.3, blue: 0.3) }
     static var newsblurGreen: Color { Color(red: 0.439, green: 0.620, blue: 0.365) }
     static var newsblurBlue: Color { Color(red: 0.33, green: 0.47, blue: 0.65) }
-    static var clusterMatch: Color {
-        themedColor(light: 0x5A8C6A, sepia: 0x6E865F, medium: 0x7DC99A, dark: 0x7DC99A)
-    }
-
-    static var clusterRelated: Color {
-        themedColor(light: 0xA88246, sepia: 0x9B7540, medium: 0xD2A76B, dark: 0xD2A76B)
-    }
-
     private static func themedColor(light: Int, sepia: Int, medium: Int, dark: Int) -> Color {
         guard let themeManager = ThemeManager.shared else {
             return colorFromHex(light)
@@ -199,10 +191,6 @@ class PreferencesViewModel: ObservableObject {
         // Hide infrequent stories per month when infrequent site stories is disabled
         if !defaults.bool(forKey: "show_infrequent_site_stories") {
             hidden.insert("infrequent_stories_per_month")
-        }
-
-        if !defaults.bool(forKey: "story_clustering") {
-            hidden.insert("cluster_mode")
         }
 
         if !GesturePreferences.feedsEnabled {
@@ -1029,85 +1017,6 @@ struct PreferenceIconView: View {
     }
 }
 
-// MARK: - Cluster Mode Preview
-
-@available(iOS 15.0, *)
-struct ClusterTierPillView: View {
-    let label: String
-    let tier: String
-    var compact: Bool = false
-
-    private var tierColor: Color {
-        tier == "title" ? PreferencesColors.clusterMatch : PreferencesColors.clusterRelated
-    }
-
-    private var horizontalPadding: CGFloat { compact ? 6 : 8 }
-    private var verticalPadding: CGFloat { compact ? 2 : 3 }
-    private var fontSize: CGFloat { compact ? 9 : 10 }
-
-    var body: some View {
-        Text(label.uppercased())
-            .font(.system(size: fontSize, weight: .semibold, design: .rounded))
-            .foregroundColor(tierColor)
-            .lineLimit(1)
-            .padding(.horizontal, horizontalPadding)
-            .padding(.vertical, verticalPadding)
-            .overlay(
-                Capsule()
-                    .stroke(tierColor, lineWidth: 1)
-            )
-            .fixedSize(horizontal: true, vertical: true)
-    }
-}
-
-@available(iOS 15.0, *)
-struct ClusterModePreviewView: View {
-    let mode: String
-    var compact: Bool = false
-
-    var body: some View {
-        HStack(spacing: compact ? 4 : 6) {
-            ClusterTierPillView(label: NBLocalization.text("Match"), tier: "title", compact: compact)
-
-            if mode != "title" {
-                Text("+")
-                    .font(.system(size: compact ? 10 : 11, weight: .semibold))
-                    .foregroundColor(PreferencesColors.textSecondary)
-                ClusterTierPillView(label: NBLocalization.text("Related"), tier: "related", compact: compact)
-            }
-        }
-        .fixedSize(horizontal: true, vertical: true)
-    }
-}
-
-@available(iOS 15.0, *)
-struct ClusterSettingStateView: View {
-    let isEnabled: Bool
-    let mode: String
-
-    private var stateTitle: String {
-        if !isEnabled {
-            return NBLocalization.text("Title only")
-        }
-
-        return mode == "title" ? NBLocalization.text("Title match only") : NBLocalization.text("Title match plus related")
-    }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(stateTitle)
-                .font(.system(size: 11, weight: .semibold))
-                .foregroundColor(PreferencesColors.textSecondary)
-
-            if isEnabled {
-                ClusterModePreviewView(mode: mode, compact: true)
-            }
-        }
-        .padding(.top, 2)
-        .fixedSize(horizontal: false, vertical: true)
-    }
-}
-
 // MARK: - Item View
 
 @available(iOS 15.0, *)
@@ -1212,7 +1121,6 @@ struct ToggleItemView: View {
     @ObservedObject var viewModel: PreferencesViewModel
 
     @AppStorage private var isOn: Bool
-    @AppStorage("cluster_mode") private var clusterMode = "related"
 
     init(item: PreferenceItem, key: String, defaultValue: Bool, viewModel: PreferencesViewModel) {
         self.item = item
@@ -1236,10 +1144,6 @@ struct ToggleItemView: View {
                         .font(.system(size: 12))
                         .foregroundColor(PreferencesColors.textSecondary)
                         .lineLimit(2)
-                }
-
-                if key == "story_clustering" {
-                    ClusterSettingStateView(isEnabled: isOn, mode: clusterMode)
                 }
             }
 
@@ -1275,12 +1179,8 @@ struct MultiValueItemView: View {
 
     var body: some View {
         Button(action: { showPicker = true }) {
-            if key == "cluster_mode" {
-                clusterModeRow
-            } else {
-                // PreferencesView.swift makes the space between a picker title and its value tappable.
-                standardRow.contentShape(Rectangle())
-            }
+            // PreferencesView.swift makes the space between a picker title and its value tappable.
+            standardRow.contentShape(Rectangle())
         }
         .buttonStyle(PlainButtonStyle())
         .accessibilityIdentifier(key)
@@ -1339,44 +1239,6 @@ struct MultiValueItemView: View {
             Image(systemName: "chevron.forward")
                 .font(.system(size: 11, weight: .semibold))
                 .foregroundColor(PreferencesColors.textSecondary.opacity(0.4))
-        }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 10)
-    }
-
-    private var clusterModeRow: some View {
-        HStack(alignment: .top, spacing: 12) {
-            PreferenceIconView(icon: item.icon, color: item.iconColor)
-
-            VStack(alignment: .leading, spacing: 6) {
-                titleText
-                    .lineLimit(1)
-
-                if let subtitle = item.subtitle {
-                    subtitleText(subtitle)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-
-                HStack(alignment: .top, spacing: 0) {
-                    Spacer(minLength: 0)
-
-                    VStack(alignment: .trailing, spacing: 4) {
-                        Text(currentTitle)
-                            .font(.system(size: 14))
-                            .foregroundColor(PreferencesColors.textSecondary)
-                            .multilineTextAlignment(.trailing)
-                            .fixedSize(horizontal: false, vertical: true)
-                        ClusterModePreviewView(mode: currentValue, compact: true)
-                    }
-                }
-                .padding(.top, 2)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-
-            Image(systemName: "chevron.forward")
-                .font(.system(size: 11, weight: .semibold))
-                .foregroundColor(PreferencesColors.textSecondary.opacity(0.4))
-                .padding(.top, 6)
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
@@ -1474,16 +1336,8 @@ struct PickerSheet: View {
                     ForEach(0..<titles.count, id: \.self) { index in
                         Button(action: { onSelect(index) }) {
                             HStack {
-                                if key == "cluster_mode" {
-                                    VStack(alignment: .leading, spacing: 6) {
-                                        Text(titles[index])
-                                            .foregroundColor(PreferencesColors.textPrimary)
-                                        ClusterModePreviewView(mode: "\(values[index])")
-                                    }
-                                } else {
-                                    Text(titles[index])
-                                        .foregroundColor(PreferencesColors.textPrimary)
-                                }
+                                Text(titles[index])
+                                    .foregroundColor(PreferencesColors.textPrimary)
 
                                 Spacer()
 

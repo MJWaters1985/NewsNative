@@ -5,9 +5,6 @@ import Foundation
 @objcMembers final class NewsNativeFeatures: NSObject {
     /// Infrequent Site Stories, Global Shared Stories, Widely Read Stories, Long Reads and Good Reads in the feed list.
     static let showsSpecialFeedSections = false
-    /// Features the server builds with AI models, including embeddings: Daily Briefing, the Web Feed tab of
-    /// Add + Discover Sites, related sites and stories, story clustering and AI classifier labels on stories.
-    static let aiFeatures = false
     /// The account header above the feed list: avatar, username, unread counts and the sync status pill.
     static let showsAccountHeader = false
     /// Social reading: All Shared Stories and the shared stories of people you follow in the feed list and dashboard

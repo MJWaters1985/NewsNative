@@ -70,20 +70,6 @@ static NSDictionary *NBUserProfilePreferencesDictionary(NSDictionary *userProfil
     return nil;
 }
 
-static BOOL NBBoolPreferenceValue(id value) {
-    if (!value || value == [NSNull null]) {
-        return NO;
-    }
-
-    if ([value isKindOfClass:[NSNumber class]]) {
-        return [value boolValue];
-    } else if ([value isKindOfClass:[NSString class]]) {
-        return [(NSString *)value boolValue];
-    }
-
-    return NO;
-}
-
 @interface FeedsObjCViewController () <PreferencesViewDelegate>
 
 @property (atomic) NSUInteger feedListAccountGeneration;
@@ -117,25 +103,6 @@ static BOOL NBBoolPreferenceValue(id value) {
 @end
 
 @implementation FeedsObjCViewController
-
-- (void)syncStoryClusteringDefaultsFromUserProfile:(NSDictionary *)userProfile {
-    NSDictionary *preferences = NBUserProfilePreferencesDictionary(userProfile);
-    if (!preferences.count) {
-        return;
-    }
-
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    id clusteringValue = preferences[@"story_clustering"];
-    if (clusteringValue && clusteringValue != [NSNull null]) {
-        [defaults setBool:NBBoolPreferenceValue(clusteringValue) forKey:@"story_clustering"];
-    }
-
-    id clusterModeValue = preferences[@"cluster_mode"];
-    if (clusterModeValue && clusterModeValue != [NSNull null]) {
-        [defaults setObject:[StoryClusterDisplayDecision normalizedClusterTierValue:clusterModeValue]
-                     forKey:@"cluster_mode"];
-    }
-}
 
 - (void)updateCachedUserProfilePreferenceWithKey:(NSString *)key value:(id)value {
     if (!self.appDelegate.dictUserProfile.count || !key.length) {
@@ -1635,7 +1602,6 @@ static BOOL NBBoolPreferenceValue(id value) {
     appDelegate.dictUnreadCounts = [NSMutableDictionary dictionary];
     appDelegate.dictSocialProfile = [results objectForKey:@"social_profile"];
     appDelegate.dictUserProfile = [results objectForKey:@"user_profile"];
-    [self syncStoryClusteringDefaultsFromUserProfile:appDelegate.dictUserProfile];
     // StoryButtonPreferences.swift adopts the synced story button preferences.
     [StoryButtonPreferences syncFromUserProfile:appDelegate.dictUserProfile];
     appDelegate.dictSocialServices = [results objectForKey:@"social_services"];
@@ -2524,14 +2490,6 @@ static BOOL NBBoolPreferenceValue(id value) {
         [self.appDelegate.feedDetailViewController updateStoryTitleSwipePreference];
     } else if ([identifier isEqual:@"feed_title_swipe_right"] || [identifier isEqual:@"feed_title_swipe_left"] || [identifier isEqual:@"enable_feed_swipes"]) {
         [self reloadFeedTitlesTable];
-    } else if ([identifier isEqual:@"story_clustering"]) {
-        NSString *value = [[NSUserDefaults standardUserDefaults] boolForKey:@"story_clustering"] ? @"true" : @"false";
-        [self saveProfilePreferenceWithKey:@"story_clustering" value:value];
-        [self.appDelegate.feedDetailViewController reload];
-    } else if ([identifier isEqual:@"cluster_mode"]) {
-        NSString *clusterMode = [[NSUserDefaults standardUserDefaults] stringForKey:@"cluster_mode"] ?: @"related";
-        [self saveProfilePreferenceWithKey:@"cluster_mode" value:clusterMode];
-        [self.appDelegate.feedDetailViewController reload];
     } else if ([identifier isEqual:@"story_list_preview_images_size"]) {
         NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
         NSString *preview = [userPreferences stringForKey:@"story_list_preview_images_size"];

@@ -2507,7 +2507,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 - (NSArray *)feedIdsForTopLevelRiverWithReadFilter:(NSString *)readFilter {
     NSMutableArray *mutableFeedIds = [NSMutableArray array];
     NSMutableSet<NSString *> *seenFeedIds = [NSMutableSet set];
-    NSSet<NSString *> *subscribedFeedIds = [self subscribedFeedIdsForStoryClusters];
+    NSSet<NSString *> *subscribedFeedIds = [self subscribedFeedIds];
     BOOL unreadOnly = [readFilter isEqualToString:@"unread"];
     // Note: "everything" is the renamed key for top-level unfoldered feeds (flat_folders_with_inactive's " " bucket),
     // so it must NOT be excluded — otherwise the All Site Stories river silently drops every unfoldered feed.
@@ -4332,7 +4332,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     return [[self feedIdWithoutSearchQuery:feedId] substringFromIndex:prefix.length];
 }
 
-- (NSSet<NSString *> *)subscribedFeedIdsForStoryClusters {
+- (NSSet<NSString *> *)subscribedFeedIds {
     NSMutableSet<NSString *> *feedIds = [NSMutableSet set];
 
     [self.dictFeeds enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
@@ -4348,13 +4348,6 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     }];
 
     return [feedIds copy];
-}
-
-- (BOOL)isSubscribedFeedIdForStoryClusters:(NSString *)feedId {
-    NSString *normalizedFeedId = [self feedIdWithoutSearchQuery:[NSString stringWithFormat:@"%@", feedId ?: @""]];
-    NSDictionary *feed = self.dictFeeds[normalizedFeedId];
-
-    return [feed isKindOfClass:[NSDictionary class]] && ![feed[@"temp"] boolValue];
 }
 
 - (NSDictionary *)feedMetadataForStory:(NSDictionary *)story preferActiveFeeds:(BOOL)preferActiveFeeds {
