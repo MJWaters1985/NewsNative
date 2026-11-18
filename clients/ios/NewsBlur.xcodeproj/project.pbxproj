@@ -1142,7 +1142,11 @@
 		A91220260000000000000004 /* StoryTitleSwipePreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = A91220260000000000000005 /* StoryTitleSwipePreference.swift */; };
 		B92720260000000000000004 /* ReaderMotion.swift in Sources */ = {isa = PBXBuildFile; fileRef = B92720260000000000000005 /* ReaderMotion.swift */; };
 		A91320260000000000000003 /* GesturePreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = A91320260000000000000005 /* GesturePreferences.swift */; };
+		C0FFEE260000000000000003 /* NewsNativeFeatures.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0FFEE260000000000000005 /* NewsNativeFeatures.swift */; };
+		C0FFEE260000000000000006 /* FeedRailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0FFEE260000000000000008 /* FeedRailView.swift */; };
 		A91320260000000000000004 /* GesturePreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = A91320260000000000000005 /* GesturePreferences.swift */; };
+		C0FFEE260000000000000004 /* NewsNativeFeatures.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0FFEE260000000000000005 /* NewsNativeFeatures.swift */; };
+		C0FFEE260000000000000007 /* FeedRailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0FFEE260000000000000008 /* FeedRailView.swift */; };
 		A91320260000000000000011 /* StoryPreloadFailureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A91320260000000000000012 /* StoryPreloadFailureTests.swift */; };
 		A92200000000000000000002 /* FeedSubscriptionRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9220000000000000000000C /* FeedSubscriptionRequest.swift */; };
 		A92200000000000000000003 /* Subscribe Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A9220000000000000000000F /* Subscribe Extension.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -1763,7 +1767,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				FF8A949F1DE3BB77000A4C31 /* Story Notification Service Extension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2260,6 +2263,8 @@
 		A91220260000000000000005 /* StoryTitleSwipePreference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryTitleSwipePreference.swift; sourceTree = "<group>"; };
 		B92720260000000000000005 /* ReaderMotion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReaderMotion.swift; sourceTree = "<group>"; };
 		A91320260000000000000005 /* GesturePreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GesturePreferences.swift; sourceTree = "<group>"; };
+		C0FFEE260000000000000005 /* NewsNativeFeatures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsNativeFeatures.swift; sourceTree = "<group>"; };
+		C0FFEE260000000000000008 /* FeedRailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedRailView.swift; sourceTree = "<group>"; };
 		A91320260000000000000012 /* StoryPreloadFailureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryPreloadFailureTests.swift; sourceTree = "<group>"; };
 		A9220000000000000000000C /* FeedSubscriptionRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedSubscriptionRequest.swift; sourceTree = "<group>"; };
 		A9220000000000000000000D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -3990,6 +3995,8 @@
 				A91220260000000000000005 /* StoryTitleSwipePreference.swift */,
 				B92720260000000000000005 /* ReaderMotion.swift */,
 				A91320260000000000000005 /* GesturePreferences.swift */,
+				C0FFEE260000000000000005 /* NewsNativeFeatures.swift */,
+				C0FFEE260000000000000008 /* FeedRailView.swift */,
 				17BC56AF2BBF6C2200A30C41 /* StorySettings.swift */,
 				171B3E1D2D94C8080056DA9A /* Request.swift */,
 			);
@@ -6081,6 +6088,8 @@
 				A91220260000000000000004 /* StoryTitleSwipePreference.swift in Sources */,
 				B92720260000000000000004 /* ReaderMotion.swift in Sources */,
 				A91320260000000000000004 /* GesturePreferences.swift in Sources */,
+				C0FFEE260000000000000004 /* NewsNativeFeatures.swift in Sources */,
+				C0FFEE260000000000000007 /* FeedRailView.swift in Sources */,
 				175792B32930605500490924 /* PremiumViewController.m in Sources */,
 				PREM1EW5W1FT000000000002 /* PremiumView.swift in Sources */,
 				175792B42930605500490924 /* NBLoadingCell.m in Sources */,
@@ -6384,6 +6393,8 @@
 				A91220260000000000000003 /* StoryTitleSwipePreference.swift in Sources */,
 				B92720260000000000000003 /* ReaderMotion.swift in Sources */,
 				A91320260000000000000003 /* GesturePreferences.swift in Sources */,
+				C0FFEE260000000000000003 /* NewsNativeFeatures.swift in Sources */,
+				C0FFEE260000000000000006 /* FeedRailView.swift in Sources */,
 				FF83FF051FB52565008DAC0F /* PremiumViewController.m in Sources */,
 				PREM1EW5W1FT000000000003 /* PremiumView.swift in Sources */,
 				PREF5V1EW5W1FT000000001 /* PreferencesView.swift in Sources */,
@@ -6804,7 +6815,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -6857,7 +6868,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -6906,7 +6917,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Share Extension/Share Extension.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -6962,7 +6973,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Share Extension/Share Extension.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -6996,14 +7007,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
-				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIconMeadowSage AppIconAtlanticBlue AppIconCoralRose AppIconRubyRed AppIconEmberOrange AppIconTealMint AppIconLavenderIris AppIconSlateGray AppIconSepiaCocoa AppIconArcticCyan AppIconPlumBerry AppIconSunriseGoldLight AppIconSunriseGoldDark AppIconMeadowSageLight AppIconMeadowSageDark AppIconAtlanticBlueLight AppIconAtlanticBlueDark AppIconCoralRoseLight AppIconCoralRoseDark AppIconRubyRedLight AppIconRubyRedDark AppIconEmberOrangeLight AppIconEmberOrangeDark AppIconTealMintLight AppIconTealMintDark AppIconLavenderIrisLight AppIconLavenderIrisDark AppIconSlateGrayLight AppIconSlateGrayDark AppIconSepiaCocoaLight AppIconSepiaCocoaDark AppIconArcticCyanLight AppIconArcticCyanDark AppIconPlumBerryLight AppIconPlumBerryDark";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconDev;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_ENTITLEMENTS = Resources/App.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -7061,14 +7071,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIconMeadowSage AppIconAtlanticBlue AppIconCoralRose AppIconRubyRed AppIconEmberOrange AppIconTealMint AppIconLavenderIris AppIconSlateGray AppIconSepiaCocoa AppIconArcticCyan AppIconPlumBerry AppIconSunriseGoldLight AppIconSunriseGoldDark AppIconMeadowSageLight AppIconMeadowSageDark AppIconAtlanticBlueLight AppIconAtlanticBlueDark AppIconCoralRoseLight AppIconCoralRoseDark AppIconRubyRedLight AppIconRubyRedDark AppIconEmberOrangeLight AppIconEmberOrangeDark AppIconTealMintLight AppIconTealMintDark AppIconLavenderIrisLight AppIconLavenderIrisDark AppIconSlateGrayLight AppIconSlateGrayDark AppIconSepiaCocoaLight AppIconSepiaCocoaDark AppIconArcticCyanLight AppIconArcticCyanDark AppIconPlumBerryLight AppIconPlumBerryDark";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconDev;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_ENTITLEMENTS = Resources/App.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -7140,7 +7149,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -7193,7 +7202,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -7242,7 +7251,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -7295,7 +7304,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -7324,14 +7333,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
-				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIconMeadowSage AppIconAtlanticBlue AppIconCoralRose AppIconRubyRed AppIconEmberOrange AppIconTealMint AppIconLavenderIris AppIconSlateGray AppIconSepiaCocoa AppIconArcticCyan AppIconPlumBerry AppIconSunriseGoldLight AppIconSunriseGoldDark AppIconMeadowSageLight AppIconMeadowSageDark AppIconAtlanticBlueLight AppIconAtlanticBlueDark AppIconCoralRoseLight AppIconCoralRoseDark AppIconRubyRedLight AppIconRubyRedDark AppIconEmberOrangeLight AppIconEmberOrangeDark AppIconTealMintLight AppIconTealMintDark AppIconLavenderIrisLight AppIconLavenderIrisDark AppIconSlateGrayLight AppIconSlateGrayDark AppIconSepiaCocoaLight AppIconSepiaCocoaDark AppIconArcticCyanLight AppIconArcticCyanDark AppIconPlumBerryLight AppIconPlumBerryDark";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_ENTITLEMENTS = Resources/App.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = YES;
@@ -7378,14 +7386,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIconMeadowSage AppIconAtlanticBlue AppIconCoralRose AppIconRubyRed AppIconEmberOrange AppIconTealMint AppIconLavenderIris AppIconSlateGray AppIconSepiaCocoa AppIconArcticCyan AppIconPlumBerry AppIconSunriseGoldLight AppIconSunriseGoldDark AppIconMeadowSageLight AppIconMeadowSageDark AppIconAtlanticBlueLight AppIconAtlanticBlueDark AppIconCoralRoseLight AppIconCoralRoseDark AppIconRubyRedLight AppIconRubyRedDark AppIconEmberOrangeLight AppIconEmberOrangeDark AppIconTealMintLight AppIconTealMintDark AppIconLavenderIrisLight AppIconLavenderIrisDark AppIconSlateGrayLight AppIconSlateGrayDark AppIconSepiaCocoaLight AppIconSepiaCocoaDark AppIconArcticCyanLight AppIconArcticCyanDark AppIconPlumBerryLight AppIconPlumBerryDark";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_ENTITLEMENTS = Resources/App.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = YES;
@@ -7448,7 +7455,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = QFXTY46FMX;
 				ENABLE_APP_SANDBOX = YES;
@@ -7508,7 +7515,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = QFXTY46FMX;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -7567,7 +7574,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = QFXTY46FMX;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -7624,7 +7631,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = QFXTY46FMX;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -7821,7 +7828,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -7868,7 +7875,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;

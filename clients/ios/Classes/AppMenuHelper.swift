@@ -92,11 +92,6 @@ class AppMenuHelper: NSObject {
             ]),
             
             UIMenu(title: "", options: .displayInline, children: [
-                UIKeyCommand(title: NBLocalization.text("Notifications"),
-                             image: UIImage(systemName: "bell"),
-                             action: #selector(BaseViewController.showNotifications(_:)),
-                             input: "n",
-                             modifierFlags: [.command, .shift]),
                 UIKeyCommand(title: NBLocalization.text("Find Friends"),
                              image: UIImage(systemName: "person.2"),
                              action: #selector(BaseViewController.showFindFriends(_:)),
@@ -227,16 +222,12 @@ class AppMenuHelper: NSObject {
                                  action: #selector(BaseViewController.chooseIntelligence(_:)),
                                  input: "1", modifierFlags: [.command],
                                  propertyList: "1"),
-                    UIKeyCommand(title: NBLocalization.text("Focus Stories"),
-                                 image: UIImage(systemName: "scope"),
-                                 action: #selector(BaseViewController.chooseIntelligence(_:)),
-                                 input: "2", modifierFlags: [.command],
-                                 propertyList: "2"),
+                    // AppMenuHelper.swift: NewsNative has no Focus filter, so Saved is the third segment.
                     UIKeyCommand(title: NBLocalization.text("Saved Stories"),
                                  image: UIImage(systemName: "bookmark"),
                                  action: #selector(BaseViewController.chooseIntelligence(_:)),
-                                 input: "3", modifierFlags: [.command],
-                                 propertyList: "3")
+                                 input: "2", modifierFlags: [.command],
+                                 propertyList: "2")
                 ]),
                 // Submenu: Dashboard
                 UIMenu(title: NBLocalization.text("Dashboard"), image: UIImage(systemName: "speedometer"), children: [
@@ -479,12 +470,6 @@ class AppMenuHelper: NSObject {
                           propertyList: "manually"),
             ]),
             UIMenu(title: "", options: .displayInline, children: [
-                UICommand(title: NBLocalization.text("Train…"),
-                          image: UIImage(systemName: "brain"),
-                          action: #selector(BaseViewController.openTrainSite(_:))),
-                UICommand(title: NBLocalization.text("Notifications…"),
-                          image: UIImage(systemName: "bell"),
-                          action: #selector(BaseViewController.openNotifications(_:))),
                 UICommand(title: NBLocalization.text("Statistics…"),
                           image: UIImage(systemName: "chart.bar"),
                           action: #selector(BaseViewController.openStatistics(_:))),
@@ -551,21 +536,10 @@ class AppMenuHelper: NSObject {
                 UICommand(title: NBLocalization.text("Send To…"),
                           image: UIImage(systemName: "paperplane"),
                           action: #selector(BaseViewController.showSendTo(_:))),
-                UICommand(title: NBLocalization.text("Train This Story…"),
-                          image: UIImage(systemName: "brain"),
-                          action: #selector(BaseViewController.showTrain(_:))),
                 UICommand(title: NBLocalization.text("Share This Story…"),
                           image: UIImage(systemName: "square.and.arrow.up"),
                           action: #selector(BaseViewController.showShare(_:))),
-                // AppMenuHelper.swift: Y reads the story aloud, like the web's shortcut (Listen/ListenPlayer.swift).
-                UIKeyCommand(title: NBLocalization.text("Listen"),
-                             image: UIImage(systemName: "headphones"),
-                             action: #selector(BaseViewController.toggleListen(_:)),
-                             input: "y", modifierFlags: []),
-                // AppMenuHelper.swift: queues the story on screen in Listen's Up Next (Listen/ListenQueue.swift).
-                UICommand(title: NBLocalization.text("Add to Up Next"),
-                          image: UIImage(systemName: "text.badge.plus"),
-                          action: #selector(BaseViewController.toggleListenQueue(_:)))
+                // AppMenuHelper.swift: Listen and training are set aside in NewsNativeFeatures.swift.
             ]),
             UIMenu(title: "", options: .displayInline, children: [
                 UIKeyCommand(title: NBLocalization.text("Next Unread Story"),
@@ -604,9 +578,6 @@ class AppMenuHelper: NSObject {
                              image: UIImage(systemName: "keyboard"),
                              action: #selector(BaseViewController.showKeyboardShortcuts(_:)),
                              input: "/", modifierFlags: [.shift]),
-                UICommand(title: NBLocalization.text("Support Forum"),
-                          image: UIImage(systemName: "questionmark.circle"),
-                          action: #selector(BaseViewController.showSupportForum(_:))),
                 UIMenu(title: "", options: .displayInline, children: [
                     UICommand(title: NBLocalization.text("Manage Account on the Web"),
                               image: UIImage(systemName: "person.crop.circle.badge.gear"),

@@ -1445,8 +1445,9 @@ private final class DuoSidebarResizePan: FeedsSidebarResizePanGestureRecognizer 
         let domain = defaults.persistentDomain(forName: try XCTUnwrap(Bundle.main.bundleIdentifier)) ?? [:]
         let keys = ["theme_style", "theme_light", "theme_dark", "selectedIntelligence"]
         let savedPreferences = keys.map { domain[$0] }
-        let filterNames = ["all", "unread", "focus", "saved"]
-        let expectedIntelligence = [0, 0, 1, 2]
+        let filterNames = ["all", "unread", "saved"]
+        let expectedIntelligence = [0, 0, 2]
+        let expectedStoredIntelligence = [-1, 0, 2]
 
         func restorePreferences() {
             for (key, value) in zip(keys, savedPreferences) {
@@ -1499,14 +1500,14 @@ private final class DuoSidebarResizePan: FeedsSidebarResizePanGestureRecognizer 
                     XCTAssertEqual(feeds.intelligenceControl.selectedSegmentIndex, index)
                     XCTAssertEqual(app.selectedIntelligence, expectedIntelligence[index])
                     XCTAssertEqual(feeds.viewShowingAllFeeds, index == 0)
-                    XCTAssertEqual(defaults.integer(forKey: "selectedIntelligence"), index - 1)
+                    XCTAssertEqual(defaults.integer(forKey: "selectedIntelligence"), expectedStoredIntelligence[index])
                     if vertical {
                         let items = feeds.toolbarItems ?? []
                         let filters = items.filter { $0.accessibilityIdentifier?.hasPrefix("feed-list-intelligence-") == true }
-                        XCTAssertEqual(filters.count, 4)
+                        XCTAssertEqual(filters.count, filterNames.count)
                         XCTAssertEqual(filters.filter(\.isSelected).map(\.tag), [index],
                                        "Exactly the active intelligence filter must be selected")
-                        XCTAssertTrue(filters.allSatisfy(\.sharesBackground), "The four filters must keep their shared native group")
+                        XCTAssertTrue(filters.allSatisfy(\.sharesBackground), "The filters must keep their shared native group")
                         for filter in filters {
                             XCTAssertNil(filter.customView, "Native filters must fit the system rail and overflow")
                             XCTAssertNotNil(filter.image)

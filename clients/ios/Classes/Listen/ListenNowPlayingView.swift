@@ -166,14 +166,6 @@ struct ListenNowPlayingView: View {
                     .opacity(0.85)
             }
             Spacer(minLength: 0)
-            Button(NBLocalization.text("Upgrade")) {
-                ListenPresenter.showUpgrade(.archive)
-            }
-            .font(.system(size: 13, weight: .semibold))
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
-            .background(Capsule().fill(Color.white.opacity(0.22)))
-            .buttonStyle(.plain)
         }
         .foregroundColor(.white)
         .padding(14)
@@ -191,7 +183,6 @@ struct ListenNowPlayingView: View {
                 .foregroundColor(ListenColors.textPrimary)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
-            upgradeButton(.archive)
         }
         .padding(16)
         .frame(maxWidth: .infinity)
@@ -207,8 +198,7 @@ struct ListenNowPlayingView: View {
         Button {
             ListenPresenter.showUpgrade(upgrade)
         } label: {
-            Text(upgrade == .pro ? NBLocalization.text("Upgrade to Premium Pro")
-                                 : NBLocalization.text("Upgrade to Premium Archive"))
+            Text(NBLocalization.text("Upgrade to Premium Pro"))
                 .font(.system(size: 15, weight: .semibold))
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
@@ -250,7 +240,8 @@ struct ListenNowPlayingView: View {
                 .buttonStyle(.plain)
                 .accessibilityIdentifier("listen-retry")
             }
-            if error.upgrade != .none {
+            // ListenNowPlayingView.swift: NewsNative does not offer the Premium Archive upgrade.
+            if error.upgrade == .pro {
                 upgradeButton(error.upgrade)
             }
         }

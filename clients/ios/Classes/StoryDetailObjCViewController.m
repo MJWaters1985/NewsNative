@@ -625,7 +625,8 @@
 }
 
 - (NSString *)clusterStoriesHTML {
-    if (![[NSUserDefaults standardUserDefaults] boolForKey:@"story_clustering"]) {
+    // StoryDetailObjCViewController.m: clustering uses AI embeddings, set aside in NewsNativeFeatures.swift.
+    if (!NewsNativeFeatures.aiFeatures || ![[NSUserDefaults standardUserDefaults] boolForKey:@"story_clustering"]) {
         return @"";
     }
 
@@ -647,16 +648,11 @@
     NSInteger hiddenCount = allClusterStories.count - visibleClusterStories.count;
 
     // StoryDetailObjCViewController.m words the cluster counts with the interface language's plural rules.
-    NSString *premiumArchiveLabel = [[NBLocalization text:@"Premium Archive"] stringByEncodingHTMLEntities];
     NSMutableString *clusterHTML = [NSMutableString string];
     [clusterHTML appendFormat:@"<div class=\"NB-story-cluster-detail\">"
      "<div class=\"NB-story-cluster-detail-header\">"
      "<span class=\"NB-story-cluster-detail-title\">%@</span>",
      [[NBLocalization plural:@"Also published by %@ sites" groupedCount:allClusterStories.count] stringByEncodingHTMLEntities]];
-
-    if (!appDelegate.isPremiumArchive && hiddenCount == 0) {
-        [clusterHTML appendFormat:@"<a href=\"http://ios.newsblur.com/premium-archive\" class=\"NB-clustering-detail-upgrade-pill\">%@</a>", premiumArchiveLabel];
-    }
 
     [clusterHTML appendString:@"</div>"];
 
@@ -734,12 +730,11 @@
     }
 
     if (!appDelegate.isPremiumArchive && hiddenCount > 0) {
-        [clusterHTML appendFormat:@"<a href=\"http://ios.newsblur.com/premium-archive\" class=\"NB-cluster-locked-upsell\">"
+        // StoryDetailObjCViewController.m states how many sites are hidden without offering the Archive upgrade.
+        [clusterHTML appendFormat:@"<div class=\"NB-cluster-locked-upsell\">"
          "<span class=\"NB-cluster-locked-text\">%@</span>"
-         "<span class=\"NB-clustering-detail-upgrade-pill\">%@</span>"
-         "</a>",
-         [[NBLocalization plural:@"+ %@ more sites" groupedCount:hiddenCount] stringByEncodingHTMLEntities],
-         premiumArchiveLabel];
+         "</div>",
+         [[NBLocalization plural:@"+ %@ more sites" groupedCount:hiddenCount] stringByEncodingHTMLEntities]];
     }
 
     [clusterHTML appendString:@"</div>"];
@@ -1980,7 +1975,9 @@
             comments = [comments stringByAppendingString:@"</div>"];
         }
         
-        if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"show_public_comments"] boolValue] &&
+        // StoryDetailObjCViewController.m leaves out public comments while NewsNativeFeatures.swift sets them aside.
+        if (NewsNativeFeatures.publicComments &&
+            [[[NSUserDefaults standardUserDefaults] objectForKey:@"show_public_comments"] boolValue] &&
             [[story objectForKey:@"comment_count_public"] intValue] > 0 ) {
             comments = [comments stringByAppendingString:@"<div class=\"NB-story-comments-group NB-story-comment-public-comments\">"];
             NSString *publicCommentHeader = [NSString stringWithFormat:@
@@ -2009,9 +2006,21 @@
     NSString *comments = @"<div id=\"NB-share-bar-wrapper\">";
     NSString *commentLabel = @"";
     NSString *shareLabel = @"";
+    // StoryDetailObjCViewController.m counts only people you follow while public comments are set aside
+    // (NewsNativeFeatures.swift), so the bar never promises comments the story leaves out.
+    BOOL includesPublic = NewsNativeFeatures.publicComments;
+    id commentCountValue = [self.activeStory objectForKey:includesPublic ? @"comment_count" : @"comment_count_friends"];
+    NSInteger commentCount = [commentCountValue isKindOfClass:[NSNumber class]] || [commentCountValue isKindOfClass:[NSString class]] ? [commentCountValue integerValue] : 0;
+    NSInteger shareCount = 0;
+    if (includesPublic) {
+        id shareCountValue = [self.activeStory objectForKey:@"share_count"];
+        shareCount = [shareCountValue isKindOfClass:[NSNumber class]] || [shareCountValue isKindOfClass:[NSString class]] ? [shareCountValue integerValue] : 0;
+    } else {
+        id sharedByFriends = [self.activeStory objectForKey:@"shared_by_friends"];
+        shareCount = [sharedByFriends isKindOfClass:[NSArray class]] ? [sharedByFriends count] : 0;
+    }
     
-    if (![[self.activeStory objectForKey:@"comment_count"] isKindOfClass:[NSNull class]] &&
-        [[self.activeStory objectForKey:@"comment_count"] intValue]) {
+    if (commentCount > 0) {
         commentLabel = [commentLabel stringByAppendingString:[NSString stringWithFormat:@
                                                               "<div class=\"NB-story-comments-label\">"
                                                                 "%@" // comment count
@@ -2022,15 +2031,14 @@
                                                                 "%@" // public avatars
                                                               "</div>",
                                                               [NSString stringWithFormat:@"<b>%@</b>",
-                                                               [[NBLocalization plural:@"%@ comments" groupedCount:[[self.activeStory objectForKey:@"comment_count"] integerValue]] stringByEncodingHTMLEntities]],
+                                                               [[NBLocalization plural:@"%@ comments" groupedCount:commentCount] stringByEncodingHTMLEntities]],
                                                               
                                                               //replyStr,
                                                               [self getAvatars:@"commented_by_friends"],
-                                                              [self getAvatars:@"commented_by_public"]]];
+                                                              includesPublic ? [self getAvatars:@"commented_by_public"] : @""]];
     }
     
-    if (![[self.activeStory objectForKey:@"share_count"] isKindOfClass:[NSNull class]] &&
-        [[self.activeStory objectForKey:@"share_count"] intValue]) {
+    if (shareCount > 0) {
         shareLabel = [shareLabel stringByAppendingString:[NSString stringWithFormat:@
 
                                                               "<div class=\"NB-right\">"
@@ -2042,14 +2050,13 @@
                                                                   "%@" // comment count
                                                                 "</div>"
                                                               "</div>",
-                                                              [self getAvatars:@"shared_by_public"],
+                                                              includesPublic ? [self getAvatars:@"shared_by_public"] : @"",
                                                               [self getAvatars:@"shared_by_friends"],
                                                               [NSString stringWithFormat:@"<b>%@</b>",
-                                                               [[NBLocalization plural:@"%@ shares" groupedCount:[[self.activeStory objectForKey:@"share_count"] integerValue]] stringByEncodingHTMLEntities]]]];
+                                                               [[NBLocalization plural:@"%@ shares" groupedCount:shareCount] stringByEncodingHTMLEntities]]]];
     }
     
-    if ([self.activeStory objectForKey:@"share_count"] != [NSNull null] &&
-        [[self.activeStory objectForKey:@"share_count"] intValue] > 0) {
+    if (commentCount > 0 || shareCount > 0) {
         
         comments = [comments stringByAppendingString:[NSString stringWithFormat:@
                                                       "<div class=\"NB-story-shares\">"
@@ -2957,10 +2964,6 @@
             if (targetFeedId.length && storyHash.length && [self.appDelegate isSubscribedFeedIdForStoryClusters:targetFeedId]) {
                 [self.appDelegate loadFeed:targetFeedId withStory:storyHash storyTitle:storyTitle animated:NO];
             }
-            decisionHandler(WKNavigationActionPolicyCancel);
-            return;
-        } else if ([action isEqualToString:@"premium-archive"]) {
-            [self.appDelegate showPremiumDialogForArchive];
             decisionHandler(WKNavigationActionPolicyCancel);
             return;
         } else if ([action isEqualToString:@"premium"]) {

@@ -389,10 +389,6 @@ final class ListenVoiceSettingsModel: ObservableObject {
         }
         return parts.isEmpty ? nil : parts.joined(separator: " · ")
     }
-
-    var showsUpgrade: Bool {
-        !((ListenPlayer.shared.usage ?? catalog?.usage)?.isArchiveTier ?? true)
-    }
 }
 
 /// Plays a short sample of a voice reading the current article, or the voice's own sample when no article is

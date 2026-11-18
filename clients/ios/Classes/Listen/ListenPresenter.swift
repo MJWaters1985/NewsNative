@@ -46,12 +46,10 @@ enum ListenPresenter {
     /// Dismisses Listen sheets first so the premium screen isn't stacked under them (NewsBlurAppDelegate.m).
     static func showUpgrade(_ upgrade: ListenPlaybackError.Upgrade) {
         guard let appDelegate = NewsBlurAppDelegate.shared() else { return }
+        // ListenPresenter.swift: only the Pro upgrade is offered; NewsNative does not sell Premium Archive.
+        guard upgrade == .pro else { return }
         dismissNowPlaying {
-            if upgrade == .pro {
-                appDelegate.showPremiumDialogForPro()
-            } else {
-                appDelegate.showPremiumDialogForArchive()
-            }
+            appDelegate.showPremiumDialogForPro()
         }
     }
 

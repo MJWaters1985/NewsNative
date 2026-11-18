@@ -1502,8 +1502,8 @@ final class ReaderUITests: XCTestCase {
         for right in [false, true] {
             app = XCUIApplication()
             app.launchArguments = ["-enable_feed_swipes", "YES", "-enable_story_swipes", "NO",
-                                   "-feed_title_swipe_left", right ? "notifications" : "read",
-                                   "-feed_title_swipe_right", right ? "read" : "notifications",
+                                   "-feed_title_swipe_left", right ? "statistics" : "read",
+                                   "-feed_title_swipe_right", right ? "read" : "statistics",
                                    "-show_feeds_after_being_read", "YES", "-newsblur-ui-test-animations"]
             launch(on: "reader")
             let row = feedCell("910002")

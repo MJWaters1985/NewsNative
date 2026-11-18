@@ -904,16 +904,6 @@
 		</dict>
 		<dict>
 			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Show public comments</string>
-			<key>Key</key>
-			<string>show_public_comments</string>
-			<key>DefaultValue</key>
-			<true/>
-		</dict>
-		<dict>
-			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
 			<string>Default browser</string>
@@ -1128,9 +1118,9 @@
 		</dict>
 		<dict>
 			<key>DefaultValue</key>
-			<string>www.newsblur.com/privacy</string>
+			<string>mjwaters1985.github.io/NewsNative/privacy.html</string>
 			<key>File</key>
-			<string>http://www.newsblur.com/privacy</string>
+			<string>https://mjwaters1985.github.io/NewsNative/privacy.html</string>
 			<key>Title</key>
 			<string>Privacy Policy</string>
 			<key>Type</key>
@@ -1140,9 +1130,9 @@
 		</dict>
 		<dict>
 			<key>DefaultValue</key>
-			<string>www.newsblur.com/tos</string>
+			<string>mjwaters1985.github.io/NewsNative/terms.html</string>
 			<key>File</key>
-			<string>http://www.newsblur.com/tos</string>
+			<string>https://mjwaters1985.github.io/NewsNative/terms.html</string>
 			<key>Title</key>
 			<string>Terms of Use</string>
 			<key>Type</key>

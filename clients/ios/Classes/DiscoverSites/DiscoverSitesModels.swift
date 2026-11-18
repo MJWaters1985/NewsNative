@@ -25,6 +25,12 @@ enum DiscoverTab: String, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
+    /// DiscoverSitesModels.swift: the AI-built Web Feed tab appears only when NewsNativeFeatures.swift allows AI features.
+    static var allCases: [DiscoverTab] {
+        let tabs: [DiscoverTab] = [.search, .webFeed, .popular, .youtube, .reddit, .newsletters, .podcasts, .googleNews]
+        return NewsNativeFeatures.aiFeatures ? tabs : tabs.filter { $0 != .webFeed }
+    }
+
     var label: String {
         switch self {
         case .search: return "Search"

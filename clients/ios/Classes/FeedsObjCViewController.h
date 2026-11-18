@@ -61,6 +61,8 @@ UIGestureRecognizerDelegate, UITextFieldDelegate> {
 @property (nonatomic) IBOutlet NSLayoutConstraint *toolbarTrailingConstraint;
 @property (nonatomic) IBOutlet NSLayoutConstraint *toolbarBottomConstraint;
 @property (nonatomic) IBOutlet UIToolbar *feedViewToolbar;
+/// FeedsObjCViewController.m: places the feed toolbar in an open Duo's side rail; returns whether it is there.
+- (BOOL)updateSplitFeedRail;
 @property (nonatomic) IBOutlet UISlider * feedScoreSlider;
 @property (nonatomic) IBOutlet UIBarButtonItem * homeButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * addBarButton;

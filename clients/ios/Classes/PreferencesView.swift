@@ -76,254 +76,6 @@ private struct PreferencesColors {
 
 // MARK: - App Icon Choices
 
-/// Whether the app icon follows the device's light/dark setting or stays pinned
-/// to a single appearance. The active alternate-icon name encodes this, so no
-/// extra persistence is needed.
-@available(iOS 15.0, *)
-private enum NewsBlurAppIconAppearanceMode: String, CaseIterable, Identifiable {
-    case light
-    case auto
-    case dark
-
-    var id: String { rawValue }
-
-    /// Label shown in the chooser's segmented control.
-    var title: String {
-        switch self {
-        case .light: return NBLocalization.text("Light")
-        case .auto: return NBLocalization.text("Use both")
-        case .dark: return NBLocalization.text("Dark")
-        }
-    }
-
-    /// SF Symbol paired with the label in the segmented control.
-    var symbolName: String {
-        switch self {
-        case .light: return "sun.max.fill"
-        case .auto: return "circle.lefthalf.filled"
-        case .dark: return "moon.fill"
-        }
-    }
-
-    /// One-line explanation shown beneath the segmented control.
-    var caption: String {
-        switch self {
-        case .light: return NBLocalization.text("Keeps the light icon no matter how your device is set.")
-        case .auto: return NBLocalization.text("The icon follows your device's light and dark appearance.")
-        case .dark: return NBLocalization.text("Keeps the dark icon no matter how your device is set.")
-        }
-    }
-
-    /// The appearance a pinned mode forces, or `nil` when following the system.
-    var pinnedAppearance: String? {
-        switch self {
-        case .light: return "Light"
-        case .dark: return "Dark"
-        case .auto: return nil
-        }
-    }
-}
-
-@available(iOS 15.0, *)
-private struct NewsBlurAppIconOption: Identifiable {
-    let id: String
-    let title: String
-    let flavor: String
-    let appearance: String
-    let previewAssetName: String
-    let tintColor: Color
-}
-
-@available(iOS 15.0, *)
-private struct NewsBlurAppIconFlavorGroup: Identifiable {
-    let id: String
-    let title: String
-    /// Shared stem of the flavor's appiconset names, e.g. "AppIconArcticCyan".
-    let assetBaseName: String
-    /// True for the flavor whose "Use both" icon is the bundle's primary icon.
-    let isPrimary: Bool
-    let options: [NewsBlurAppIconOption]
-
-    /// Alternate-icon name to hand to `setAlternateIconName` for a given mode.
-    /// `nil` is the bundle's primary icon (only the primary flavor in `.auto`).
-    func iconName(for mode: NewsBlurAppIconAppearanceMode) -> String? {
-        switch mode {
-        case .auto: return isPrimary ? nil : assetBaseName
-        case .light: return assetBaseName + "Light"
-        case .dark: return assetBaseName + "Dark"
-        }
-    }
-
-    /// The preview option matching a single appearance ("Light" or "Dark").
-    func option(forAppearance appearance: String) -> NewsBlurAppIconOption {
-        options.first { $0.appearance == appearance } ?? options[0]
-    }
-}
-
-@available(iOS 15.0, *)
-private enum NewsBlurAppIconLibrary {
-    static let groups: [NewsBlurAppIconFlavorGroup] = [
-        group("sunrise-gold", title: NBLocalization.text("Sunrise Gold"), assetBaseName: "AppIconSunriseGold",
-              isPrimary: true, lightTint: 0xD88A26, darkTint: 0xDDA033),
-        group("meadow-sage", title: NBLocalization.text("Meadow Sage"), assetBaseName: "AppIconMeadowSage",
-              isPrimary: false, lightTint: 0x6F9E5B, darkTint: 0x7DBD63),
-        group("atlantic-blue", title: NBLocalization.text("Atlantic Blue"), assetBaseName: "AppIconAtlanticBlue",
-              isPrimary: false, lightTint: 0x3F85BC, darkTint: 0x4FA2D9),
-        group("coral-rose", title: NBLocalization.text("Coral Rose"), assetBaseName: "AppIconCoralRose",
-              isPrimary: false, lightTint: 0xD86868, darkTint: 0xE96E76),
-        group("ruby-red", title: NBLocalization.text("Ruby Red"), assetBaseName: "AppIconRubyRed",
-              isPrimary: false, lightTint: 0xCC3147, darkTint: 0xE5475C),
-        group("ember-orange", title: NBLocalization.text("Ember Orange"), assetBaseName: "AppIconEmberOrange",
-              isPrimary: false, lightTint: 0xD96B27, darkTint: 0xE56F28),
-        group("teal-mint", title: NBLocalization.text("Teal Mint"), assetBaseName: "AppIconTealMint",
-              isPrimary: false, lightTint: 0x2FA28E, darkTint: 0x3CC3AD),
-        group("lavender-iris", title: NBLocalization.text("Lavender Iris"), assetBaseName: "AppIconLavenderIris",
-              isPrimary: false, lightTint: 0x8261CE, darkTint: 0x9879EA),
-        group("slate-gray", title: NBLocalization.text("Slate Gray"), assetBaseName: "AppIconSlateGray",
-              isPrimary: false, lightTint: 0x6C7D8A, darkTint: 0x81919D),
-        group("sepia-cocoa", title: NBLocalization.text("Sepia Cocoa"), assetBaseName: "AppIconSepiaCocoa",
-              isPrimary: false, lightTint: 0xA16E44, darkTint: 0xB87945),
-        group("arctic-cyan", title: NBLocalization.text("Arctic Cyan"), assetBaseName: "AppIconArcticCyan",
-              isPrimary: false, lightTint: 0x37A8CA, darkTint: 0x44BADB),
-        group("plum-berry", title: NBLocalization.text("Plum Berry"), assetBaseName: "AppIconPlumBerry",
-              isPrimary: false, lightTint: 0xA74A98, darkTint: 0xC060B2)
-    ]
-
-    static var canChooseIcons: Bool {
-        NewsBlurAppDelegate.shared?.isPremium == true
-    }
-
-    static var supportsIconSelection: Bool {
-        #if targetEnvironment(macCatalyst)
-        return true
-        #else
-        return UIApplication.shared.supportsAlternateIcons
-        #endif
-    }
-
-    /// Resolves the live alternate-icon name into a flavor + appearance mode.
-    static var currentSelection: (group: NewsBlurAppIconFlavorGroup, mode: NewsBlurAppIconAppearanceMode) {
-        guard let name = UIApplication.shared.alternateIconName else {
-            return (groups[0], .auto)
-        }
-
-        if name.hasSuffix("Light"),
-           let group = groups.first(where: { $0.assetBaseName == String(name.dropLast("Light".count)) }) {
-            return (group, .light)
-        }
-
-        if name.hasSuffix("Dark"),
-           let group = groups.first(where: { $0.assetBaseName == String(name.dropLast("Dark".count)) }) {
-            return (group, .dark)
-        }
-
-        if let group = groups.first(where: { $0.assetBaseName == name }) {
-            return (group, .auto)
-        }
-
-        return (groups[0], .auto)
-    }
-
-    /// The preview option to show for a flavor given the mode and system appearance.
-    static func displayOption(for group: NewsBlurAppIconFlavorGroup,
-                              mode: NewsBlurAppIconAppearanceMode,
-                              colorScheme: ColorScheme) -> NewsBlurAppIconOption {
-        let appearance = mode.pinnedAppearance ?? (colorScheme == .dark ? "Dark" : "Light")
-        return group.option(forAppearance: appearance)
-    }
-
-    static func shouldIgnoreSimulatorIconChangeError(_ error: Error) -> Bool {
-        #if targetEnvironment(simulator)
-        let nsError = error as NSError
-        return (nsError.domain == NSPOSIXErrorDomain && nsError.code == 35) ||
-            nsError.localizedDescription.localizedCaseInsensitiveContains("resource temporarily unavailable")
-        #else
-        return false
-        #endif
-    }
-
-    static func apply(group: NewsBlurAppIconFlavorGroup,
-                      mode: NewsBlurAppIconAppearanceMode,
-                      completion: @escaping (Error?) -> Void) {
-        UIApplication.shared.setAlternateIconNameWithoutAlert(group.iconName(for: mode), completion: completion)
-    }
-
-    private static func group(
-        _ id: String,
-        title: String,
-        assetBaseName: String,
-        isPrimary: Bool,
-        lightTint: Int,
-        darkTint: Int
-    ) -> NewsBlurAppIconFlavorGroup {
-        NewsBlurAppIconFlavorGroup(
-            id: id,
-            title: title,
-            assetBaseName: assetBaseName,
-            isPrimary: isPrimary,
-            options: [
-                option(id: "\(id)-light", title: "\(title) Light", flavor: title,
-                       appearance: "Light", assetBaseName: assetBaseName, tint: lightTint),
-                option(id: "\(id)-dark", title: "\(title) Dark", flavor: title,
-                       appearance: "Dark", assetBaseName: assetBaseName, tint: darkTint)
-            ]
-        )
-    }
-
-    private static func option(
-        id: String,
-        title: String,
-        flavor: String,
-        appearance: String,
-        assetBaseName: String,
-        tint: Int
-    ) -> NewsBlurAppIconOption {
-        NewsBlurAppIconOption(
-            id: id,
-            title: title,
-            flavor: flavor,
-            appearance: appearance,
-            previewAssetName: "\(assetBaseName)\(appearance)Preview",
-            tintColor: colorFromHex(tint)
-        )
-    }
-
-    private static func colorFromHex(_ hex: Int) -> Color {
-        Color(
-            red: Double((hex >> 16) & 0xFF) / 255.0,
-            green: Double((hex >> 8) & 0xFF) / 255.0,
-            blue: Double(hex & 0xFF) / 255.0
-        )
-    }
-}
-
-@available(iOS 15.0, *)
-private extension UIApplication {
-    /// Switches the home-screen icon without UIKit's "You have changed the icon" alert.
-    ///
-    /// The public `setAlternateIconName(_:completionHandler:)` always presents a system
-    /// alert. The private `_setAlternateIconName:completionHandler:` selector does the
-    /// identical work without it. If that selector ever disappears we fall back to the
-    /// public API so the icon still changes (just with the alert).
-    func setAlternateIconNameWithoutAlert(_ iconName: String?, completion: @escaping (Error?) -> Void) {
-        let selector = NSSelectorFromString("_setAlternateIconName:completionHandler:")
-
-        guard responds(to: selector) else {
-            setAlternateIconName(iconName, completionHandler: completion)
-            return
-        }
-
-        typealias SilentSetIcon = @convention(c) (NSObject, Selector, NSString?, @escaping (NSError?) -> Void) -> Void
-        let implementation = method(for: selector)
-        let callIcon = unsafeBitCast(implementation, to: SilentSetIcon.self)
-        callIcon(self, selector, iconName as NSString?) { error in
-            DispatchQueue.main.async {
-                completion(error)
-            }
-        }
-    }
-}
-
 // MARK: - Preference Section Model
 
 struct PreferenceSection: Identifiable {
@@ -363,7 +115,6 @@ enum PreferenceItemType {
     case staticValue(key: String, value: String)
     case link(title: String, url: String)
     case language
-    case appIcon
 }
 
 struct PreferenceItem: Identifiable {
@@ -396,6 +147,7 @@ class PreferencesViewModel: ObservableObject {
     @Published var sections: [PreferenceSection] = []
     @Published var hiddenKeys: Set<String> = []
     @Published var refreshTrigger = false
+    @Published var showingProjectInformation = false
 
     weak var delegate: PreferencesViewDelegate?
     private let isMac: Bool
@@ -562,37 +314,6 @@ class PreferencesViewModel: ObservableObject {
                             values: ["scroll", "selection", "after1", "after2", "after3", "after4", "after5", "after10", "after15", "after30", "after45", "after60", "manually"],
                             defaultValue: "scroll"
                         )
-                    ),
-                    PreferenceItem(
-                        title: NBLocalization.text("Discover sites"),
-                        icon: "sparkle.magnifyingglass",
-                        iconColor: .orange,
-                        type: .multiValue(
-                            key: "discover_display",
-                            titles: [NBLocalization.text("Show with feed icons"), NBLocalization.text("Show without icons"), NBLocalization.text("Hidden")],
-                            values: ["with_icons", "without_icons", "hidden"],
-                            defaultValue: "with_icons"
-                        ),
-                        subtitle: NBLocalization.text("Show related feeds in the story list header")
-                    ),
-                    PreferenceItem(
-                        title: NBLocalization.text("Cluster related stories"),
-                        icon: "square.stack.3d.down.right",
-                        iconColor: .indigo,
-                        type: .toggle(key: "story_clustering", defaultValue: true),
-                        subtitle: NBLocalization.text("Show duplicate stories from other feeds beneath a story title")
-                    ),
-                    PreferenceItem(
-                        title: NBLocalization.text("Cluster matches"),
-                        icon: "tag",
-                        iconColor: .green,
-                        type: .multiValue(
-                            key: "cluster_mode",
-                            titles: [NBLocalization.text("Title match only"), NBLocalization.text("Title match plus related")],
-                            values: ["title", "related"],
-                            defaultValue: "related"
-                        ),
-                        subtitle: NBLocalization.text("Choose whether clusters show only duplicate titles or also related stories")
                     )
                 ]
             ),
@@ -700,47 +421,6 @@ class PreferencesViewModel: ObservableObject {
                             values: ["feeds", "everything"],
                             defaultValue: "feeds"
                         )
-                    ),
-                    PreferenceItem(
-                        title: NBLocalization.text("Show Infrequent Site Stories"),
-                        icon: "calendar.badge.clock",
-                        iconColor: .teal,
-                        type: .toggle(key: "show_infrequent_site_stories", defaultValue: true)
-                    ),
-                    PreferenceItem(
-                        title: NBLocalization.text("Infrequent stories per month"),
-                        icon: "chart.bar.doc.horizontal",
-                        iconColor: .indigo,
-                        type: .multiValue(
-                            key: "infrequent_stories_per_month",
-                            titles: [NBLocalization.text("< 5/month"), NBLocalization.text("< 15/month"), NBLocalization.text("< 30/month"), NBLocalization.text("< 60/month"), NBLocalization.text("< 90/month")],
-                            values: [5, 15, 30, 60, 90],
-                            defaultValue: 30
-                        )
-                    ),
-                    PreferenceItem(
-                        title: NBLocalization.text("Show Global Shared Stories"),
-                        icon: "globe",
-                        iconColor: .purple,
-                        type: .toggle(key: "show_global_shared_stories", defaultValue: true)
-                    ),
-                    PreferenceItem(
-                        title: NBLocalization.text("Show Widely Read Stories"),
-                        icon: "flame",
-                        iconColor: .orange,
-                        type: .toggle(key: "show_widely_read_stories", defaultValue: true)
-                    ),
-                    PreferenceItem(
-                        title: NBLocalization.text("Show Long Reads"),
-                        icon: "moon",
-                        iconColor: .indigo,
-                        type: .toggle(key: "show_long_reads", defaultValue: true)
-                    ),
-                    PreferenceItem(
-                        title: NBLocalization.text("Show Good Reads"),
-                        icon: "star.fill",
-                        iconColor: .yellow,
-                        type: .toggle(key: "show_good_reads", defaultValue: true)
                     )
                 ]
             ),
@@ -806,23 +486,6 @@ class PreferencesViewModel: ObservableObject {
                         iconColor: .indigo,
                         type: .toggle(key: "reduce_motion", defaultValue: false),
                         subtitle: NBLocalization.text("Keep fades, without movement.")
-                    )
-                ]
-            ),
-
-            // MARK: App Icon Section
-            PreferenceSection(
-                title: NBLocalization.text("App Icon"),
-                icon: "app",
-                iconColor: PreferencesColors.newsblurGreen,
-                footerText: NBLocalization.text("Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants."),
-                items: [
-                    PreferenceItem(
-                        title: NBLocalization.text("Choose Icon"),
-                        icon: "sun.max",
-                        iconColor: PreferencesColors.newsblurGreen,
-                        type: .appIcon,
-                        subtitle: NBLocalization.text("12 color flavors with light and dark variants.")
                     )
                 ]
             ),
@@ -912,12 +575,6 @@ class PreferencesViewModel: ObservableObject {
                         subtitle: NBLocalization.text("Swipe left/right between stories")
                     ),
                     PreferenceItem(
-                        title: NBLocalization.text("Show public comments"),
-                        icon: "bubble.left.and.bubble.right",
-                        iconColor: .blue,
-                        type: .toggle(key: "show_public_comments", defaultValue: true)
-                    ),
-                    PreferenceItem(
                         title: NBLocalization.text("Default browser"),
                         icon: "safari",
                         iconColor: .cyan,
@@ -964,12 +621,6 @@ class PreferencesViewModel: ObservableObject {
                 footerText: NBLocalization.text("Choose the buttons shown below each story. Your choices sync to your other devices."),
                 items: [
                     PreferenceItem(
-                        title: NBLocalization.text("Show Train"),
-                        icon: "brain",
-                        iconColor: .purple,
-                        type: .toggle(key: "show_sideoption_train", defaultValue: true)
-                    ),
-                    PreferenceItem(
                         title: NBLocalization.text("Show Share"),
                         icon: "square.and.arrow.up",
                         iconColor: .blue,
@@ -980,71 +631,6 @@ class PreferencesViewModel: ObservableObject {
                         icon: "bookmark",
                         iconColor: .green,
                         type: .toggle(key: "show_sideoption_save", defaultValue: true)
-                    ),
-                    PreferenceItem(
-                        title: NBLocalization.text("Show Ask AI"),
-                        icon: "sparkles",
-                        iconColor: Color(red: 0.85, green: 0.45, blue: 0.37),
-                        type: .toggle(key: "show_ask_ai", defaultValue: true)
-                    ),
-                    PreferenceItem(
-                        title: NBLocalization.text("Show Listen"),
-                        icon: "headphones",
-                        iconColor: Color(red: 0.55, green: 0.35, blue: 0.85),
-                        type: .toggle(key: "show_sideoption_listen", defaultValue: true)
-                    )
-                ]
-            ),
-
-            // MARK: Listen Section
-            PreferenceSection(
-                title: NBLocalization.text("Listen"),
-                icon: "headphones",
-                iconColor: Color(red: 0.55, green: 0.35, blue: 0.85),
-                items: [
-                    PreferenceItem(
-                        title: NBLocalization.text("Voice"),
-                        icon: "person.wave.2",
-                        iconColor: Color(red: 0.55, green: 0.35, blue: 0.85),
-                        type: .button(key: "listen_voice", action: "listenVoice")
-                    ),
-                    PreferenceItem(
-                        title: NBLocalization.text("Delivery"),
-                        icon: "waveform",
-                        iconColor: .indigo,
-                        type: .multiValue(
-                            key: ListenPreferences.deliveryKey,
-                            titles: [NBLocalization.text("Steady"), NBLocalization.text("Natural"),
-                                     NBLocalization.text("Expressive"), NBLocalization.text("Custom")],
-                            values: ["steady", "natural", "expressive", "custom"],
-                            defaultValue: "natural"
-                        )
-                    ),
-                    PreferenceItem(
-                        title: NBLocalization.text("Speed"),
-                        icon: "speedometer",
-                        iconColor: .orange,
-                        type: .multiValue(
-                            key: ListenPreferences.speedKey,
-                            titles: Self.listenSpeedChoices.map { ListenFormat.speed($0) },
-                            values: Self.listenSpeedChoices.map { ListenPreferences.speedString($0) },
-                            defaultValue: ListenPreferences.speedString(1)
-                        ),
-                        subtitle: NBLocalization.text("Set an exact speed under Voice")
-                    ),
-                    PreferenceItem(
-                        title: NBLocalization.text("Auto-continue"),
-                        icon: "forward.end",
-                        iconColor: .green,
-                        type: .toggle(key: ListenPreferences.autoContinueKey, defaultValue: true),
-                        subtitle: NBLocalization.text("Mark the story read and play the next unread story")
-                    ),
-                    PreferenceItem(
-                        title: NBLocalization.text("Follow along"),
-                        icon: "text.line.first.and.arrowtriangle.forward",
-                        iconColor: .yellow,
-                        type: .toggle(key: ListenPreferences.highlightKey, defaultValue: true),
-                        subtitle: NBLocalization.text("Highlight the paragraph being read")
                     )
                 ]
             ),
@@ -1122,19 +708,26 @@ class PreferencesViewModel: ObservableObject {
                         title: NBLocalization.text("Copyright"),
                         icon: "c.circle",
                         iconColor: .gray,
-                        type: .staticValue(key: "copyright", value: "NewsBlur, Inc.")
+                        type: .staticValue(key: "copyright", value: "© 2026 Mike Waters")
+                    ),
+                    // PreferencesView.swift opens the same About NewsNative sheet as the sign-in screen's More Information.
+                    PreferenceItem(
+                        title: NBLocalization.text("About NewsNative"),
+                        icon: "newspaper",
+                        iconColor: .orange,
+                        type: .button(key: "project_information", action: ProjectInformationView.showAction)
                     ),
                     PreferenceItem(
                         title: NBLocalization.text("Privacy Policy"),
                         icon: "hand.raised",
                         iconColor: .blue,
-                        type: .link(title: NBLocalization.text("Privacy Policy"), url: "https://www.newsblur.com/privacy")
+                        type: .link(title: NBLocalization.text("Privacy Policy"), url: ProjectInformationView.privacyPolicyURL)
                     ),
                     PreferenceItem(
                         title: NBLocalization.text("Terms of Use"),
                         icon: "doc.text",
                         iconColor: .purple,
-                        type: .link(title: NBLocalization.text("Terms of Use"), url: "https://www.newsblur.com/tos")
+                        type: .link(title: NBLocalization.text("Terms of Use"), url: ProjectInformationView.termsOfUseURL)
                     )
                 ]
             ),
@@ -1185,7 +778,7 @@ class PreferencesViewModel: ObservableObject {
                     key: "\(onFeeds ? "feed" : "story")_title_swipe_\(direction)",
                     titles: onFeeds ? GesturePreferences.feedActionTitles : StoryTitleSwipePreference.actions.map { $0.title },
                     values: onFeeds ? GesturePreferences.feedActions : StoryTitleSwipePreference.actions.map { $0.value },
-                    defaultValue: onFeeds ? (right ? "notifications" : "read") : (right ? "back" : "read")
+                    defaultValue: onFeeds ? (right ? "statistics" : "read") : (right ? "back" : "read")
                 ), pickerTitle: onFeeds
                     ? (right ? NBLocalization.text("Swipe right on feeds") : NBLocalization.text("Swipe left on feeds"))
                     : (right ? NBLocalization.text("Swipe right on story titles") : NBLocalization.text("Swipe left on story titles"))
@@ -1252,6 +845,10 @@ class PreferencesViewModel: ObservableObject {
     }
 
     func handleButtonAction(_ action: String, key: String) {
+        if action == ProjectInformationView.showAction {
+            showingProjectInformation = true
+            return
+        }
         delegate?.preferencesButtonTapped(key: key, action: action)
     }
 
@@ -1330,6 +927,7 @@ struct PreferencesView: View {
         .environment(\.locale, Locale(identifier: NBLocalization.resolvedLanguage))
         .environment(\.layoutDirection, NBLocalization.isRightToLeft ? .rightToLeft : .leftToRight)
         .background(PreferencesColors.background.ignoresSafeArea())
+        .sheet(isPresented: $viewModel.showingProjectInformation) { ProjectInformationView() }
         .onAppear {
             // Refresh state when view appears
             viewModel.updateHiddenKeys()
@@ -1557,8 +1155,6 @@ struct PreferenceItemView: View {
             case .language:
                 LanguagePreferenceItemView(item: item)
 
-            case .appIcon:
-                AppIconPreferenceItemView(item: item, viewModel: viewModel)
             }
 
             // Footer text for individual items (indented to align with content)
@@ -2142,487 +1738,6 @@ struct LinkItemView: View {
             .padding(.vertical, 10)
         }
         .buttonStyle(PlainButtonStyle())
-    }
-}
-
-// MARK: - App Icon Item View
-
-@available(iOS 15.0, *)
-struct AppIconPreferenceItemView: View {
-    let item: PreferenceItem
-    @ObservedObject var viewModel: PreferencesViewModel
-
-    @Environment(\.colorScheme) private var colorScheme
-    @State private var showChooser = false
-    @State private var currentGroup = NewsBlurAppIconLibrary.currentSelection.group
-    @State private var currentMode = NewsBlurAppIconLibrary.currentSelection.mode
-
-    private var isPremium: Bool {
-        NewsBlurAppIconLibrary.canChooseIcons
-    }
-
-    private var rowValue: String {
-        if !NewsBlurAppIconLibrary.supportsIconSelection {
-            return "Unavailable"
-        }
-
-        return isPremium ? currentGroup.title : "Premium"
-    }
-
-    private var rowPreviewOption: NewsBlurAppIconOption {
-        NewsBlurAppIconLibrary.displayOption(for: currentGroup, mode: currentMode, colorScheme: colorScheme)
-    }
-
-    var body: some View {
-        Button(action: openChooser) {
-            HStack(spacing: 12) {
-                AppIconPreviewImage(option: rowPreviewOption, size: 42, cornerRadius: 10)
-
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(item.title)
-                        .font(.system(size: 15, weight: .regular))
-                        .foregroundColor(PreferencesColors.textPrimary)
-
-                    if let subtitle = item.subtitle {
-                        Text(subtitle)
-                            .font(.system(size: 12))
-                            .foregroundColor(PreferencesColors.textSecondary)
-                            .lineLimit(2)
-                    }
-                }
-
-                Spacer()
-
-                HStack(spacing: 6) {
-                    if !isPremium {
-                        Image(systemName: "lock.fill")
-                            .font(.system(size: 11, weight: .semibold))
-                            .foregroundColor(PreferencesColors.textSecondary.opacity(0.7))
-                    }
-
-                    Text(rowValue)
-                        .font(.system(size: 14))
-                        .foregroundColor(PreferencesColors.textSecondary)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.75)
-                }
-
-                Image(systemName: "chevron.forward")
-                    .font(.system(size: 11, weight: .semibold))
-                    .foregroundColor(PreferencesColors.textSecondary.opacity(0.4))
-            }
-            .padding(.horizontal, 14)
-            .padding(.vertical, 10)
-        }
-        .buttonStyle(PlainButtonStyle())
-        .onAppear {
-            syncCurrentSelection()
-        }
-        .sheet(isPresented: $showChooser, onDismiss: syncCurrentSelection) {
-            AppIconChooserView(currentGroup: $currentGroup, currentMode: $currentMode)
-        }
-    }
-
-    private func openChooser() {
-        guard NewsBlurAppIconLibrary.supportsIconSelection else { return }
-
-        if isPremium {
-            syncCurrentSelection()
-            showChooser = true
-        } else {
-            viewModel.handleButtonAction("showPremium", key: "app_icon")
-        }
-    }
-
-    /// Re-reads the live flavor + appearance mode so the row preview stays in sync.
-    private func syncCurrentSelection() {
-        let selection = NewsBlurAppIconLibrary.currentSelection
-        currentGroup = selection.group
-        currentMode = selection.mode
-    }
-}
-
-// MARK: - App Icon Chooser
-
-@available(iOS 15.0, *)
-private struct AppIconChooserView: View {
-    @Binding var currentGroup: NewsBlurAppIconFlavorGroup
-    @Binding var currentMode: NewsBlurAppIconAppearanceMode
-
-    @Environment(\.dismiss) private var dismiss
-    @State private var isChangingIcon = false
-    @State private var pendingGroup = NewsBlurAppIconLibrary.currentSelection.group
-    @State private var pendingMode = NewsBlurAppIconLibrary.currentSelection.mode
-    @State private var errorMessage: String?
-
-    private let flavorColumns = [
-        GridItem(.flexible(minimum: 132), spacing: 12),
-        GridItem(.flexible(minimum: 132), spacing: 12)
-    ]
-
-    var body: some View {
-        VStack(spacing: 0) {
-            header
-
-            ScrollViewReader { proxy in
-                ScrollView {
-                    LazyVStack(alignment: .leading, spacing: 18) {
-                        AppIconAppearancePicker(mode: $pendingMode, isChangingIcon: isChangingIcon)
-                            .id("appearance-picker")
-
-                        if pendingMode == .auto {
-                            ForEach(NewsBlurAppIconLibrary.groups) { group in
-                                AppIconFlavorSection(
-                                    group: group,
-                                    isSelected: group.id == pendingGroup.id,
-                                    isChangingIcon: isChangingIcon,
-                                    onSelect: { select(group) }
-                                )
-                                .id(group.id)
-                            }
-                        } else {
-                            let appearance = pendingMode.pinnedAppearance ?? "Light"
-                            LazyVGrid(columns: flavorColumns, spacing: 12) {
-                                ForEach(NewsBlurAppIconLibrary.groups) { group in
-                                    AppIconOptionCard(
-                                        option: group.option(forAppearance: appearance),
-                                        displayTitle: group.title,
-                                        appearanceTag: nil,
-                                        isSelected: group.id == pendingGroup.id,
-                                        isChangingIcon: isChangingIcon,
-                                        onSelect: { select(group) }
-                                    )
-                                    .id(group.id)
-                                }
-                            }
-                        }
-
-                        if let errorMessage {
-                            Text(errorMessage)
-                                .font(.system(size: 13))
-                                .foregroundColor(PreferencesColors.destructive)
-                                .padding(.horizontal, 4)
-                        }
-                    }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 16)
-                }
-                .onAppear {
-                    DispatchQueue.main.async {
-                        proxy.scrollTo("appearance-picker", anchor: .top)
-                    }
-                }
-            }
-        }
-        .background(PreferencesColors.background.ignoresSafeArea())
-        .interactiveDismissDisabled(isChangingIcon)
-        .onAppear {
-            let selection = NewsBlurAppIconLibrary.currentSelection
-            currentGroup = selection.group
-            currentMode = selection.mode
-            pendingGroup = selection.group
-            pendingMode = selection.mode
-        }
-    }
-
-    private var header: some View {
-        ZStack {
-            Text(NBLocalization.text("App Icon"))
-                .font(.headline)
-                .foregroundColor(PreferencesColors.textPrimary)
-
-            HStack {
-                Spacer()
-
-                if isChangingIcon {
-                    ProgressView()
-                        .controlSize(.small)
-                        .frame(width: 64, height: 36, alignment: .trailing)
-                } else {
-                    Text(NBLocalization.text("Done"))
-                        .font(.body.bold())
-                        .foregroundColor(PreferencesColors.newsblurGreen)
-                        .frame(width: 64, height: 36, alignment: .trailing)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            applyPendingSelection()
-                        }
-                        .accessibilityAddTraits(.isButton)
-                }
-            }
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
-        .background(PreferencesColors.cardBackground)
-    }
-
-    private func select(_ group: NewsBlurAppIconFlavorGroup) {
-        guard !isChangingIcon else { return }
-        guard pendingGroup.id != group.id else { return }
-
-        errorMessage = nil
-        withAnimation(.easeInOut(duration: 0.18)) {
-            pendingGroup = group
-        }
-    }
-
-    private func applyPendingSelection() {
-        guard !isChangingIcon else { return }
-
-        guard pendingGroup.id != currentGroup.id || pendingMode != currentMode else {
-            dismiss()
-            return
-        }
-
-        errorMessage = nil
-        isChangingIcon = true
-
-        NewsBlurAppIconLibrary.apply(group: pendingGroup, mode: pendingMode) { error in
-            DispatchQueue.main.async {
-                isChangingIcon = false
-
-                if let error {
-                    if NewsBlurAppIconLibrary.shouldIgnoreSimulatorIconChangeError(error) {
-                        errorMessage = NBLocalization.text("The iOS simulator could not change the Home Screen icon. Try this on a device.")
-                        return
-                    }
-
-                    errorMessage = error.localizedDescription
-                    return
-                }
-
-                withAnimation(.easeInOut(duration: 0.18)) {
-                    currentGroup = pendingGroup
-                    currentMode = pendingMode
-                }
-                dismiss()
-            }
-        }
-    }
-}
-
-// MARK: - Appearance Mode Picker
-
-@available(iOS 15.0, *)
-private struct AppIconAppearancePicker: View {
-    @Binding var mode: NewsBlurAppIconAppearanceMode
-    let isChangingIcon: Bool
-
-    @Namespace private var thumbNamespace
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 0) {
-                ForEach(NewsBlurAppIconAppearanceMode.allCases) { option in
-                    segment(for: option)
-                }
-            }
-            .padding(3)
-            .background(
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .fill(PreferencesColors.secondaryBackground)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .stroke(PreferencesColors.border.opacity(0.35), lineWidth: 1)
-            )
-
-            Text(mode.caption)
-                .font(.system(size: 12))
-                .foregroundColor(PreferencesColors.textSecondary)
-                .fixedSize(horizontal: false, vertical: true)
-                .frame(maxWidth: .infinity, minHeight: 30, alignment: .topLeading)
-                .padding(.horizontal, 4)
-                .id(mode)
-                .transition(.opacity)
-        }
-    }
-
-    private func segment(for option: NewsBlurAppIconAppearanceMode) -> some View {
-        let isSelected = option == mode
-
-        return Button {
-            guard !isChangingIcon, option != mode else { return }
-            withAnimation(.spring(response: 0.34, dampingFraction: 0.86)) {
-                mode = option
-            }
-        } label: {
-            HStack(spacing: 5) {
-                Image(systemName: option.symbolName)
-                    .font(.system(size: 11, weight: .bold))
-                Text(option.title)
-                    .font(.system(size: 13, weight: .semibold))
-            }
-            .foregroundColor(isSelected ? .white : PreferencesColors.textSecondary)
-            .frame(maxWidth: .infinity)
-            .frame(height: 34)
-            .background(
-                ZStack {
-                    if isSelected {
-                        RoundedRectangle(cornerRadius: 9, style: .continuous)
-                            .fill(PreferencesColors.newsblurGreen)
-                            .matchedGeometryEffect(id: "thumb", in: thumbNamespace)
-                    }
-                }
-            )
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(PlainButtonStyle())
-        .disabled(isChangingIcon)
-    }
-}
-
-// MARK: - Icon Cards
-
-@available(iOS 15.0, *)
-private struct AppIconCardButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .scaleEffect(configuration.isPressed ? 0.96 : 1)
-            .animation(.easeOut(duration: 0.12), value: configuration.isPressed)
-    }
-}
-
-@available(iOS 15.0, *)
-private struct AppIconFlavorSection: View {
-    let group: NewsBlurAppIconFlavorGroup
-    let isSelected: Bool
-    let isChangingIcon: Bool
-    let onSelect: () -> Void
-
-    private let columns = [
-        GridItem(.flexible(minimum: 132), spacing: 12),
-        GridItem(.flexible(minimum: 132), spacing: 12)
-    ]
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 8) {
-                Text(group.title.uppercased())
-                    .font(.system(size: 12, weight: .bold, design: .rounded))
-                    .foregroundColor(isSelected ? PreferencesColors.newsblurGreen : PreferencesColors.textSecondary)
-
-                Image(systemName: "checkmark.circle.fill")
-                    .font(.system(size: 13, weight: .bold))
-                    .foregroundColor(PreferencesColors.newsblurGreen)
-                    .opacity(isSelected ? 1 : 0)
-                    .scaleEffect(isSelected ? 1 : 0.86)
-                    .accessibilityHidden(!isSelected)
-
-                Spacer()
-            }
-            .padding(.horizontal, 4)
-
-            LazyVGrid(columns: columns, spacing: 12) {
-                ForEach(group.options) { option in
-                    AppIconOptionCard(
-                        option: option,
-                        displayTitle: option.title,
-                        appearanceTag: option.appearance,
-                        isSelected: false,
-                        isChangingIcon: isChangingIcon,
-                        onSelect: onSelect
-                    )
-                }
-            }
-            .padding(6)
-            .background(
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .fill(isSelected ? PreferencesColors.newsblurGreen.opacity(0.08) : Color.clear)
-                    .allowsHitTesting(false)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .stroke(isSelected ? PreferencesColors.newsblurGreen : Color.clear, lineWidth: 2)
-                    .allowsHitTesting(false)
-            )
-            .animation(.easeInOut(duration: 0.18), value: isSelected)
-        }
-    }
-}
-
-@available(iOS 15.0, *)
-private struct AppIconOptionCard: View {
-    let option: NewsBlurAppIconOption
-    let displayTitle: String
-    let appearanceTag: String?
-    let isSelected: Bool
-    let isChangingIcon: Bool
-    let onSelect: () -> Void
-
-    var body: some View {
-        Button(action: onSelect) {
-            VStack(spacing: 8) {
-                ZStack(alignment: .topTrailing) {
-                    AppIconPreviewImage(option: option, size: 76, cornerRadius: 18)
-
-                    if isSelected {
-                        Image(systemName: "checkmark.circle.fill")
-                            .font(.system(size: 18, weight: .bold))
-                            .foregroundColor(PreferencesColors.newsblurGreen)
-                            .background(Circle().fill(PreferencesColors.cardBackground).padding(1))
-                            .offset(x: 7, y: -7)
-                            .transition(.scale.combined(with: .opacity))
-                    }
-                }
-
-                VStack(spacing: 3) {
-                    Text(displayTitle)
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundColor(PreferencesColors.textPrimary)
-                        .multilineTextAlignment(.center)
-                        .lineLimit(2)
-                        .minimumScaleFactor(0.78)
-
-                    if let appearanceTag {
-                        Text(appearanceTag.uppercased())
-                            .font(.system(size: 10, weight: .bold, design: .rounded))
-                            .foregroundColor(option.tintColor)
-                            .padding(.horizontal, 7)
-                            .padding(.vertical, 3)
-                            .background(option.tintColor.opacity(0.14))
-                            .clipShape(Capsule())
-                    }
-                }
-                .frame(minHeight: appearanceTag == nil ? 20 : 42)
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.horizontal, 10)
-            .padding(.vertical, 12)
-            .background(PreferencesColors.cardBackground)
-            .contentShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(isSelected ? PreferencesColors.newsblurGreen : PreferencesColors.border.opacity(0.35),
-                            lineWidth: isSelected ? 2 : 1)
-                    .allowsHitTesting(false)
-            )
-            .shadow(color: Color.black.opacity(0.06), radius: 2, x: 0, y: 1)
-            .animation(.easeInOut(duration: 0.18), value: isSelected)
-        }
-        .buttonStyle(AppIconCardButtonStyle())
-        .disabled(isChangingIcon)
-    }
-}
-
-@available(iOS 15.0, *)
-private struct AppIconPreviewImage: View {
-    let option: NewsBlurAppIconOption
-    let size: CGFloat
-    let cornerRadius: CGFloat
-
-    var body: some View {
-        Image(option.previewAssetName)
-            .resizable()
-            .interpolation(.high)
-            .frame(width: size, height: size)
-            .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .stroke(Color.black.opacity(0.08), lineWidth: 1)
-            )
-            .shadow(color: Color.black.opacity(0.16), radius: 4, x: 0, y: 2)
     }
 }
 

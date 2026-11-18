@@ -1299,7 +1299,6 @@ private final class DailyBriefingStore: ObservableObject {
     static var notificationOptions: [DailyBriefingOption<String>] { [
         DailyBriefingOption(value: "email", title: NBLocalization.text("Email")),
         DailyBriefingOption(value: "web", title: NBLocalization.text("Web")),
-        DailyBriefingOption(value: "ios", title: "iOS"),
         DailyBriefingOption(value: "android", title: "Android"),
     ] }
 
@@ -2632,25 +2631,6 @@ private struct DailyBriefingGroupView: View {
                         )
                     }
 
-                    if group.isPreview {
-                        Button {
-                            feedDetailInteraction.openPremiumDialog()
-                        } label: {
-                            VStack(alignment: .leading, spacing: 6) {
-                                Text(NBLocalization.text("Premium Archive"))
-                                    .font(dailyBriefingFont(named: "WhitneySSm-Medium", size: 13))
-                                    .foregroundColor(Color.themed([0x2030C0, 0x2030C0, 0x8FB3FF, 0x8FB3FF]))
-                                Text(NBLocalization.text("Get Daily Briefing with all of your top stories."))
-                                    .font(dailyBriefingFont(named: "WhitneySSm-Book", size: 14))
-                                    .foregroundColor(Color.themed([0x333333, 0x3C3226, 0xE0E0E0, 0xE0E0E0]))
-                            }
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(14)
-                            .background(Color.themed([0xF8FAFF, 0xF2E7D8, 0x36384A, 0x26283A]))
-                            .clipShape(RoundedRectangle(cornerRadius: 14))
-                        }
-                        .buttonStyle(.plain)
-                    }
                 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, 16)

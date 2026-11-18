@@ -501,13 +501,6 @@ struct ListenVoiceSettingsView: View {
                 Text(usage)
                     .font(.system(size: 12))
                     .foregroundColor(ListenColors.textSecondary)
-                if model.showsUpgrade {
-                    Button(NBLocalization.text("Upgrade")) {
-                        model.preview.stop()
-                        ListenPresenter.showUpgrade(.archive)
-                    }
-                    .font(.system(size: 12, weight: .semibold))
-                }
             }
             .frame(maxWidth: .infinity)
             .multilineTextAlignment(.center)

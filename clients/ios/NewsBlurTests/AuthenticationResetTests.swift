@@ -1189,13 +1189,15 @@ private final class AuthenticationRefreshPublication: @unchecked Sendable {
         XCTAssertTrue(gesture.cancelsTouchesInView, "A recognized swipe must not also tap Add or Try")
         let pager = try XCTUnwrap(controller.sourcePager)
         XCTAssertTrue(pager.scrollView.isPagingEnabled)
-        XCTAssertEqual(pager.scrollView.contentSize.width, pager.view.bounds.width * 8, accuracy: 1)
+        XCTAssertEqual(pager.scrollView.contentSize.width, pager.view.bounds.width * CGFloat(DiscoverTab.allCases.count), accuracy: 1)
         XCTAssertFalse(pager.scrollView.panGestureRecognizer.isEnabled, "The ancestor pan handles page content without applying the drag twice")
     }
 
     func test_pagerVisitsEverySourceInOrderAndStopsAtBothEnds() throws {
         let (controller, model) = makeDiscovery()
-        let sources: [DiscoverTab] = [.search, .webFeed, .popular, .youtube, .reddit, .newsletters, .podcasts, .googleNews]
+        // AuthenticationResetTests.swift: DiscoverTab.allCases leaves out the AI Web Feed tab while NewsNativeFeatures.swift sets it aside.
+        let sources = DiscoverTab.allCases
+        XCTAssertEqual(sources.contains(.webFeed), NewsNativeFeatures.aiFeatures)
         try swipe(controller, x: 600, y: 0)
         XCTAssertEqual(model.activeTab, .search)
         for source in sources.dropFirst() {
@@ -1218,7 +1220,7 @@ private final class AuthenticationRefreshPublication: @unchecked Sendable {
         XCTAssertEqual(pager.scrollView.contentOffset.x, 400, accuracy: 1)
         XCTAssertEqual(model.activeTab, .search, "Dragging must not commit the next source before settling")
         let search = try XCTUnwrap(pager.children.first { $0.view.accessibilityIdentifier == "discover-page-search" })
-        let web = try XCTUnwrap(pager.children.first { $0.view.accessibilityIdentifier == "discover-page-webFeed" })
+        let web = try XCTUnwrap(pager.children.first { $0.view.accessibilityIdentifier == "discover-page-\(DiscoverTab.allCases[1].rawValue)" })
         XCTAssertEqual(search.view.convert(search.view.bounds, to: pager.view).minX, -400, accuracy: 1)
         XCTAssertEqual(web.view.convert(web.view.bounds, to: pager.view).minX, 600, accuracy: 1)
         pager.view.frame.size.height -= 200

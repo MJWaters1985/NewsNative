@@ -80,9 +80,6 @@ import Combine
             },
             onAddFeed: { [weak self] feed in
                 self?.handleAddFeed(feed)
-            },
-            onUpgrade: { [weak self] in
-                self?.handleUpgrade()
             }
         )
 
@@ -140,11 +137,5 @@ import Combine
 
     private func handleAddFeed(_ feed: DiscoverPopularFeed) {
         cardActions?.addFeed(url: feed.feedAddress)
-    }
-
-    private func handleUpgrade() {
-        dismiss(animated: true) { [weak self] in
-            self?.appDelegate?.showPremiumDialogForArchive()
-        }
     }
 }

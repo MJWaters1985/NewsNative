@@ -25,6 +25,7 @@
 #define kMenuOptionHeight 48
 
 - (BOOL)isAskAIEnabled {
+    if (!NewsNativeFeatures.askAI) return NO;
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     // Default to YES if the key doesn't exist
     if ([userPreferences objectForKey:@"show_ask_ai"] == nil) {
@@ -42,7 +43,8 @@
 
 // FontSettingsViewController.m groups actions independently of optional rows and phone-only controls.
 - (NSArray<NSArray<NSNumber *> *> *)menuGroups {
-    NSMutableArray *training = [NSMutableArray arrayWithObject:@3];
+    // FontSettingsViewController.m: action 3 trains the story when NewsNativeFeatures.swift allows training.
+    NSMutableArray *training = NewsNativeFeatures.training ? [NSMutableArray arrayWithObject:@3] : [NSMutableArray array];
     if ([self isAskAIEnabled]) [training addObject:@5];
     if ([self isGoToFeedEnabled]) [training addObject:@6];
     [training addObject:@14];

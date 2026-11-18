@@ -958,7 +958,7 @@ class StoryTitlesHeaderBar: NSObject {
             fixedWidth = gapsAndEdges + fittedMarkReadWidth
         }
 
-        let discoverDisplay = UserDefaults.standard.string(forKey: "discover_display") ?? "with_icons"
+        let discoverDisplay = Self.discoverDisplay
         let faviconWidth = CGFloat(min(storedFavicons.count, 5)) * 14 + 36
         let prefersFavicons = !isDailyBriefingMode && discoverDisplay == "with_icons" && !storedFavicons.isEmpty
         // StoryTitlesHeaderBar.swift restores Search text as soon as it fits beside the compact discovery icon.
@@ -1061,8 +1061,15 @@ class StoryTitlesHeaderBar: NSObject {
     }
 
     /// Shows or hides the discover pill based on feed type and user preference.
+    /// StoryTitlesHeaderBar.swift: related sites come from AI embeddings, so the discover pill stays hidden while
+    /// NewsNativeFeatures.swift sets AI features aside.
+    static var discoverDisplay: String {
+        guard NewsNativeFeatures.aiFeatures else { return "hidden" }
+        return UserDefaults.standard.string(forKey: "discover_display") ?? "with_icons"
+    }
+
     func updateDiscoverVisibility(isRiver: Bool, isEverything: Bool, isSocial: Bool, isSaved: Bool, isRead: Bool, isWidget: Bool, isInfrequent: Bool) {
-        let discoverDisplay = UserDefaults.standard.string(forKey: "discover_display") ?? "with_icons"
+        let discoverDisplay = Self.discoverDisplay
         if discoverDisplay == "hidden" {
             discoverPill.isHidden = true
             relayoutPills()

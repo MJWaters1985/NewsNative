@@ -542,8 +542,11 @@
     [self addKeyCommandWithInput:@"v" modifierFlags:0 action:@selector(showOriginalSubview:) discoverabilityTitle:@"Open in Browser"];
     [self addKeyCommandWithInput:@"s" modifierFlags:UIKeyModifierShift action:@selector(openShareDialog) discoverabilityTitle:@"Share This Story"];
     [self addKeyCommandWithInput:@"c" modifierFlags:0 action:@selector(scrolltoComment) discoverabilityTitle:@"Scroll to Comments"];
-    [self addKeyCommandWithInput:@"t" modifierFlags:0 action:@selector(openStoryTrainerFromKeyboard:) discoverabilityTitle:@"Open Story Trainer"];
-    if (self.isPhone) {
+    // StoryPagesObjCViewController.m: training and Listen are set aside in NewsNativeFeatures.swift.
+    if (NewsNativeFeatures.training) {
+        [self addKeyCommandWithInput:@"t" modifierFlags:0 action:@selector(openStoryTrainerFromKeyboard:) discoverabilityTitle:@"Open Story Trainer"];
+    }
+    if (self.isPhone && NewsNativeFeatures.listen) {
         // StoryPagesObjCViewController.m: iPad and Mac get Y from the Story menu (AppMenuHelper.swift).
         [self addKeyCommandWithInput:@"y" modifierFlags:0 action:@selector(toggleListen:) discoverabilityTitle:@"Listen"];
     }

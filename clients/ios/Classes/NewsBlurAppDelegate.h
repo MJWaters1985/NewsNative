@@ -339,7 +339,6 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)showWidgetSites;
 - (void)showDashboardSites:(NSString *)selectedRiverId;
 - (void)showPremiumDialog;
-- (void)showPremiumDialogForArchive;
 - (void)showPremiumDialogForPro;
 - (void)showUsageBillingDialog;
 - (void)updateSplitBehavior:(BOOL)refresh;

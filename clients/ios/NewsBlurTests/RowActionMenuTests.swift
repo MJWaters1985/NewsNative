@@ -101,7 +101,8 @@ import UIKit
         let source = try XCTUnwrap(menu as? UITableViewDataSource)
         let delegate = try XCTUnwrap(menu as? UITableViewDelegate)
         let table = UITableView()
-        for (action, label) in [(3, "Train this story"), (2, "Send to...")] {
+        XCTAssertFalse(groups.contains { $0.contains(NSNumber(value: 3)) }, "Training is set aside in NewsNativeFeatures.swift")
+        for (action, label) in [(2, "Send to...")] {
             let section = try XCTUnwrap(groups.firstIndex { $0.contains(NSNumber(value: action)) })
             let row = try XCTUnwrap(groups[section].firstIndex(of: NSNumber(value: action)))
             let path = IndexPath(row: row, section: section)
@@ -600,7 +601,7 @@ import UIKit
         let (app, controller) = feedFixture()
         let groups = controller.feedActions(feedID: "42", folder: "Tech", source: UIView())
         XCTAssertEqual(groups.map { $0.map(\.id) }, [
-            ["mark-read", "refresh"], ["statistics", "notifications", "train", "related"],
+            ["mark-read", "refresh"], ["statistics"],
             ["rename", "mute"], ["delete"]
         ])
         XCTAssertEqual(app.storiesCollection.activeFeed["id"] as? String, "99")
@@ -651,8 +652,9 @@ import UIKit
         story.isRead = false
         story.isSaved = false
         let groups = RowActionMenus.story(story, controller: controller, source: UIView())
-        XCTAssertEqual(groups.map { $0.map(\.id) }, [["read", "newer", "older"], ["save", "up-next"],
-                                                   ["share-link", "share-story", "share-newsblur"], ["train", "ask-ai"]])
+        // RowActionMenuTests.swift: Listen's Up Next, training and Ask AI are set aside (NewsNativeFeatures.swift).
+        XCTAssertEqual(groups.map { $0.map(\.id) }, [["read", "newer", "older"], ["save"],
+                                                   ["share-link", "share-story", "share-newsblur"]])
         XCTAssertNil(app.activeStory)
         for action in groups.flatMap({ $0 }) { XCTAssertNotNil(action.native.image, action.symbol) }
         app.storiesCollection.isSavedView = true
@@ -663,7 +665,7 @@ import UIKit
         XCTAssertEqual(saved.first { $0.id == "save" }?.title, "Unsave story")
     }
 
-    func test_storyMenuIncludesReaderActionsAndRespectsAskAIPreference() throws {
+    func test_storyMenuIncludesReaderActionsButNeverAskAI() throws {
         let defaults = UserDefaults.standard
         let previous = defaults.object(forKey: "show_ask_ai")
         defer { defaults.set(previous, forKey: "show_ask_ai") }
@@ -675,12 +677,11 @@ import UIKit
         let story = try makeStory(index: 0, dictionary: ["story_hash": "42:menu", "story_title": "Menu target",
                                                         "story_permalink": "https://example.com/menu"], app: app)
         let actions = RowActionMenus.story(story, controller: controller, source: UIView()).flatMap { $0 }
-        // RowActionMenuTests.swift requires the pressed story to expose the reader's sharing and AI tools without selecting it.
-        XCTAssertTrue(actions.contains { $0.id == "ask-ai" })
+        // RowActionMenuTests.swift requires the pressed story to expose the reader's sharing tools without selecting it,
+        // and never Ask AI, which NewsNativeFeatures.swift sets aside even when the synced preference is on.
+        XCTAssertFalse(actions.contains { $0.id == "ask-ai" })
         XCTAssertTrue(actions.contains { $0.id == "share-newsblur" })
         XCTAssertNil(app.activeStory)
-        defaults.set(false, forKey: "show_ask_ai")
-        XCTAssertFalse(RowActionMenus.story(story, controller: controller, source: UIView()).flatMap { $0 }.contains { $0.id == "ask-ai" })
     }
 
     func test_storyReaderActionsCapturePressedStoryAndMatchItsOwnShareComment() throws {
@@ -703,9 +704,7 @@ import UIKit
         app.activeStory = ["story_hash": "99:current"]
         app.activeComment = ["user_id": 99, "comments": "Previous story comment"]
 
-        try XCTUnwrap(actions.first { $0.id == "ask-ai" }).perform()
-        XCTAssertEqual(app.askedStory?["story_hash"] as? String, "42:pressed")
-        XCTAssertEqual(app.activeStory["story_hash"] as? String, "99:current")
+        XCTAssertNil(actions.first { $0.id == "ask-ai" }, "NewsNativeFeatures.swift sets Ask AI aside")
 
         let share = try XCTUnwrap(actions.first { $0.id == "share-newsblur" })
         XCTAssertEqual(share.title, "Edit NewsBlur share…")

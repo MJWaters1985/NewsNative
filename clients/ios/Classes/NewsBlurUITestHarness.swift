@@ -64,7 +64,7 @@ final class NewsBlurUITestHarness {
             // NewsBlurUITestHarness.swift starts interactive preference tests without pinning controls in the argument domain.
             UserDefaults.standard.setValuesForKeys([
                 "enable_feed_swipes": true, "enable_story_swipes": true,
-                "feed_title_swipe_left": "read", "feed_title_swipe_right": "notifications",
+                "feed_title_swipe_left": "read", "feed_title_swipe_right": "statistics",
                 "story_title_swipe_left": "read", "story_title_swipe_right": "back",
                 "long_press_story_title": "open_send_to"
             ])
@@ -545,7 +545,7 @@ final class NewsBlurUITestHarness {
         if ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-share-focus") ||
             ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-focused-pagination") {
             appDelegate.selectedIntelligence = 1
-            appDelegate.feedsViewController.intelligenceControl.selectedSegmentIndex = 2
+            appDelegate.feedsViewController.intelligenceControl.selectedSegmentIndex = 1
         }
         switch scenario {
         case .list:

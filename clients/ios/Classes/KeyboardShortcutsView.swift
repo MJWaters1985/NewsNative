@@ -127,7 +127,6 @@ private func shortcutSections() -> [ShortcutSection] {
             KeyboardShortcut(keys: ["\u{21E7}", "\u{2193}"], description: NBLocalization.text("Next folder")),
             KeyboardShortcut(keys: ["\u{21E7}", "\u{2191}"], description: NBLocalization.text("Previous folder")),
             KeyboardShortcut(keys: ["\u{21E7}", "A"], description: NBLocalization.text("Mark all as read")),
-            KeyboardShortcut(keys: ["\u{21E7}", "T"], description: NBLocalization.text("Open story trainer")),
         ]),
         ShortcutSection(title: NBLocalization.text("Stories"), icon: "doc.text", shortcuts: [
             KeyboardShortcut(keys: ["\u{2193}"], description: NBLocalization.text("Next story")),
@@ -143,8 +142,6 @@ private func shortcutSections() -> [ShortcutSection] {
             KeyboardShortcut(keys: ["O"], description: NBLocalization.text("Open in browser")),
             KeyboardShortcut(keys: ["\u{21E7}", "S"], description: NBLocalization.text("Share story")),
             KeyboardShortcut(keys: ["C"], description: NBLocalization.text("Scroll to comments")),
-            KeyboardShortcut(keys: ["T"], description: NBLocalization.text("Open story trainer")),
-            KeyboardShortcut(keys: ["Y"], description: NBLocalization.text("Listen to story")),
         ]),
     ]
 }

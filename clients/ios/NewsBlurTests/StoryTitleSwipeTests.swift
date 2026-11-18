@@ -181,7 +181,7 @@ import ObjectiveC.runtime
         XCTAssertTrue(GesturePreferences.feedsEnabled)
         XCTAssertTrue(GesturePreferences.storiesEnabled)
         XCTAssertEqual(GesturePreferences.feedLeftAction, "read")
-        XCTAssertEqual(GesturePreferences.feedRightAction, "notifications")
+        XCTAssertEqual(GesturePreferences.feedRightAction, "statistics")
         XCTAssertEqual(StoryTitleSwipePreference.leftAction, .read)
         XCTAssertEqual(StoryTitleSwipePreference.rightAction, .back)
         XCTAssertTrue(StoryTitleSwipePreference.usesFullScreenBack)
@@ -291,7 +291,7 @@ import ObjectiveC.runtime
     func test_feedSwipeDirectionsKeepDefaultsAndCanBeReversed() {
         let feed = FeedTableCell(style: .default, reuseIdentifier: nil)
         feed.setupGestures()
-        XCTAssertEqual(feed.firstIconName, "menu_icn_notifications.png")
+        XCTAssertEqual(feed.firstIconName, "menu_icn_statistics.png")
         XCTAssertEqual(feed.thirdIconName, "indicator-unread")
         UserDefaults.standard.set("read", forKey: "feed_title_swipe_right")
         UserDefaults.standard.set("statistics", forKey: "feed_title_swipe_left")

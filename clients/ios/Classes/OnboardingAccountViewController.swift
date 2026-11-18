@@ -678,6 +678,12 @@ struct OnboardingAccountView: View {
 struct ProjectInformationView: View {
     @Environment(\.dismiss) private var dismiss
 
+    // OnboardingAccountViewController.swift: NewsNative's own policies, published from the newsnative-pages branch.
+    // They link onward to the policies of NewsBlur's own service for newsblur.com accounts.
+    static let privacyPolicyURL = "https://mjwaters1985.github.io/NewsNative/privacy.html"
+    static let termsOfUseURL = "https://mjwaters1985.github.io/NewsNative/terms.html"
+    static let showAction = "showProjectInformation"
+
     static let license = """
         The MIT License
 
@@ -734,6 +740,10 @@ struct ProjectInformationView: View {
                             NBLocalization.text("The NewsNative name, app icon and logo are © 2026 Mike Waters, all rights reserved. They are not covered by the MIT License, so modified versions of this app must use a different name and icon."))
                     section(NBLocalization.text("Trademarks"),
                             NBLocalization.text("NewsBlur is the name of a service and app by NewsBlur, Inc. It appears in NewsNative only to describe compatibility."))
+                    HStack(spacing: 20) {
+                        Link(NBLocalization.text("Privacy Policy"), destination: URL(string: Self.privacyPolicyURL)!)
+                        Link(NBLocalization.text("Terms of Use"), destination: URL(string: Self.termsOfUseURL)!)
+                    }.font(.subheadline)
                     section(NBLocalization.text("Copyright"),
                             "NewsNative © 2026 Mike Waters.\nNewsBlur © 2009 Samuel Clay, NewsBlur.")
                     VStack(alignment: .leading, spacing: 8) {

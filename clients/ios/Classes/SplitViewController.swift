@@ -264,6 +264,9 @@ class SplitViewController: UISplitViewController {
         (detailNavigation?.viewControllers.first as? DetailViewController)?.updateResolvedFeedSidebarLayout()
         updateFeedsDividerPosition()
         updateDuoEmptyReaderProtection()
+        // SplitViewController.swift also moves the feed toolbar in or out of the side rail when the feed column hides,
+        // which lays out only this container.
+        NewsBlurAppDelegate.shared?.feedsViewController?.updateSplitFeedRail()
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {

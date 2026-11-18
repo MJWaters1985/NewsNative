@@ -19,7 +19,6 @@ struct DiscoverFeedsView: View {
     var onTryFeed: ((DiscoverPopularFeed) -> Void)?
     var onOpenStory: ((DiscoverPopularFeed, DiscoverStory) -> Void)?
     var onAddFeed: ((DiscoverPopularFeed) -> Void)?
-    var onUpgrade: (() -> Void)?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -119,145 +118,6 @@ struct DiscoverFeedsView: View {
         .hoverEffect(.highlight)
     }
 
-    // MARK: - Archive Upgrade Banner
-
-    @ViewBuilder
-    private var archiveUpgradeBanner: some View {
-        if let appDelegate = NewsBlurAppDelegate.shared(), !appDelegate.isPremiumArchive {
-            let counts = discoverIndexedCounts
-            let feedCount = counts.total
-            let indexedCount = counts.indexed
-            let progressPct = feedCount > 0 ? Double(indexedCount) / Double(feedCount) : 0
-
-            Button(action: { onUpgrade?() }) {
-                VStack(alignment: .leading, spacing: 10) {
-                    HStack(alignment: .top, spacing: 12) {
-                        Image(systemName: "sparkles")
-                            .font(.system(size: 18, weight: .medium))
-                            .foregroundColor(.white)
-                            .frame(width: 32, height: 32)
-                            .background(
-                                LinearGradient(
-                                    colors: [Color(red: 0.39, green: 0.40, blue: 0.95),
-                                             Color(red: 0.55, green: 0.36, blue: 0.96)],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                )
-                            )
-                            .cornerRadius(8)
-
-                        VStack(alignment: .leading, spacing: 4) {
-                            HStack(spacing: 8) {
-                                Text(NBLocalization.text("Unlock full discovery"))
-                                    .font(.system(size: 13, weight: .semibold))
-                                    .foregroundColor(DiscoverColors.textPrimary)
-
-                                Text(NBLocalization.text("Premium Archive"))
-                                    .font(.system(size: 9, weight: .semibold))
-                                    .textCase(.uppercase)
-                                    .tracking(0.5)
-                                    .foregroundColor(.white)
-                                    .padding(.horizontal, 6)
-                                    .padding(.vertical, 2)
-                                    .background(
-                                        LinearGradient(
-                                            colors: [Color(red: 0.39, green: 0.40, blue: 0.95),
-                                                     Color(red: 0.55, green: 0.36, blue: 0.96)],
-                                            startPoint: .topLeading,
-                                            endPoint: .bottomTrailing
-                                        )
-                                    )
-                                    .cornerRadius(3)
-                            }
-
-                            Text(String(format: NBLocalization.text("Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations."),
-                                        NBLocalization.formattedCount(indexedCount), NBLocalization.formattedCount(feedCount)))
-                                .font(.system(size: 12))
-                                .foregroundColor(DiscoverColors.textSecondary)
-                                .lineSpacing(2)
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
-                    }
-
-                    // Progress bar
-                    VStack(alignment: .trailing, spacing: 4) {
-                        GeometryReader { geometry in
-                            ZStack(alignment: .leading) {
-                                RoundedRectangle(cornerRadius: 3)
-                                    .fill(DiscoverColors.bannerProgressBackground)
-                                    .frame(height: 6)
-
-                                RoundedRectangle(cornerRadius: 3)
-                                    .fill(
-                                        LinearGradient(
-                                            colors: [Color(red: 0.39, green: 0.40, blue: 0.95),
-                                                     Color(red: 0.55, green: 0.36, blue: 0.96)],
-                                            startPoint: .leading,
-                                            endPoint: .trailing
-                                        )
-                                    )
-                                    .frame(width: geometry.size.width * progressPct, height: 6)
-                            }
-                        }
-                        .frame(height: 6)
-
-                        Text(String(format: NBLocalization.text("%1$@ of %2$@ sites indexed"),
-                                    NBLocalization.formattedCount(indexedCount), NBLocalization.formattedCount(feedCount)))
-                            .font(.system(size: 11))
-                            .foregroundColor(DiscoverColors.bannerProgressLabel)
-                    }
-
-                    // CTA button
-                    Text(NBLocalization.text("Upgrade to Premium Archive"))
-                        .font(.system(size: 12, weight: .semibold))
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 8)
-                        .background(
-                            LinearGradient(
-                                colors: [Color(red: 0.39, green: 0.40, blue: 0.95),
-                                         Color(red: 0.55, green: 0.36, blue: 0.96)],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .cornerRadius(6)
-                }
-                .padding(14)
-                .background(DiscoverColors.bannerBackground)
-                .cornerRadius(8)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(DiscoverColors.bannerBorder, lineWidth: 1)
-                )
-                .padding(.horizontal, 12)
-                .padding(.top, 8)
-                .padding(.bottom, 4)
-            }
-            .buttonStyle(PlainButtonStyle())
-        }
-    }
-
-    private var discoverIndexedCounts: (total: Int, indexed: Int) {
-        guard let appDelegate = NewsBlurAppDelegate.shared(),
-              let dictFeeds = appDelegate.dictFeeds as? [String: Any] else {
-            return (0, 0)
-        }
-
-        var total = 0
-        var indexed = 0
-        for (_, value) in dictFeeds {
-            guard let feedDict = value as? [String: Any] else { continue }
-            total += 1
-            if let discoverIndexed = feedDict["discover_indexed"] as? Bool, discoverIndexed {
-                indexed += 1
-            } else if let discoverIndexed = feedDict["discover_indexed"] as? NSNumber, discoverIndexed.boolValue {
-                indexed += 1
-            }
-        }
-        return (total, indexed)
-    }
-
     // MARK: - Content
 
     private var contentView: some View {
@@ -304,8 +164,6 @@ struct DiscoverFeedsView: View {
     private var feedListView: some View {
         ScrollView {
             LazyVStack(spacing: 12) {
-                archiveUpgradeBanner
-
                 LazyVGrid(columns: [viewModel.viewMode == .grid
                     ? GridItem(.adaptive(minimum: 300), spacing: 12, alignment: .top)
                     : GridItem(.flexible())], spacing: 12) {

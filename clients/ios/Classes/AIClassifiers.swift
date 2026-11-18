@@ -15,6 +15,8 @@ import Foundation
 /// places them after the URL match, and storyDetailView.js routes a tap to the story trainer.
 @objcMembers final class StoryAIClassifierPills: NSObject {
     static func headerHTML(for promptClassifiers: Any?) -> String {
+        // AIClassifiers.swift: AI classifier labels are set aside in NewsNativeFeatures.swift.
+        guard NewsNativeFeatures.aiFeatures else { return "" }
         guard let entries = promptClassifiers as? [Any] else { return "" }
         let pills = entries.compactMap(pillHTML(for:))
         guard !pills.isEmpty else { return "" }

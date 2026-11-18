@@ -1333,8 +1333,6 @@ private struct OnboardingView: View {
                 Text(NBLocalization.text("Stay connected")).font(.subheadline.weight(.semibold))
                     .foregroundStyle(DiscoverColors.textSecondary).padding(.horizontal, 4)
                 VStack(spacing: 0) {
-                    completionLink(title: "NewsBlur Forum", subtitle: "Ask questions and share ideas", destination: "https://forum.newsblur.com", avatar: nil)
-                    Divider().padding(.leading, 80)
                     completionLink(title: "@samuelclay on X", subtitle: "From the creator of NewsBlur", destination: "https://x.com/samuelclay", avatar: "onboarding-samuel")
                     Divider().padding(.leading, 80)
                     completionLink(title: "@NewsBlur on X", subtitle: "News and updates", destination: "https://x.com/NewsBlur", avatar: "logo_512.png")

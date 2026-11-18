@@ -127,9 +127,11 @@ static BOOL NBBoolPreferenceValue(id value) {
 @property (nonatomic) NSInteger lastSection;
 @property (nonatomic, strong) NSArray<UIBarButtonItem *> *defaultFeedToolbarItems;
 @property (nonatomic, strong) NSArray<UIBarButtonItem *> *verticalFeedToolbarItems;
+@property (nonatomic, strong) FeedRailView *splitFeedRail;
 @property (nonatomic, strong) NSArray<UIBarButtonItem *> *verticalIntelligenceItems;
 @property (nonatomic, strong) UIView *feedSearchContainerView;
 @property (nonatomic, strong) UIView *scrollingFeedHeaderView;
+@property (nonatomic, strong) UIView *searchOnlyFeedHeaderView;
 @property (nonatomic) CGFloat horizontalFeedTopMargin;
 @property (nonatomic) BOOL hidNavigationBarForFeedHeader;
 @property (nonatomic) BOOL feedMotionPresentationScheduled;
@@ -356,6 +358,14 @@ static BOOL NBBoolPreferenceValue(id value) {
      name:NSUserDefaultsDidChangeNotification
      object:nil];
     
+    // FeedsObjCViewController.m drops the Focus filter: NewsNative has no intelligence training to fill it.
+    if (self.intelligenceControl.numberOfSegments == 4) {
+        [self.intelligenceControl removeSegmentAtIndex:2 animated:NO];
+    }
+    // FeedsObjCViewController.m moves a Focus filter saved by an earlier build to Unread before the list appears.
+    if ([[NSUserDefaults standardUserDefaults] integerForKey:@"selectedIntelligence"] == 1) {
+        [[NSUserDefaults standardUserDefaults] setInteger:0 forKey:@"selectedIntelligence"];
+    }
     [self updateIntelligenceControlForOrientation:UIInterfaceOrientationUnknown];
     
     self.intelligenceControl.hidden = YES;
@@ -499,6 +509,8 @@ static BOOL NBBoolPreferenceValue(id value) {
         [self configureVerticalFeedToolbar];
         return;
     }
+    // FeedsObjCViewController.m keeps the bottom toolbar hidden while its controls sit in an open Duo's rail.
+    if ([self updateSplitFeedRail]) return;
     if (self.feedViewToolbar.hidden) {
         self.feedViewToolbar.hidden = NO;
         self.toolbarItems = nil;
@@ -594,16 +606,9 @@ static BOOL NBBoolPreferenceValue(id value) {
             settings.title = [NBLocalization text:@"Settings"];
             settings.accessibilityIdentifier = @"feed-list-settings";
 
-            NSArray<NSString *> *titles = @[[NBLocalization text:@"All"], [NBLocalization text:@"Unread"], [NBLocalization text:@"Focus"], [NBLocalization text:@"Saved"]];
-            // FeedsObjCViewController.m keeps UI test identifiers in English whatever the interface language.
-            NSArray<NSString *> *identifiers = @[@"all", @"unread", @"focus", @"saved"];
-            // FeedsObjCViewController.m preserves the existing intelligence artwork and its semantic colors.
-            NSArray<UIImage *> *images = @[
-                [UIImage systemImageNamed:@"tray.full"],
-                [[UIImage imageNamed:@"unread_yellow_icn.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal],
-                [[Utilities imageNamed:@"indicator-focus" sized:14] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal],
-                [[Utilities imageNamed:@"unread_blue_icn.png" sized:14] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
-            ];
+            NSArray<NSString *> *titles = [self railIntelligenceTitles];
+            NSArray<NSString *> *identifiers = [self railIntelligenceIdentifiers];
+            NSArray<UIImage *> *images = [self railIntelligenceImages];
             NSMutableArray<UIBarButtonItem *> *filters = [NSMutableArray array];
             for (NSInteger index = 0; index < titles.count; index++) {
                 UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithImage:images[index]
@@ -616,10 +621,10 @@ static BOOL NBBoolPreferenceValue(id value) {
             }
             self.verticalIntelligenceItems = filters;
             self.verticalFeedToolbarItems = @[
-                add, filters[0], filters[1], filters[2], filters[3], settings
+                add, filters[0], filters[1], filters[2], settings
             ];
             for (UIBarButtonItem *item in self.verticalFeedToolbarItems) {
-                // FeedsObjCViewController.m groups the four intelligence filters between separate Add and Settings controls.
+                // FeedsObjCViewController.m groups the intelligence filters between separate Add and Settings controls.
                 item.axisBehavior = UIBarButtonItemAxisBehaviorVerticalPreferred;
                 item.sharesBackground = [self.verticalIntelligenceItems containsObject:item];
                 item.accessibilityLabel = item.title;
@@ -639,7 +644,84 @@ static BOOL NBBoolPreferenceValue(id value) {
 #endif
 }
 
+- (NSArray<NSString *> *)railIntelligenceTitles {
+    return @[[NBLocalization text:@"All"], [NBLocalization text:@"Unread"], [NBLocalization text:@"Saved"]];
+}
+
+- (NSArray<NSString *> *)railIntelligenceIdentifiers {
+    // FeedsObjCViewController.m keeps UI test identifiers in English whatever the interface language.
+    return @[@"all", @"unread", @"saved"];
+}
+
+- (NSArray<UIImage *> *)railIntelligenceImages {
+    // FeedsObjCViewController.m preserves the existing intelligence artwork and its semantic colors.
+    return @[
+        [UIImage systemImageNamed:@"tray.full"],
+        [[UIImage imageNamed:@"unread_yellow_icn.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal],
+        [[Utilities imageNamed:@"unread_blue_icn.png" sized:14] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
+    ];
+}
+
+- (BOOL)updateSplitFeedRail {
+    // FeedsObjCViewController.m moves the feed toolbar into an open Duo's side rail (FeedRailView.swift), where the
+    // closed Duo's native vertical toolbar puts it. UIKit hands an expanded split view's rail to neither column.
+    UISplitViewController *split = self.splitViewController;
+    UIView *host = split.viewIfLoaded;
+    BOOL useRail = NO;
+    BOOL railOnRight = YES;
+    CGFloat railWidth = 0;
+#if !TARGET_OS_MACCATALYST && __IPHONE_OS_VERSION_MAX_ALLOWED >= 270100
+    if (@available(iOS 27.1, *)) {
+        UIVerticalBarEdge edge = split.traitCollection.verticalBarEdge;
+        if (host && !split.isCollapsed && edge != UIVerticalBarEdgeUnspecified && ![self usesVerticalFeedToolbar] &&
+            split.displayMode != UISplitViewControllerDisplayModeSecondaryOnly &&
+            self.navigationController.topViewController == self && self.feedViewToolbar) {
+            BOOL leftToRight = host.effectiveUserInterfaceLayoutDirection == UIUserInterfaceLayoutDirectionLeftToRight;
+            railOnRight = (edge == UIVerticalBarEdgeTrailing) == leftToRight;
+            railWidth = railOnRight ? host.safeAreaInsets.right : host.safeAreaInsets.left;
+            useRail = railWidth >= FeedRailView.controlWidth;
+        }
+    }
+#endif
+    if (!useRail) {
+        if (self.splitFeedRail.superview) {
+            [self.splitFeedRail removeFromSuperview];
+            // FeedsObjCViewController.m brings the bottom toolbar back through its normal layout pass.
+            [self.view setNeedsLayout];
+        }
+        return NO;
+    }
+    if (!self.splitFeedRail) {
+        FeedRailView *rail = [[FeedRailView alloc] initWithTitles:[self railIntelligenceTitles]
+                                                           images:[self railIntelligenceImages]
+                                                      identifiers:[self railIntelligenceIdentifiers]];
+        __weak typeof(self) weakSelf = self;
+        rail.onAdd = ^{ [weakSelf tapAddSite:nil]; };
+        rail.onSettings = ^{ [weakSelf showSettingsPopover:nil]; };
+        rail.onSelectFilter = ^(NSInteger index) {
+            weakSelf.intelligenceControl.selectedSegmentIndex = index;
+            [weakSelf selectIntelligence];
+        };
+        self.splitFeedRail = rail;
+    }
+    FeedRailView *rail = self.splitFeedRail;
+    if (rail.superview != host) [host addSubview:rail];
+    if (host.subviews.lastObject != rail) [host bringSubviewToFront:rail];
+    CGSize size = rail.fittingSize;
+    // FeedsObjCViewController.m lines the rail up with UIKit's own sidebar button above it.
+    CGFloat centerDistance = MIN(FeedRailView.edgeCenterDistance, railWidth - FeedRailView.controlWidth / 2);
+    CGFloat centerX = railOnRight ? CGRectGetWidth(host.bounds) - centerDistance : centerDistance;
+    CGRect frame = CGRectMake(round(centerX - size.width / 2),
+                              CGRectGetHeight(host.bounds) - FeedRailView.bottomMargin - size.height,
+                              size.width, size.height);
+    if (!CGRectEqualToRect(rail.frame, frame)) rail.frame = frame;
+    rail.selectedIndex = self.intelligenceControl.selectedSegmentIndex;
+    if (!self.feedViewToolbar.hidden) self.feedViewToolbar.hidden = YES;
+    return YES;
+}
+
 - (void)updateVerticalFeedToolbarSelection {
+    if (self.splitFeedRail) self.splitFeedRail.selectedIndex = self.intelligenceControl.selectedSegmentIndex;
 #if !TARGET_OS_MACCATALYST && __IPHONE_OS_VERSION_MAX_ALLOWED >= 270100
     if (@available(iOS 27.1, *)) {
         for (UIBarButtonItem *item in self.verticalFeedToolbarItems) {
@@ -662,10 +744,21 @@ static BOOL NBBoolPreferenceValue(id value) {
     [self selectIntelligence];
 }
 
+- (void)viewSafeAreaInsetsDidChange {
+    [super viewSafeAreaInsetsDidChange];
+    // FeedsObjCViewController.m recomputes the search field's corner clearance when folding or rotating moves the status bar.
+    if (!NewsNativeFeatures.showsAccountHeader && self.searchOnlyFeedHeaderView) {
+        [self layoutHeaderCounts:UIInterfaceOrientationUnknown];
+    }
+}
+
 - (void)updateFeedNavigationBarForHeader {
 #if !TARGET_OS_MACCATALYST
     if (!self.feedSearchContainerView) return;
-    BOOL scrollingHeader = [self usesVerticalFeedToolbar];
+    // FeedsObjCViewController.m: without the account header (NewsNativeFeatures.swift) the title bar is empty unless
+    // it carries the sidebar button, so it hides the same way Duo's scrolling header does.
+    BOOL scrollingHeader = [self usesVerticalFeedToolbar] ||
+        (!NewsNativeFeatures.showsAccountHeader && self.navigationItem.rightBarButtonItem == nil);
     NSDirectionalEdgeInsets margins = self.view.directionalLayoutMargins;
     CGFloat topMargin = scrollingHeader ? 0 : self.horizontalFeedTopMargin;
     if (margins.top != topMargin) {
@@ -727,12 +820,8 @@ static BOOL NBBoolPreferenceValue(id value) {
     
     if (intelligenceLevel == 2) {
         self.viewShowingAllFeeds = NO;
-        [self.intelligenceControl setSelectedSegmentIndex:3];
-        [appDelegate setSelectedIntelligence:2];
-    } else if (intelligenceLevel == 1) {
-        self.viewShowingAllFeeds = NO;
         [self.intelligenceControl setSelectedSegmentIndex:2];
-        [appDelegate setSelectedIntelligence:1];
+        [appDelegate setSelectedIntelligence:2];
     } else if (intelligenceLevel == 0) {
         self.viewShowingAllFeeds = NO;
         [self.intelligenceControl setSelectedSegmentIndex:1];
@@ -792,16 +881,18 @@ static BOOL NBBoolPreferenceValue(id value) {
 #endif
     [self.syncNotifier updateFrameInSuperview];
 
+    BOOL usesSplitRail = [self updateSplitFeedRail];
     BOOL usesVerticalToolbar = [self usesVerticalFeedToolbar];
     BOOL hasScrollingHeader = self.scrollingFeedHeaderView && self.feedTitlesTable.tableHeaderView == self.scrollingFeedHeaderView;
-    if (usesVerticalToolbar != hasScrollingHeader) {
+    // FeedsObjCViewController.m: with the account header hidden there is no scrolling header to keep in step.
+    if (NewsNativeFeatures.showsAccountHeader && usesVerticalToolbar != hasScrollingHeader) {
         [self layoutHeaderCounts:UIInterfaceOrientationUnknown];
         [self refreshHeaderCounts];
     }
-    if (usesVerticalToolbar != self.feedViewToolbar.hidden) {
+    if (!usesSplitRail && usesVerticalToolbar != self.feedViewToolbar.hidden) {
         [self configureFeedToolbarItemsForOrientation:UIInterfaceOrientationUnknown];
     }
-    if (usesVerticalToolbar) {
+    if (usesVerticalToolbar || usesSplitRail) {
         // FeedsObjCViewController.m manually reserves only the bottom safe area because this table disables automatic adjustment.
         CGFloat bottomInset = MAX(0, self.view.safeAreaInsets.bottom) +
             [ListenStoryBridge miniPlayerInsetForView:self.feedTitlesTable];
@@ -952,6 +1043,7 @@ static BOOL NBBoolPreferenceValue(id value) {
         // In 3-column mode, feed detail toolbar has its own sidebar button
         if (displayMode == UISplitViewControllerDisplayModeTwoBesideSecondary) {
             self.navigationItem.rightBarButtonItem = nil;
+            [self updateFeedNavigationBarForHeader];
             return;
         }
 
@@ -972,6 +1064,7 @@ static BOOL NBBoolPreferenceValue(id value) {
             self.sidebarBarButton.accessibilityLabel = [NBLocalization text:@"Sidebar"];
         }
         self.navigationItem.rightBarButtonItem = self.sidebarBarButton;
+        [self updateFeedNavigationBarForHeader];
     }
 }
 
@@ -1063,9 +1156,8 @@ static BOOL NBBoolPreferenceValue(id value) {
 #if TARGET_OS_MACCATALYST
 - (void)updateMacIntelligenceControlForWidth:(CGFloat)toolbarWidth {
     NSArray<NSString *> *titles = @[[NBLocalization text:@"All"], [NBLocalization text:@"Unread"],
-                                    [NBLocalization text:@"Focus"], [NBLocalization text:@"Saved"]];
+                                    [NBLocalization text:@"Saved"]];
     NSArray<UIImage *> *icons = @[[UIImage imageNamed:@"unread_yellow_icn.png"],
-                                  [Utilities imageNamed:@"indicator-focus" sized:14],
                                   [Utilities imageNamed:@"unread_blue_icn.png" sized:14]];
     NSInteger selected = self.intelligenceControl.selectedSegmentIndex;
     if (selected < 0 || selected >= titles.count) selected = 1;
@@ -1073,7 +1165,7 @@ static BOOL NBBoolPreferenceValue(id value) {
     UIColor *textColor = UIColorFromLightSepiaMediumDarkRGB(0x555555, 0x6A5A4A, 0xAAAAAA, 0xAAAAAA);
     CGFloat allTextWidth = ceil([titles[0] sizeWithAttributes:@{NSFontAttributeName: font}].width);
     CGFloat selectedContentWidth = selected == 0 ? 0 : ceil([titles[selected] sizeWithAttributes:@{NSFontAttributeName: font}].width) + 18;
-    NSInteger iconOnlyCount = selected == 0 ? 3 : 2;
+    NSInteger iconOnlyCount = selected == 0 ? 2 : 1;
     // FeedsObjCViewController.m budgets the measured 32pt inner margins, two 36pt buttons and two 12pt group gaps.
     CGFloat availableWidth = MAX(0, toolbarWidth - 128);
     CGFloat contentWidth = allTextWidth + selectedContentWidth + iconOnlyCount * 14;
@@ -1085,8 +1177,8 @@ static BOOL NBBoolPreferenceValue(id value) {
         contentWidth = allTextWidth + selectedContentWidth + iconOnlyCount * 14;
     }
     // FeedsObjCViewController.m gives each segment 12pt on either side when space permits, reducing padding for narrow sidebars.
-    CGFloat controlWidth = MIN(availableWidth, contentWidth + 4 * 24);
-    CGFloat segmentPadding = MAX(0, (controlWidth - contentWidth) / 4);
+    CGFloat controlWidth = MIN(availableWidth, contentWidth + 3 * 24);
+    CGFloat segmentPadding = MAX(0, (controlWidth - contentWidth) / 3);
     CGFloat allWidth = allTextWidth + segmentPadding;
     CGFloat selectedWidth = selectedContentWidth + segmentPadding;
     CGFloat iconSegmentWidth = 14 + segmentPadding;
@@ -1172,36 +1264,30 @@ static BOOL NBBoolPreferenceValue(id value) {
     self.intelligenceControlWidthConstraint.constant = controlWidth;
 
     UIImage *unreadImage;
-    UIImage *focusImage;
     UIImage *savedImage;
+    // FeedsObjCViewController.m splits the width between All, Unread and Saved now that Focus is gone.
     if (useCompactIcons) {
         unreadImage = [UIImage imageNamed:@"unread_yellow_icn.png"];
-        focusImage = [Utilities imageNamed:@"indicator-focus" sized:14];
         savedImage = [Utilities imageNamed:@"unread_blue_icn.png" sized:14];
 
         CGFloat segmentScale = controlWidth / (localizedToolbar ? firstSegmentWidth + 120 : 165);
         [self.intelligenceControl setWidth:(localizedToolbar ? firstSegmentWidth : 45) * segmentScale forSegmentAtIndex:0];
-        [self.intelligenceControl setWidth:40 * segmentScale forSegmentAtIndex:1];
-        [self.intelligenceControl setWidth:40 * segmentScale forSegmentAtIndex:2];
-        [self.intelligenceControl setWidth:40 * segmentScale forSegmentAtIndex:3];
+        [self.intelligenceControl setWidth:60 * segmentScale forSegmentAtIndex:1];
+        [self.intelligenceControl setWidth:60 * segmentScale forSegmentAtIndex:2];
     } else {
         unreadImage = [UIImage imageNamed:@"unread_yellow.png"];
-        focusImage = [UIImage imageNamed:@"unread_green.png"];
         savedImage = [UIImage imageNamed:@"unread_blue.png"];
         
-        [self.intelligenceControl setWidth:40 forSegmentAtIndex:0];
-        [self.intelligenceControl setWidth:68 forSegmentAtIndex:1];
-        [self.intelligenceControl setWidth:62 forSegmentAtIndex:2];
-        [self.intelligenceControl setWidth:60 forSegmentAtIndex:3];
+        [self.intelligenceControl setWidth:60 forSegmentAtIndex:0];
+        [self.intelligenceControl setWidth:88 forSegmentAtIndex:1];
+        [self.intelligenceControl setWidth:82 forSegmentAtIndex:2];
     }
 
     // FeedsObjCViewController.m labels segment images without depending on UIKit's private subview layout.
     unreadImage.accessibilityLabel = [NBLocalization text:@"Unread"];
-    focusImage.accessibilityLabel = [NBLocalization text:@"Focus"];
     savedImage.accessibilityLabel = [NBLocalization text:@"Saved"];
     [self.intelligenceControl setImage:unreadImage forSegmentAtIndex:1];
-    [self.intelligenceControl setImage:focusImage forSegmentAtIndex:2];
-    [self.intelligenceControl setImage:savedImage forSegmentAtIndex:3];
+    [self.intelligenceControl setImage:savedImage forSegmentAtIndex:2];
 
     [self.intelligenceControl sizeToFit];
 
@@ -1751,7 +1837,8 @@ static BOOL NBBoolPreferenceValue(id value) {
     
     // Add All Shared Stories folder to bottom
     [appDelegate.dictFoldersArray removeObject:@"river_blurblogs"];
-    if ([[appDelegate.dictSocialFeeds allKeys] count] > 0) {
+    // FeedsObjCViewController.m leaves out shared stories while NewsNativeFeatures.swift sets social reading aside.
+    if (NewsNativeFeatures.socialFeatures && [[appDelegate.dictSocialFeeds allKeys] count] > 0) {
         [appDelegate.dictFoldersArray addObject:@"river_blurblogs"];
     }
     
@@ -2013,19 +2100,18 @@ static BOOL NBBoolPreferenceValue(id value) {
         [self.appDelegate showWidgetSites];
     }];
     
-    [viewController addFeedListTitle:[NBLocalization text:@"Notifications"] iconName:@"feed-menu-notifications" selectionShouldDismiss:YES handler:^{
-        [self.appDelegate openNotificationsWithFeed:nil];
-    }];
+    // FeedsObjCViewController.m offers Interactions and Find Friends only with social reading (NewsNativeFeatures.swift).
+    if (NewsNativeFeatures.socialFeatures) {
+        [viewController startNewSection];
 
-    [viewController startNewSection];
+        [viewController addFeedListTitle:[NBLocalization text:@"Interactions"] iconName:@"feed-menu-interactions" selectionShouldDismiss:YES handler:^{
+            [self showInteractionsPopover:nil];
+        }];
 
-    [viewController addFeedListTitle:[NBLocalization text:@"Interactions"] iconName:@"feed-menu-interactions" selectionShouldDismiss:YES handler:^{
-        [self showInteractionsPopover:nil];
-    }];
-
-    [viewController addFeedListTitle:[NBLocalization text:@"Find Friends"] iconName:@"feed-menu-friends" selectionShouldDismiss:YES handler:^{
-        [self.appDelegate showFindFriends];
-    }];
+        [viewController addFeedListTitle:[NBLocalization text:@"Find Friends"] iconName:@"feed-menu-friends" selectionShouldDismiss:YES handler:^{
+            [self.appDelegate showFindFriends];
+        }];
+    }
     
     [viewController startNewSection];
 
@@ -2033,11 +2119,7 @@ static BOOL NBBoolPreferenceValue(id value) {
         [viewController addFeedListTitle:[NBLocalization text:@"Premium Archive"] iconName:@"feed-menu-subscription" selectionShouldDismiss:YES handler:^{
             [self.appDelegate showPremiumDialog];
         }];
-    } else if (appDelegate.isPremium) {
-        [viewController addFeedListTitle:[NBLocalization text:@"Upgrade to Archive"] iconName:@"feed-menu-subscription" selectionShouldDismiss:YES handler:^{
-            [self.appDelegate showPremiumDialog];
-        }];
-    } else {
+    } else if (!appDelegate.isPremium) {
         [viewController addFeedListTitle:[NBLocalization text:@"Upgrade to Premium"] iconName:@"feed-menu-subscription" selectionShouldDismiss:YES handler:^{
             [self.appDelegate showPremiumDialog];
         }];
@@ -2050,11 +2132,6 @@ static BOOL NBBoolPreferenceValue(id value) {
             [self.appDelegate showUsageBillingDialog];
         }];
     }
-    
-    [viewController addFeedListTitle:[NBLocalization text:@"Support Forum"] iconName:@"feed-menu-feedback" selectionShouldDismiss:YES handler:^{
-        NSURL *url = [NSURL URLWithString:@"https://forum.newsblur.com"];
-        [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
-    }];
     
     [viewController startNewSection];
 
@@ -2097,6 +2174,14 @@ static BOOL NBBoolPreferenceValue(id value) {
     UINavigationController *navController = self.navigationController;
     
 #if !TARGET_OS_MACCATALYST
+    if (self.splitFeedRail.superview) {
+        // FeedsObjCViewController.m anchors settings to the open Duo's rail button (FeedRailView.swift).
+        UIButton *settings = self.splitFeedRail.settingsButton;
+        [viewController showFromNavigationController:navController barButtonItem:nil
+                                          sourceView:settings sourceRect:settings.bounds
+                            permittedArrowDirections:UIPopoverArrowDirectionAny];
+        return;
+    }
     if ([self usesVerticalFeedToolbar]) {
         // FeedsObjCViewController.m anchors Duo settings to the visible side control after folding.
         [viewController showFromNavigationController:navController
@@ -3253,13 +3338,19 @@ heightForHeaderInSection:(NSInteger)section {
         return 0;
     }
 
+    // FeedsObjCViewController.m: NewsNativeFeatures.swift sets these special sections aside.
+    if (!NewsNativeFeatures.showsSpecialFeedSections &&
+        (section == NewsBlurTopSectionInfrequentSiteStories || [NewsNativeFeatures.specialFeedFolders containsObject:folderName])) {
+        return 0;
+    }
+
     if (section == NewsBlurTopSectionInfrequentSiteStories &&
         ![prefs boolForKey:@"show_infrequent_site_stories"]) {
         return 0;
     }
 
     if ([folderName isEqualToString:@"daily_briefing"] &&
-        !appDelegate.briefingEnabled) {
+        (!appDelegate.briefingEnabled || !NewsNativeFeatures.aiFeatures)) {
         return 0;
     }
 
@@ -3867,9 +3958,7 @@ heightForHeaderInSection:(NSInteger)section {
             appDelegate.activeUserProfileName = [NSString stringWithFormat:@"%@", [feed objectForKey:@"username"]];
             [appDelegate showUserProfileModal:cell];
         } else {
-            if ([swipe isEqualToString:@"notifications"]) {
-                [appDelegate openNotificationsWithFeed:feedId sender:cell];
-            } else if ([swipe isEqualToString:@"statistics"]) {
+            if ([swipe isEqualToString:@"statistics"]) {
                 [appDelegate openStatisticsWithFeed:feedId sender:cell];
             } else {
                 // Train
@@ -4217,7 +4306,8 @@ heightForHeaderInSection:(NSInteger)section {
 
 - (IBAction)selectIntelligence {
     NSInteger selectedSegmentIndex = self.intelligenceControl.selectedSegmentIndex;
-    NSInteger previousSegmentIndex = self.viewShowingAllFeeds ? 0 : appDelegate.selectedIntelligence + 1;
+    // FeedsObjCViewController.m: segments are All, Unread and Saved (intelligence levels -1, 0 and 2).
+    NSInteger previousSegmentIndex = self.viewShowingAllFeeds ? 0 : (appDelegate.selectedIntelligence >= 2 ? 2 : 1);
     if (selectedSegmentIndex == previousSegmentIndex) return;
     [self updateVerticalFeedToolbarSelection];
 #if TARGET_OS_MACCATALYST
@@ -4239,12 +4329,6 @@ heightForHeaderInSection:(NSInteger)section {
         
         self.viewShowingAllFeeds = NO;
         [appDelegate setSelectedIntelligence:0];
-    } else if (selectedSegmentIndex == 2) {
-        [userPreferences setInteger:1 forKey:@"selectedIntelligence"];
-        [userPreferences synchronize];
-        
-        self.viewShowingAllFeeds = NO;
-        [appDelegate setSelectedIntelligence:1];
     } else {
         [userPreferences setInteger:2 forKey:@"selectedIntelligence"];
         [userPreferences synchronize];
@@ -4851,7 +4935,26 @@ heightForHeaderInSection:(NSInteger)section {
     
     self.feedTitlesTopConstraint.constant = 50;
 #else
-    if (scrollingHeader) {
+    if (!NewsNativeFeatures.showsAccountHeader) {
+        // FeedsObjCViewController.m: NewsNativeFeatures.swift hides the account header, so only search tops the feed list.
+        self.navigationItem.titleView = nil;
+        if (!self.searchOnlyFeedHeaderView) {
+            self.searchOnlyFeedHeaderView = [[UIView alloc] init];
+            self.searchOnlyFeedHeaderView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+        }
+        CGFloat width = CGRectGetWidth(self.feedTitlesTable.bounds);
+        // FeedsObjCViewController.m keeps the search field clear of a rounded screen corner. With no status bar above
+        // the column (Duo's open display puts it in the side rail), the top-leading corner is the screen's own
+        // 55-point continuous curve, which reaches about 1.53 times its radius along each edge; 28 points keeps the
+        // field and its touch area inside the visible display.
+        CGFloat topClearance = self.view.safeAreaInsets.top > 0 ? 8 : 28;
+        self.searchOnlyFeedHeaderView.frame = CGRectMake(0, 0, width, topClearance + 28 + 4);
+        self.searchOnlyFeedHeaderView.backgroundColor = self.feedSearchContainerView.backgroundColor;
+        self.feedSearchContainerView.frame = CGRectMake(0, topClearance, width, 28);
+        self.feedSearchContainerView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+        [self.searchOnlyFeedHeaderView addSubview:self.feedSearchContainerView];
+        self.feedTitlesTable.tableHeaderView = self.searchOnlyFeedHeaderView;
+    } else if (scrollingHeader) {
         // FeedsObjCViewController.m puts account details and search in the table so both scroll away together on Duo.
         self.navigationItem.titleView = nil;
         if (!self.scrollingFeedHeaderView) {

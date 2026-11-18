@@ -30,6 +30,7 @@ import UIKit
     }
 
     func test_deepNativePrefetchPreparesRegularAndClusterFaviconsWithoutForegroundDiskReads() throws {
+        try XCTSkipUnless(NewsNativeFeatures.aiFeatures, "NewsNativeFeatures.swift sets AI features aside, including clustering, AI labels and related sites.")
         let fixture = try makeFixture()
         defer { fixture.close() }
         let paths = try fixture.nearbyPaths()
@@ -53,6 +54,7 @@ import UIKit
     }
 
     func test_prefetchedCellPixelsMatchOriginalRoundingAcrossThemesReadStatesAndClusterRows() throws {
+        try XCTSkipUnless(NewsNativeFeatures.aiFeatures, "NewsNativeFeatures.swift sets AI features aside, including clustering, AI labels and related sites.")
         let fixture = try makeFixture()
         defer { fixture.close() }
         let paths = try fixture.nearbyPaths()
@@ -78,6 +80,7 @@ import UIKit
     }
 
     func test_nativeCancellationAndRenderResetDiscardQueuedFaviconPreparation() throws {
+        try XCTSkipUnless(NewsNativeFeatures.aiFeatures, "NewsNativeFeatures.swift sets AI features aside, including clustering, AI labels and related sites.")
         for clearRenderState in [false, true] {
             let fixture = try makeFixture()
             defer { fixture.close() }

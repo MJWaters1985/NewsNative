@@ -306,7 +306,8 @@ import SwiftUI
             return []
         }
 
-        guard UserDefaults.standard.bool(forKey: "story_clustering") else {
+        // StoryCache.swift: clustering uses AI embeddings, set aside in NewsNativeFeatures.swift.
+        guard NewsNativeFeatures.aiFeatures, UserDefaults.standard.bool(forKey: "story_clustering") else {
             return []
         }
 

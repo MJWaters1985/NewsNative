@@ -1735,9 +1735,9 @@ import WebKit
         XCTAssertTrue(items.contains { $0.accessibilityIdentifier == "feed-list-settings" }, "Settings must participate in the system bar")
         XCTAssertTrue(items.contains { $0.accessibilityIdentifier?.hasPrefix("feed-list-intelligence") == true }, "Intelligence filters must participate in the system bar")
         let filters = items.filter { $0.accessibilityIdentifier?.hasPrefix("feed-list-intelligence-") == true }
-        XCTAssertEqual(filters.map(\.title), ["All", "Unread", "Focus", "Saved"])
+        XCTAssertEqual(filters.map(\.title), ["All", "Unread", "Saved"])
         for filter in filters {
-            XCTAssertTrue(filter.sharesBackground, "All four intelligence filters must form one continuous native group")
+            XCTAssertTrue(filter.sharesBackground, "All intelligence filters must form one continuous native group")
             XCTAssertNil(filter.customView, "Native items must retain individual system overflow")
             XCTAssertNotNil(filter.image)
         }
@@ -1899,7 +1899,7 @@ import WebKit
             app.storiesCollection.activeFeed = previousFeed
             app.feedDetailViewController.storyCache.reload()
         }
-        for actionID in ["train", "statistics", "notifications", "related", "mark-read", "rename", "delete"] {
+        for actionID in ["train", "statistics", "related", "mark-read", "rename", "delete"] {
             try await dismissLiveDialog(in: window)
             let folders = try XCTUnwrap(app.dictFoldersArray as? [String])
             let path = try XCTUnwrap(feeds.feedTitlesTable.indexPathsForVisibleRows?.first { index in
@@ -2488,7 +2488,7 @@ import WebKit
             let expectedWidth: CGFloat
             if #available(iOS 27.0, *) { expectedWidth = 375 } else { expectedWidth = 359 }
             XCTAssertEqual(toolbar.bounds.width, expectedWidth, accuracy: 0.5)
-            XCTAssertEqual(controller.intelligenceControl.widthForSegment(at: 1), 68,
+            XCTAssertEqual(controller.intelligenceControl.widthForSegment(at: 1), 88,
                            "Changing child margins must not change the toolbar's available width")
         }
         withExtendedLifetime(navigation) {}
@@ -2717,19 +2717,18 @@ import WebKit
         XCTAssertEqual(controller.feedViewToolbar.items?.count, 3, "Spacers split the toolbar into separate glass groups")
         XCTAssertTrue(controller.feedViewToolbar.items?.first === controller.addBarButton)
         XCTAssertTrue(controller.feedViewToolbar.items?.last === controller.settingsBarButton)
-        XCTAssertEqual(controller.intelligenceControl.widthForSegment(at: 1), 68)
-        XCTAssertEqual(controller.intelligenceControl.widthForSegment(at: 2), 62)
-        XCTAssertEqual(controller.intelligenceControl.widthForSegment(at: 3), 60)
+        XCTAssertEqual(controller.intelligenceControl.widthForSegment(at: 1), 88)
+        XCTAssertEqual(controller.intelligenceControl.widthForSegment(at: 2), 82)
 
         controller.feedViewToolbar.frame.size.width = 286
         controller.layout(for: .landscapeLeft)
         XCTAssertEqual(controller.feedViewToolbar.items?.count, 3)
-        XCTAssertLessThan(controller.intelligenceControl.widthForSegment(at: 1), 68)
-        XCTAssertEqual(controller.intelligenceControl.numberOfSegments, 4)
+        XCTAssertLessThan(controller.intelligenceControl.widthForSegment(at: 1), 88)
+        XCTAssertEqual(controller.intelligenceControl.numberOfSegments, 3)
 
         controller.feedViewToolbar.frame.size.width = 375
         controller.layout(for: .landscapeLeft)
-        XCTAssertEqual(controller.intelligenceControl.widthForSegment(at: 1), 68,
+        XCTAssertEqual(controller.intelligenceControl.widthForSegment(at: 1), 88,
                        "Widening the sidebar must restore the text labels")
     }
 

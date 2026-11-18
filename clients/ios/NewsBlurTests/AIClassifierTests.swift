@@ -169,6 +169,7 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
 
 @MainActor final class Test_StoryAIClassifierPills: XCTestCase {
     func test_headerShowsContentAndImagePillsWithScoreClasses() throws {
+        try XCTSkipUnless(NewsNativeFeatures.aiFeatures, "NewsNativeFeatures.swift sets AI features aside, including clustering, AI labels and related sites.")
         try withEnglishInterface {
             let html = StoryAIClassifierPills.headerHTML(for: [
                 ["prompt": "Non-apple related news", "score": 1, "include_images": false],
@@ -188,7 +189,8 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         }
     }
 
-    func test_headerEscapesPromptText() {
+    func test_headerEscapesPromptText() throws {
+        try XCTSkipUnless(NewsNativeFeatures.aiFeatures, "NewsNativeFeatures.swift sets AI features aside, including clustering, AI labels and related sites.")
         let html = StoryAIClassifierPills.headerHTML(for: [
             ["prompt": "<img src=x onerror=\"alert('x')\"> & C:\\path\nnext", "score": 1, "include_images": false],
         ])
@@ -210,6 +212,7 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
     }
 
     func test_storyHeaderPlacesPillsAfterURLMatchAndKeepsThemOffline() throws {
+        try XCTSkipUnless(NewsNativeFeatures.aiFeatures, "NewsNativeFeatures.swift sets AI features aside, including clustering, AI labels and related sites.")
         let app = NewsBlurAppDelegate()
         app.storiesCollection = StoriesCollection()
         app.storiesCollection.activeClassifiers = ["5719953": ["url_regex": ["sponsor": -1]]]
@@ -1283,7 +1286,8 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         XCTAssertEqual(intelligence(of: "7:other", in: app)?["prompt"] as? Int, 0, "Another site's story wasn't asked for")
     }
 
-    func test_aFoldedStoryTakesItsAIPillsFromItsClusterMember() {
+    func test_aFoldedStoryTakesItsAIPillsFromItsClusterMember() throws {
+        try XCTSkipUnless(NewsNativeFeatures.aiFeatures, "NewsNativeFeatures.swift sets AI features aside, including clustering, AI labels and related sites.")
         // The reruns matched the AI focus prompt the reader removes, and the server folds both under the keynote.
         let app = makeApp()
         let prompt = "Non-apple related news"
@@ -2036,7 +2040,7 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         try withEnglishInterface {
             UsageBillingFeature.isEnabled = false
             XCTAssertFalse(try settingsMenuTitles().contains("Usage Billing"))
-            XCTAssertTrue(try settingsMenuTitles().contains("Support Forum"), "The rest of the menu is still there")
+            XCTAssertTrue(try settingsMenuTitles().contains("Logout"), "The rest of the menu is still there")
 
             UsageBillingFeature.isEnabled = true
             XCTAssertTrue(try settingsMenuTitles().contains("Usage Billing"))

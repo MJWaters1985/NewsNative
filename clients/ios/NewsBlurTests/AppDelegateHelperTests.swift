@@ -612,9 +612,8 @@ private final class SubscriptionUnauthorizedTask: URLSessionDataTask, @unchecked
         controller.layout(for: .portrait)
         let control = try XCTUnwrap(controller.intelligenceControl)
         // AppDelegateHelperTests.swift requires the original text-bearing images at iPhone SE width.
-        XCTAssertEqual(control.widthForSegment(at: 1), 68)
-        XCTAssertEqual(control.widthForSegment(at: 2), 62)
-        XCTAssertEqual(control.widthForSegment(at: 3), 60)
+        XCTAssertEqual(control.widthForSegment(at: 1), 88)
+        XCTAssertEqual(control.widthForSegment(at: 2), 82)
     }
 
     func test_loadingSidebarKeepsImageFiltersAccessible() throws {
@@ -625,13 +624,32 @@ private final class SubscriptionUnauthorizedTask: URLSessionDataTask, @unchecked
         controller.loadViewIfNeeded()
 
         let control = try XCTUnwrap(controller.intelligenceControl)
-        XCTAssertEqual(control.numberOfSegments, 4)
-        for (index, label) in [(1, "Unread"), (2, "Focus"), (3, "Saved")] {
+        XCTAssertEqual(control.numberOfSegments, 3, "NewsNative offers All, Unread and Saved, without Focus")
+        for (index, label) in [(1, "Unread"), (2, "Saved")] {
             let image = try XCTUnwrap(control.imageForSegment(at: index))
             XCTAssertEqual(image.accessibilityLabel, label)
             control.selectedSegmentIndex = index
             XCTAssertEqual(control.selectedSegmentIndex, index)
         }
+    }
+
+    func test_savedFocusFilterBecomesUnread() throws {
+        // AppDelegateHelperTests.swift: NewsNative removed Focus, so a filter saved by an earlier build must not
+        // land on Saved, which now holds Focus's old segment index.
+        let defaults = UserDefaults.standard
+        let original = defaults.object(forKey: "selectedIntelligence")
+        defer {
+            if let original { defaults.set(original, forKey: "selectedIntelligence") }
+            else { defaults.removeObject(forKey: "selectedIntelligence") }
+        }
+        defaults.set(1, forKey: "selectedIntelligence")
+        let storyboard = UIStoryboard(name: "MainInterface", bundle: Bundle(for: FeedsViewController.self))
+        let controller = try XCTUnwrap(storyboard.instantiateViewController(withIdentifier: "FeedsViewController") as? FeedsViewController)
+
+        controller.loadViewIfNeeded()
+
+        XCTAssertEqual(defaults.integer(forKey: "selectedIntelligence"), 0,
+                       "A saved Focus filter must become Unread before the list restores its segment")
     }
 }
 
@@ -716,7 +734,7 @@ final class AppDelegateHelperTests: XCTestCase {
         controller.appDelegate = NewsBlurAppDelegate()
         controller.view = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
         let toolbar = UIToolbar()
-        let intelligence = UISegmentedControl(items: ["All", "Unread", "Focus", "Saved"])
+        let intelligence = UISegmentedControl(items: ["All", "Unread", "Saved"])
         let add = UIBarButtonItem(barButtonSystemItem: .add, target: nil, action: nil)
         let settings = UIBarButtonItem(title: "Settings", style: .plain, target: nil, action: nil)
         controller.feedViewToolbar = toolbar
@@ -739,7 +757,7 @@ final class AppDelegateHelperTests: XCTestCase {
         controller.appDelegate = NewsBlurAppDelegate()
         controller.view = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
         let toolbar = UIToolbar()
-        let intelligence = UISegmentedControl(items: ["All", "", "", ""])
+        let intelligence = UISegmentedControl(items: ["All", "", ""])
         controller.feedViewToolbar = toolbar
         controller.intelligenceControl = intelligence
         controller.addBarButton = UIBarButtonItem(barButtonSystemItem: .add, target: nil, action: nil)
@@ -749,15 +767,15 @@ final class AppDelegateHelperTests: XCTestCase {
         for width: CGFloat in [288, 359, 374, 288] {
             toolbar.frame = CGRect(x: 0, y: 0, width: width, height: 48)
             controller.layout(for: .portrait)
-            let segmentWidth = (0..<4).reduce(CGFloat.zero) { $0 + intelligence.widthForSegment(at: $1) }
+            let segmentWidth = (0..<3).reduce(CGFloat.zero) { $0 + intelligence.widthForSegment(at: $1) }
             if #available(iOS 27.0, *) {
                 XCTAssertLessThanOrEqual(segmentWidth, width - 144 + 0.01)
                 XCTAssertEqual(segmentWidth, width >= 374 ? 230 : min(165, width - 144), accuracy: 0.01)
             } else {
                 XCTAssertEqual(segmentWidth, width < 352 ? 165 : 230, accuracy: 0.01)
             }
-            XCTAssertEqual(intelligence.numberOfSegments, 4)
-            for index in 0..<4 {
+            XCTAssertEqual(intelligence.numberOfSegments, 3)
+            for index in 0..<3 {
                 XCTAssertGreaterThanOrEqual(intelligence.widthForSegment(at: index), 34)
             }
         }

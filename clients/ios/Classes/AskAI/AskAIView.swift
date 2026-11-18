@@ -609,25 +609,6 @@ struct AskAIView: View {
                     .foregroundColor(isRateLimitError ? NewsBlurColors.textPrimary : .red)
             }
 
-            // Show upgrade button for rate-limited non-archive users
-            if isRateLimitError && !NewsBlurAppDelegate.shared()!.isPremiumArchive {
-                Button(action: {
-                    openPremiumDialog()
-                }) {
-                    HStack {
-                        Image(systemName: "star.fill")
-                            .font(.system(size: 12))
-                        Text(NBLocalization.text("Upgrade to Premium Archive"))
-                            .font(.system(size: 13, weight: .medium))
-                    }
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 8)
-                    .background(NewsBlurColors.accent)
-                    .cornerRadius(6)
-                }
-                .padding(.top, 4)
-            }
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -648,36 +629,11 @@ struct AskAIView: View {
                     .foregroundColor(NewsBlurColors.textPrimary)
             }
 
-            // Show upgrade button for rate-limited non-archive users
-            if isRateLimitError && !NewsBlurAppDelegate.shared()!.isPremiumArchive {
-                Button(action: {
-                    openPremiumDialog()
-                }) {
-                    HStack {
-                        Image(systemName: "star.fill")
-                            .font(.system(size: 12))
-                        Text(NBLocalization.text("Upgrade to Premium Archive"))
-                            .font(.system(size: 13, weight: .medium))
-                    }
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 8)
-                    .background(NewsBlurColors.accent)
-                    .cornerRadius(6)
-                }
-                .padding(.top, 4)
-            }
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(isRateLimitError ? Color.orange.opacity(0.1) : NewsBlurColors.accent.opacity(0.1))
         .cornerRadius(6)
-    }
-
-    private func openPremiumDialog() {
-        if let appDelegate = NewsBlurAppDelegate.shared() {
-            appDelegate.showPremiumDialogForArchive()
-        }
     }
 
     private var followUpInput: some View {

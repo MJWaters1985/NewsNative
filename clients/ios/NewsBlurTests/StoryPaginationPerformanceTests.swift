@@ -123,6 +123,7 @@ import QuartzCore
     }
 
     func test_compareFullReloadAndTailInsertionAtIncreasingStoryCounts() throws {
+        try XCTSkipUnless(NewsNativeFeatures.aiFeatures, "NewsNativeFeatures.swift sets AI features aside, including clustering, AI labels and related sites.")
         for count in [100, 1_000, 5_000] {
             for mode in [PaginationApplyMode.productionReload, .experimentalTailInsertion] {
                 let fixture = makeFixture(storyCount: count)
@@ -171,7 +172,8 @@ import QuartzCore
         }
     }
 
-    func test_appendPreservesScrollMarkReadAnchor() {
+    func test_appendPreservesScrollMarkReadAnchor() throws {
+        try XCTSkipUnless(NewsNativeFeatures.aiFeatures, "NewsNativeFeatures.swift sets AI features aside, including clustering, AI labels and related sites.")
         let fixture = makeFixture(storyCount: 100)
         fixture.controller.setValue(40, forKey: "scrollingMarkReadRow")
         fixture.resetMeasurements()
@@ -319,7 +321,8 @@ import QuartzCore
         }
     }
 
-    func test_changedClusterPreferenceOrSubscriptionsFallsBackToReload() {
+    func test_changedClusterPreferenceOrSubscriptionsFallsBackToReload() throws {
+        try XCTSkipUnless(NewsNativeFeatures.aiFeatures, "NewsNativeFeatures.swift sets AI features aside, including clustering, AI labels and related sites.")
         for changeSubscriptions in [false, true] {
             let fixture = makeFixture(storyCount: 100)
             if changeSubscriptions {
@@ -340,6 +343,7 @@ import QuartzCore
     }
 
     func test_pageContainingOnlyHiddenStoriesPreservesNativeRowsAndReaderPosition() throws {
+        try XCTSkipUnless(NewsNativeFeatures.aiFeatures, "NewsNativeFeatures.swift sets AI features aside, including clustering, AI labels and related sites.")
         let fixture = makeFixture(storyCount: 100)
         let footer = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 36))
         fixture.table.tableFooterView = footer
@@ -384,6 +388,7 @@ import QuartzCore
     }
 
     func test_filteredPagesAdvanceOnceAndLaterVisiblePageUsesCorrectModelLocations() throws {
+        try XCTSkipUnless(NewsNativeFeatures.aiFeatures, "NewsNativeFeatures.swift sets AI features aside, including clustering, AI labels and related sites.")
         let fixture = makeFixture(storyCount: 100)
         let window = try showPaginationFixture(fixture)
         defer { window.isHidden = true }
@@ -454,6 +459,7 @@ import QuartzCore
     }
 
     func test_filteredAppendReloadsWhenExistingVisibleStoryOrClusterRowsChanged() throws {
+        try XCTSkipUnless(NewsNativeFeatures.aiFeatures, "NewsNativeFeatures.swift sets AI features aside, including clustering, AI labels and related sites.")
         for changeCluster in [false, true] {
             let fixture = makeFixture(storyCount: 100)
             var stories = try XCTUnwrap(fixture.stories.activeFeedStories as? [[String: Any]])

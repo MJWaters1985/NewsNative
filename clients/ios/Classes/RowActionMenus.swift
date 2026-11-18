@@ -138,12 +138,14 @@ import UIKit
                 app.loadFeed(String(describing: id), withStory: nil, animated: true)
             })
         }
-        tools.append(action("train", NBLocalization.text("Train intelligence…"), "slider.horizontal.3") {
-            app.activeStory = dictionary
-            app.openTrainStory(source)
-        })
+        if NewsNativeFeatures.training {
+            tools.append(action("train", NBLocalization.text("Train intelligence…"), "slider.horizontal.3") {
+                app.activeStory = dictionary
+                app.openTrainStory(source)
+            })
+        }
         let defaults = UserDefaults.standard
-        if defaults.object(forKey: "show_ask_ai") == nil || defaults.bool(forKey: "show_ask_ai") {
+        if NewsNativeFeatures.askAI && (defaults.object(forKey: "show_ask_ai") == nil || defaults.bool(forKey: "show_ask_ai")) {
             tools.append(action("ask-ai", NBLocalization.text("Ask AI…"), "sparkles") {
                 app.openAskAIDialog(dictionary)
             })
@@ -190,14 +192,12 @@ extension FeedsViewController: UIContextMenuInteractionDelegate {
                 }, failure: { _, error in self?.informError(error) })
             })
             tools = [
-                action("statistics", NBLocalization.text("Statistics"), "chart.bar") { app.openStatistics(withFeed: feedID, sender: source) },
-                action("notifications", NBLocalization.text("Notifications"), "bell") { app.openNotifications(withFeed: feedID, sender: source) },
-                action("train", NBLocalization.text("Train intelligence…"), "slider.horizontal.3") { [weak self] in
-                    self?.selectFeed(feedID, inFolder: folder)
-                    app.openTrainSite(withFeedLoaded: true, from: source)
-                },
-                action("related", NBLocalization.text("Related sites"), "sparkles") { app.openDiscoverFeedsDialog(fromSettingsButton: feedID, sourceView: source) }
+                action("statistics", NBLocalization.text("Statistics"), "chart.bar") { app.openStatistics(withFeed: feedID, sender: source) }
             ]
+            // RowActionMenus.swift: Related sites come from AI embeddings, set aside in NewsNativeFeatures.swift.
+            if NewsNativeFeatures.aiFeatures {
+                tools.append(action("related", NBLocalization.text("Related sites"), "sparkles") { app.openDiscoverFeedsDialog(fromSettingsButton: feedID, sourceView: source) })
+            }
             organize.append(action("rename", NBLocalization.text("Rename site…"), "pencil") { [weak self] in
                 self?.renameMenuTarget(title: title, path: "/reader/rename_feed", parameters: ["feed_id": feedID], nameKey: "feed_title")
             })

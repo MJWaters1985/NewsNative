@@ -1004,10 +1004,6 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     [self showPremiumDialogScrollTo:nil];
 }
 
-- (void)showPremiumDialogForArchive {
-    [self showPremiumDialogScrollTo:@"archive"];
-}
-
 - (void)showPremiumDialogForPro {
     [self showPremiumDialogScrollTo:@"pro"];
 }
@@ -1607,6 +1603,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)openTrainSite {
+    // NewsBlurAppDelegate.m: NewsNativeFeatures.swift sets this feature aside, so no shortcut, link or gesture opens it.
+    if (!NewsNativeFeatures.training) return;
     [self hidePopover];
     // Needs a delay because the menu will close the popover.
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.01 * NSEC_PER_SEC),
@@ -1618,6 +1616,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)openTrainSiteWithFeedLoaded:(BOOL)feedLoaded from:(id)sender {
+    // NewsBlurAppDelegate.m: NewsNativeFeatures.swift sets this feature aside, so no shortcut, link or gesture opens it.
+    if (!NewsNativeFeatures.training) return;
     UINavigationController *navController = self.feedsNavigationController;
     trainerViewController.isStoryTrainer = NO;
     trainerViewController.isFeedLoaded = feedLoaded;
@@ -1647,6 +1647,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)openTrainStory:(id)sender {
+    // NewsBlurAppDelegate.m: NewsNativeFeatures.swift sets this feature aside, so no shortcut, link or gesture opens it.
+    if (!NewsNativeFeatures.training) return;
     UINavigationController *navController = self.feedsNavigationController;
     trainerViewController.isStoryTrainer = YES;
     trainerViewController.isFeedLoaded = YES;
@@ -1684,6 +1686,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)openAskAIDialog:(NSDictionary *)story {
+    // NewsBlurAppDelegate.m: NewsNativeFeatures.swift sets this feature aside, so no shortcut, link or gesture opens it.
+    if (!NewsNativeFeatures.askAI) return;
     if (@available(iOS 15.0, *)) {
         UINavigationController *navController = self.feedsNavigationController;
         AskAIViewController *askAIViewController = [[AskAIViewController alloc] initWithStory:story];
@@ -1727,6 +1731,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)openAskAIDialog:(NSDictionary *)story sourceRect:(NSValue *)sourceRectValue {
+    // NewsBlurAppDelegate.m: NewsNativeFeatures.swift sets this feature aside, so no shortcut, link or gesture opens it.
+    if (!NewsNativeFeatures.askAI) return;
     if (@available(iOS 15.0, *)) {
         CGRect sourceRect = [sourceRectValue CGRectValue];
 
@@ -1806,6 +1812,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)openDiscoverFeedsDialogFromSettingsButton:(NSString *)feedId sourceView:(UIView *)sourceView {
+    // NewsBlurAppDelegate.m: related sites come from AI embeddings, set aside in NewsNativeFeatures.swift.
+    if (!NewsNativeFeatures.aiFeatures) return;
     if (@available(iOS 15.0, *)) {
         DiscoverFeedsViewController *discoverVC = [[DiscoverFeedsViewController alloc] initWithFeedId:feedId];
         [self presentDiscoverFeedsController:discoverVC sourceView:sourceView];
@@ -1817,6 +1825,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)openDiscoverFeedsDialogFromSettingsButtonWithFeedIds:(NSArray *)feedIds sourceView:(UIView *)sourceView {
+    // NewsBlurAppDelegate.m: related sites come from AI embeddings, set aside in NewsNativeFeatures.swift.
+    if (!NewsNativeFeatures.aiFeatures) return;
     if (@available(iOS 15.0, *)) {
         NSMutableArray *feedIdStrings = [NSMutableArray array];
         for (id feedId in feedIds) {
@@ -1962,9 +1972,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
     }
 
-    if (hasIOSNotifications) {
-        [self registerForRemoteNotifications];
-    }
+    // NewsBlurAppDelegate.m: NewsNative does not register for push; servers address pushes to NewsBlur's own app.
+    (void)hasIOSNotifications;
     
     self.notificationFeedIds = [foundNotificationFeedIds sortedArrayUsingComparator:^NSComparisonResult(id  _Nonnull obj1, id  _Nonnull obj2) {
         NSString *feed1Title = [[[self.dictFeeds objectForKey:[NSString stringWithFormat:@"%@", obj1]] objectForKey:@"feed_title"] lowercaseString];

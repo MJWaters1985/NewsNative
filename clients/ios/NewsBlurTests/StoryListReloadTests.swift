@@ -73,6 +73,7 @@ import WebKit
     }
 
     func test_parentMidpointUsesActualCellGeometryRegardlessOfPreviewChildrenAndInsets() throws {
+        try XCTSkipUnless(NewsNativeFeatures.aiFeatures, "NewsNativeFeatures.swift sets AI features aside, including clustering, AI labels and related sites.")
         try withGeometryPreferences {
             var heights = Set<Int>()
             for textSize in [FeedDetailTextSize.titleOnly, .short, .medium, .long] {
@@ -99,6 +100,7 @@ import WebKit
     }
 
     func test_parentMidpointPreservesRealClusterModelAndVisibleCells() throws {
+        try XCTSkipUnless(NewsNativeFeatures.aiFeatures, "NewsNativeFeatures.swift sets AI features aside, including clustering, AI labels and related sites.")
         try withGeometryPreferences {
             for clusterMarkRead in [true, false] {
                 for spacing in ["compact", "comfortable"] {
@@ -145,6 +147,7 @@ import WebKit
     }
 
     func test_lastParentMarksBeforeItsRelatedChildrenAndLoadingRow() throws {
+        try XCTSkipUnless(NewsNativeFeatures.aiFeatures, "NewsNativeFeatures.swift sets AI features aside, including clustering, AI labels and related sites.")
         try withGeometryPreferences {
             let fixture = try makeGeometryFixture(children: [0, 5], textSize: .long, count: 2)
             let last = try XCTUnwrap(fixture.controller.indexPath(forStoryLocation: 1))
@@ -249,6 +252,7 @@ import WebKit
     }
 
     func test_scrollingPreservesClusterMarkReadPreference() throws {
+        try XCTSkipUnless(NewsNativeFeatures.aiFeatures, "NewsNativeFeatures.swift sets AI features aside, including clustering, AI labels and related sites.")
         try withGeometryPreferences {
             for clusterMarkRead in [true, false] {
                 let fixture = try makeGeometryFixture(children: [2], textSize: .short, clusterMarkRead: clusterMarkRead)

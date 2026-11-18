@@ -215,7 +215,10 @@ static const CGFloat kFolderTitleHeight = 36.0;
         if (isDashboard) {
             [sections addObject:[FeedChooserItem makeFolderWithIdentifier:@"dash:folders" title:[NBLocalization text:@"Folders"]]];
             [sections addObject:[FeedChooserItem makeFolderWithIdentifier:@"dash:feeds" title:[NBLocalization text:@"Sites"]]];
-            [sections addObject:[FeedChooserItem makeFolderWithIdentifier:@"dash:river_blurblogs" title:[NBLocalization text:@"All Shared Stories"]]];
+            // FeedChooserViewController.m offers shared stories only with social reading (NewsNativeFeatures.swift).
+            if (NewsNativeFeatures.socialFeatures) {
+                [sections addObject:[FeedChooserItem makeFolderWithIdentifier:@"dash:river_blurblogs" title:[NBLocalization text:@"All Shared Stories"]]];
+            }
             [sections addObject:[FeedChooserItem makeFolderWithIdentifier:@"dash:saved_searches" title:[NBLocalization text:@"Saved Searches"]]];
             [sections addObject:[FeedChooserItem makeFolderWithIdentifier:@"dash:saved_stories" title:[NBLocalization text:@"Saved Stories"]]];
         } else {
@@ -240,7 +243,13 @@ static const CGFloat kFolderTitleHeight = 36.0;
     NSMutableArray *folderArray = [[allFoldersDict.allKeys sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)] mutableCopy];
     
     if (isDashboard) {
-        [folderArray addObjectsFromArray:specialFolders];
+        for (NSString *specialFolder in specialFolders) {
+            // FeedChooserViewController.m offers only the special folders NewsNative keeps (NewsNativeFeatures.swift).
+            if ([specialFolder isEqualToString:@"river_blurblogs"] && !NewsNativeFeatures.socialFeatures) continue;
+            if ([NewsNativeFeatures.specialFeedFolders containsObject:specialFolder] &&
+                !NewsNativeFeatures.showsSpecialFeedSections) continue;
+            [folderArray addObject:specialFolder];
+        }
     }
     
     for (NSString *folderName in folderArray) {

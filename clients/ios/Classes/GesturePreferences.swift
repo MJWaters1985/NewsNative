@@ -10,8 +10,10 @@ import Foundation
         (UserDefaults.standard.string(forKey: "long_press_story_title") ?? "show_actions") == "show_actions"
     }
 
-    static let feedActions = ["read", "trainer", "notifications", "statistics"]
-    static let feedActionTitles = ["Mark all stories read", "Train intelligence", "Notifications", "Statistics"]
+    // GesturePreferences.swift: NewsNative has no push notifications, so feeds offer no Notifications swipe.
+    // GesturePreferences.swift: training is set aside too (NewsNativeFeatures.swift), so feeds swipe to read or statistics.
+    static let feedActions = ["read", "statistics"]
+    static let feedActionTitles = ["Mark all stories read", "Statistics"]
 
     @objc static var feedsEnabled: Bool {
         let defaults = UserDefaults.standard
@@ -27,7 +29,7 @@ import Foundation
     @objc static var feedRightAction: String { feedAction(right: true) }
 
     private static func feedAction(right: Bool) -> String {
-        let fallback = right ? "notifications" : "read"
+        let fallback = right ? "statistics" : "read"
         let value = UserDefaults.standard.string(forKey: right ? "feed_title_swipe_right" : "feed_title_swipe_left") ?? fallback
         return feedActions.contains(value) ? value : fallback
     }
@@ -36,7 +38,6 @@ import Foundation
         if action == "read" { return "indicator-unread" }
         if social { return "menu_icn_fetch_subscribers.png" }
         switch action {
-        case "notifications": return "menu_icn_notifications.png"
         case "statistics": return "menu_icn_statistics.png"
         default: return "train.png"
         }

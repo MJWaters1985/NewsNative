@@ -757,7 +757,8 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         return NO;
     }
 
-    return [[NSUserDefaults standardUserDefaults] boolForKey:@"story_clustering"];
+    // FeedDetailObjCViewController.m: clustering uses AI embeddings, set aside in NewsNativeFeatures.swift.
+    return NewsNativeFeatures.aiFeatures && [[NSUserDefaults standardUserDefaults] boolForKey:@"story_clustering"];
 }
 
 - (NSArray<NSDictionary *> *)visibleClusterStoriesForStory:(NSDictionary *)story {
@@ -6283,9 +6284,11 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         [self.appDelegate showSendTo:self sender:cell];
     }]];
     
-    [items addObject:[self itemWithTitle:[NBLocalization text:@"Train This Story"] iconName:@"menu_icn_train.png" handler:^{
-        [self.appDelegate openTrainStory:cell];
-    }]];
+    if (NewsNativeFeatures.training) {
+        [items addObject:[self itemWithTitle:[NBLocalization text:@"Train This Story"] iconName:@"menu_icn_train.png" handler:^{
+            [self.appDelegate openTrainStory:cell];
+        }]];
+    }
     
     [self.appDelegate showMarkOlderNewerReadMenuWithStoriesCollection:self.storiesCollection story:story sourceView:self.storyTitlesTable sourceRect:rect extraItems:items completionHandler:^(BOOL marked) {
         [self.storyTitlesTable reloadData];
@@ -6541,9 +6544,11 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     }
     
     if (!appDelegate.storiesCollection.isRiverView && !infrequent && !saved && !read && !social && !widget && !dashboard) {
-        [viewController addTitle:[NBLocalization text:@"Train this site"] iconName:@"menu_icn_train.png" selectionShouldDismiss:YES handler:^{
-            [self openTrainSite];
-        }];
+        if (NewsNativeFeatures.training) {
+            [viewController addTitle:[NBLocalization text:@"Train this site"] iconName:@"menu_icn_train.png" selectionShouldDismiss:YES handler:^{
+                [self openTrainSite];
+            }];
+        }
         
         if ([appDelegate.storiesCollection.activeFeed[@"ng"] integerValue] > 0) {
             NSString *title =  appDelegate.storiesCollection.showHiddenStories ? [NBLocalization text:@"Hide hidden stories"] : [NBLocalization text:@"Show hidden stories"];
@@ -6552,11 +6557,6 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
                 [self toggleHiddenStories];
             }];
         }
-        
-        [viewController addTitle:[NBLocalization text:@"Notifications"] iconName:@"dialog-notifications" iconColor:UIColorFromRGB(0xD58B4F) selectionShouldDismiss:YES handler:^{
-            [self
-             openNotificationsWithFeed:[NSString stringWithFormat:@"%@", [self.appDelegate.storiesCollection.activeFeed objectForKey:@"id"]]];
-        }];
         
         [viewController addTitle:[NBLocalization text:@"Statistics"] iconName:@"menu_icn_statistics.png" selectionShouldDismiss:YES handler:^{
             [self

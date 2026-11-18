@@ -447,13 +447,27 @@ final class Test_Localization: XCTestCase {
         XCTAssertTrue(arabic.contains("أكتوبر") && arabic.contains("2025"), "Arabic keeps Latin digits like the web: \(arabic)")
     }
 
+    func test_publicOnlyCommentsLeaveNoShareBarOrCommentList() {
+        // LocalizationTests.swift: NewsNative sets public comments aside (NewsNativeFeatures.swift), so a story whose
+        // comments all come from strangers must not advertise or list them.
+        let page = LocalizationShareBarPage()
+        page.appDelegate = NewsBlurAppDelegate()
+        page.activeStory = ["story_hash": "public-only-comments", "comment_count": 3, "share_count": 3,
+                            "comment_count_public": 3, "comment_count_friends": 0, "shared_by_friends": [],
+                            "public_comments": [["user_id": 7, "comments": "A stranger's comment"]]]
+
+        XCTAssertFalse((page.getShareBar() ?? "").contains("NB-story-shares"), "The share bar must not count public comments")
+        XCTAssertFalse((page.getComments() ?? "").contains("A stranger's comment"), "Public comments must not be listed")
+    }
+
     func test_storyShareBarAndClusterBadgesUseTranslatedWords() {
         let restore = rememberLanguage()
         defer { restore() }
         UserDefaults.standard.set("en", forKey: NBLocalization.preferenceKey)
         let page = LocalizationShareBarPage()
         page.appDelegate = NewsBlurAppDelegate()
-        page.activeStory = ["story_hash": "localization-share-bar", "comment_count": 1, "share_count": 2]
+        page.activeStory = ["story_hash": "localization-share-bar", "comment_count": 1, "share_count": 2,
+                            "comment_count_friends": 1, "shared_by_friends": [1, 2]]
         let shareBar = page.getShareBar() ?? ""
         XCTAssertTrue(shareBar.contains("<b>1 comment</b>"), shareBar)
         XCTAssertTrue(shareBar.contains("<b>2 shares</b>"), shareBar)

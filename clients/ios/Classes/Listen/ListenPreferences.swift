@@ -81,6 +81,7 @@ struct ListenDeliverySettings: Equatable {
 
     /// Whether the story button named train, share, save, ask_ai or listen is shown.
     static func showsStoryButton(_ name: String) -> Bool {
+        guard NewsNativeFeatures.allowsStoryButton(name) else { return false }
         guard let key = storyButtons.first(where: { $0.name == name })?.localKey else { return true }
         return defaults.object(forKey: key) == nil || defaults.bool(forKey: key)
     }

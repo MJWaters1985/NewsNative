@@ -810,7 +810,7 @@ private final class ReadFadeAppDelegate: NewsBlurAppDelegate {
         controller.view = UIView(frame: table.frame)
         controller.view.addSubview(table)
         controller.feedTitlesTable = table
-        controller.intelligenceControl = UISegmentedControl(items: ["All", "Unread", "Focus", "Saved"])
+        controller.intelligenceControl = UISegmentedControl(items: ["All", "Unread", "Saved"])
         controller.intelligenceControl.selectedSegmentIndex = 1
         let window = motionWindow(containing: [controller.view])
         defer { window.isHidden = true }
@@ -818,7 +818,7 @@ private final class ReadFadeAppDelegate: NewsBlurAppDelegate {
         delegate.tableView?(table, willDisplayHeaderView: header, forSection: 1)
         ReaderMotion.presentFeedRows(table, owner: controller)
 
-        for (segment, intelligence, showsAll) in [(0, 0, true), (2, 1, false), (3, 2, false), (1, 0, false)] {
+        for (segment, intelligence, showsAll) in [(0, 0, true), (2, 2, false), (1, 0, false)] {
             controller.intelligenceControl.selectedSegmentIndex = segment
             controller.selectIntelligence()
             XCTAssertEqual(controller.appDelegate.selectedIntelligence, intelligence)
@@ -850,7 +850,7 @@ private final class ReadFadeAppDelegate: NewsBlurAppDelegate {
         table.addSubview(header)
         table.addSubview(cell)
         controller.feedTitlesTable = table
-        controller.intelligenceControl = UISegmentedControl(items: ["All", "Unread", "Focus", "Saved"])
+        controller.intelligenceControl = UISegmentedControl(items: ["All", "Unread", "Saved"])
         controller.intelligenceControl.selectedSegmentIndex = 1
         controller.setValue(NSMutableDictionary(dictionary: [NSNumber(value: 1): header]), forKey: "folderTitleViews")
         table.delegate = controller

@@ -1951,6 +1951,7 @@ import UIKit
     }
 
     func test_narrowSidebarShortensFilterBeforeCompressingDiscover() throws {
+        try XCTSkipUnless(NewsNativeFeatures.aiFeatures, "NewsNativeFeatures.swift sets AI features aside, including clustering, AI labels and related sites.")
         let (bar, parent) = makeBar(width: 320)
         // StoryTitlesHeaderBarLayoutTests.swift hosts glass in a window before checking its event routing.
         let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
@@ -2035,7 +2036,8 @@ import UIKit
         }
     }
 
-    func test_hiddenDiscoverAndMarkReadReleaseTheirWidthForTheSortLabel() {
+    func test_hiddenDiscoverAndMarkReadReleaseTheirWidthForTheSortLabel() throws {
+        try XCTSkipUnless(NewsNativeFeatures.aiFeatures, "NewsNativeFeatures.swift sets AI features aside, including clustering, AI labels and related sites.")
         let (bar, parent) = makeBar(width: 360)
         XCTAssertEqual(title(of: bar.optionsPill), "UNREAD")
         bar.updateDiscoverVisibility(isRiver: true, isEverything: true, isSocial: false, isSaved: false, isRead: false, isWidget: false, isInfrequent: false)
@@ -2069,7 +2071,8 @@ import UIKit
         XCTAssertEqual(bar.discoverPill.accessibilityLabel, "Related Sites")
     }
 
-    func test_faviconsSurviveStableLayoutWithoutRecreatingViewsOrSchedulingLayout() {
+    func test_faviconsSurviveStableLayoutWithoutRecreatingViewsOrSchedulingLayout() throws {
+        try XCTSkipUnless(NewsNativeFeatures.aiFeatures, "NewsNativeFeatures.swift sets AI features aside, including clustering, AI labels and related sites.")
         let (bar, parent) = makeBar(width: 600)
         let icon = UIGraphicsImageRenderer(size: CGSize(width: 12, height: 12)).image { context in
             UIColor.red.setFill()
