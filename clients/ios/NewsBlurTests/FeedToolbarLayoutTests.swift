@@ -410,40 +410,36 @@ import WebKit
             detail.appDelegate = nil
             app.detailViewController = nil
         }
-        // FeedToolbarLayoutTests.swift uses the production CSS and real empty-comment footer hierarchy, with tall content so the bottom is scrollable.
+        // FeedToolbarLayoutTests.swift uses the production CSS and real story-button footer hierarchy, with tall content so the bottom is scrollable.
         web.loadHTMLString("""
             <html><head><meta id="viewport" name="viewport" content="width=527, initial-scale=1.0"><style>\(css)</style></head>
             <body id="story_pane"><div id="NB-story" class="NB-story" style="height:1200px">Article</div>
-            <div class="NB-share-wrapper"><div class="NB-share-inner-wrapper" style="height:40px">Train Share Save Ask AI</div></div>
-            <div id="NB-comments-wrapper"></div></body></html>
+            <div id="NB-sideoptions-container"><div class="NB-share-wrapper"><div class="NB-share-inner-wrapper" style="height:40px">Save</div></div></div>
+            </body></html>
             """, baseURL: Bundle.main.resourceURL)
         await fulfillment(of: [loaded], timeout: SimulatorTestTiming.realWorkTimeout)
         func geometry() async throws -> [String: NSNumber] {
             let value = try await web.evaluateJavaScript("""
                 (() => { const footer = document.querySelector('.NB-share-wrapper');
-                const comments = document.querySelector('#NB-comments-wrapper');
-                const end = comments.childElementCount ? comments : footer;
-                return {tail:document.documentElement.scrollHeight - (end.getBoundingClientRect().bottom + scrollY),
+                const options = document.querySelector('#NB-sideoptions-container');
+                return {tail:document.documentElement.scrollHeight - (options.getBoundingClientRect().bottom + scrollY),
                 padding:parseFloat(getComputedStyle(document.body).paddingBottom),
-                commentsMargin:parseFloat(getComputedStyle(comments).marginBottom)}; })()
+                optionsMargin:parseFloat(getComputedStyle(options).marginBottom)}; })()
                 """)
             return try XCTUnwrap(value as? [String: NSNumber])
         }
-        for hasComments in [false, true] {
-            _ = try await web.evaluateJavaScript("document.querySelector('#NB-comments-wrapper').innerHTML = '\(hasComments ? "<div style=\"height:200px\">Comments</div>" : "")'")
-            for vertical in [true, false, true] {
-                pages.verticalToolbar = vertical
-                detail.simulatesPhone = vertical
-                page.changeWebViewWidth()
-                let metrics = try await geometry()
-                let tail = try XCTUnwrap(metrics["tail"]).doubleValue
-                if vertical {
-                    XCTAssertLessThanOrEqual(tail, 24, "The side-toolbar article must not retain a bottom-toolbar-sized blank tail; comments=\(hasComments)")
-                    XCTAssertGreaterThanOrEqual(tail, 8, "Keep a small reading margin at the end")
-                } else {
-                    XCTAssertEqual(metrics["padding"]?.doubleValue, 64, "Conventional iPad footer spacing must remain unchanged")
-                    XCTAssertEqual(metrics["commentsMargin"]?.doubleValue, 64)
-                }
+        for vertical in [true, false, true] {
+            pages.verticalToolbar = vertical
+            detail.simulatesPhone = vertical
+            page.changeWebViewWidth()
+            let metrics = try await geometry()
+            let tail = try XCTUnwrap(metrics["tail"]).doubleValue
+            if vertical {
+                XCTAssertLessThanOrEqual(tail, 24, "The side-toolbar article must not retain a bottom-toolbar-sized blank tail")
+                XCTAssertGreaterThanOrEqual(tail, 8, "Keep a small reading margin at the end")
+            } else {
+                XCTAssertEqual(metrics["padding"]?.doubleValue, 64, "Conventional iPad footer spacing must remain unchanged")
+                XCTAssertEqual(metrics["optionsMargin"]?.doubleValue, 64)
             }
         }
         #endif
@@ -1880,14 +1876,14 @@ import WebKit
         let story = Story(index: 0, dictionary: dictionary)
         let previousStory = app.activeStory
         defer { app.activeStory = previousStory }
-        for actionID in ["train", "share-link", "share-story", "share-newsblur", "ask-ai"] {
+        for actionID in ["share-link", "share-story"] {
             try await dismissLiveDialog(in: window)
             let action = try XCTUnwrap(RowActionMenus.story(story, controller: controller, source: controller.view)
                 .flatMap { $0 }.first { $0.id == actionID })
             captureLiveDialog(window, name: "ipad-story-\(actionID)-before")
             action.perform()
             try await assertLiveDialogRemainsPresented(in: window, name: "ipad-story-\(actionID)")
-            // FeedToolbarLayoutTests.swift opens composers without sharing or submitting an AI request.
+            // FeedToolbarLayoutTests.swift opens share sheets without sharing.
             try await dismissLiveDialog(in: window)
         }
     }
@@ -1899,14 +1895,14 @@ import WebKit
             app.storiesCollection.activeFeed = previousFeed
             app.feedDetailViewController.storyCache.reload()
         }
-        for actionID in ["train", "statistics", "related", "mark-read", "rename", "delete"] {
+        for actionID in ["statistics", "mark-read", "rename", "delete"] {
             try await dismissLiveDialog(in: window)
             let folders = try XCTUnwrap(app.dictFoldersArray as? [String])
             let path = try XCTUnwrap(feeds.feedTitlesTable.indexPathsForVisibleRows?.first { index in
                 guard folders.indices.contains(index.section),
                       let ids = app.dictFolders[folders[index.section]] as? [Any], ids.indices.contains(index.row) else { return false }
                 let id = String(describing: ids[index.row])
-                return app.dictFeeds[id] != nil && !app.isSocialFeed(id) && !app.isSavedFeed(id)
+                return app.dictFeeds[id] != nil && !app.isSavedFeed(id)
             })
             let folder = folders[path.section]
             let ids = try XCTUnwrap(app.dictFolders[folder] as? [Any])

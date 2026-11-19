@@ -21,26 +21,17 @@
 @class AppDelegateHelper;
 @class SplitViewController;
 @class FeedsViewController;
-@class ActivitiesViewController;
 @class FeedDetailViewController;
 @class MarkReadMenuViewController;
-@class FirstTimeUserViewController;
-@class FirstTimeUserAddSitesViewController;
-@class FirstTimeUserAddFriendsViewController;
-@class FirstTimeUserAddNewsBlurViewController;
-@class FriendsListViewController;
 @class FontSettingsViewController;
 @class DetailViewController;
 @class StoryPagesViewController;
 @class StoryDetailViewController;
-@class ShareViewController;
 @class LoginViewController;
 @class AddSiteViewController;
 @class MoveSiteViewController;
-@class NotificationsViewController;
 @class UserTagsViewController;
 @class OriginalStoryViewController;
-@class UserProfileViewController;
 @class FeedChooserViewController;
 @class MenuViewController;
 @class UnreadCounts;
@@ -58,36 +49,23 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
     UINavigationController *feedsNavigationController;
     UINavigationController *modalNavigationController;
     UINavigationController *shareNavigationController;
-    UINavigationController *userProfileNavigationController;
-    UINavigationController *notificationsNavigationController;
     DetailViewController *detailViewController;
     
-    FirstTimeUserViewController *firstTimeUserViewController;
-    FirstTimeUserAddSitesViewController *firstTimeUserAddSitesViewController;
-    FirstTimeUserAddFriendsViewController *firstTimeUserAddFriendsViewController;
-    FirstTimeUserAddNewsBlurViewController *firstTimeUserAddNewsBlurViewController;
     
-    ActivitiesViewController *activitiesViewController;
     FeedsViewController *feedsViewController;
-    FriendsListViewController *friendsListViewController;
     FontSettingsViewController *fontSettingsViewController;
     
     StoryDetailViewController *storyDetailViewController;
-    ShareViewController *shareViewController;
     LoginViewController *loginViewController;
     AddSiteViewController *addSiteViewController;
     MoveSiteViewController *moveSiteViewController;
-    NotificationsViewController *notificationsViewController;
     UserTagsViewController *userTagsViewController;
     OriginalStoryViewController *originalStoryViewController;
     UINavigationController *originalStoryViewNavController;
-    UserProfileViewController *userProfileViewController;
 
     AFHTTPSessionManager *networkManager;
 
     NSString * activeUsername;
-    NSString * activeUserProfileId;
-    NSString * activeUserProfileName;
     BOOL hasNoSites;
     BOOL isTryFeedView;
     BOOL skipTryFeedCleanup;
@@ -102,8 +80,6 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
     
     NSDictionary * activeStory;
     NSURL * activeOriginalStoryURL;
-    NSString * activeShareType;
-    NSDictionary * activeComment;
     NSInteger feedDetailPortraitYCoordinate;
     NSInteger originalStoryCount;
     NSInteger selectedIntelligence;
@@ -124,16 +100,12 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 	NSDictionary * dictFolders;
     NSMutableDictionary * dictFeeds;
     NSMutableDictionary * dictActiveFeeds;
-    NSDictionary * dictSocialFeeds;
     NSDictionary * dictSocialProfile;
     NSDictionary * dictUserProfile;
     NSDictionary * dictSocialServices;
     NSMutableDictionary * dictUnreadCounts;
     NSMutableDictionary * dictTextFeeds;
-    NSArray * userInteractionsArray;
-    NSArray * userActivitiesArray;
     NSMutableArray * dictFoldersArray;
-    NSArray * notificationFeedIds;
     
     FMDatabaseQueue *database;
     NSOperationQueue *offlineQueue;
@@ -161,34 +133,23 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 @property (nonatomic) IBOutlet UINavigationController *detailNavigationController;
 @property (nonatomic) UINavigationController *modalNavigationController;
 @property (nonatomic) UINavigationController *shareNavigationController;
-@property (nonatomic) UINavigationController *notificationsNavigationController;
-@property (nonatomic) UINavigationController *userProfileNavigationController;
 @property (nonatomic) UINavigationController *originalStoryViewNavController;
 @property (nonatomic) IBOutlet DetailViewController *detailViewController;
-@property (nonatomic) IBOutlet ActivitiesViewController *activitiesViewController;
 @property (nonatomic) IBOutlet FeedsViewController *feedsViewController;
 @property (nonatomic, readonly) FeedDetailViewController *feedDetailViewController;
 @property (nonatomic, strong) UINavigationController *feedDetailMenuNavigationController;
-@property (nonatomic) IBOutlet FriendsListViewController *friendsListViewController;
 @property (nonatomic, readonly) StoryPagesViewController *storyPagesViewController;
 @property (nonatomic) IBOutlet StoryDetailViewController *storyDetailViewController;
 @property (nonatomic) IBOutlet LoginViewController *loginViewController;
 @property (nonatomic, strong) UINavigationController *addSiteNavigationController;
 @property (nonatomic) IBOutlet AddSiteViewController *addSiteViewController;
 @property (nonatomic) IBOutlet MoveSiteViewController *moveSiteViewController;
-@property (nonatomic) IBOutlet NotificationsViewController *notificationsViewController;
 @property (nonatomic) IBOutlet UserTagsViewController *userTagsViewController;
 @property (nonatomic) IBOutlet OriginalStoryViewController *originalStoryViewController;
-@property (nonatomic) IBOutlet ShareViewController *shareViewController;
 @property (nonatomic) IBOutlet FontSettingsViewController *fontSettingsViewController;
-@property (nonatomic) IBOutlet UserProfileViewController *userProfileViewController;
 @property (nonatomic, strong) UINavigationController *fontSettingsNavigationController;
 @property (nonatomic, strong) MarkReadMenuViewController *markReadMenuViewController;
 @property (nonatomic, strong) FeedChooserViewController *feedChooserViewController;
-@property (nonatomic) IBOutlet FirstTimeUserViewController *firstTimeUserViewController;
-@property (nonatomic) IBOutlet FirstTimeUserAddSitesViewController *firstTimeUserAddSitesViewController;
-@property (nonatomic) IBOutlet FirstTimeUserAddFriendsViewController *firstTimeUserAddFriendsViewController;
-@property (nonatomic) IBOutlet FirstTimeUserAddNewsBlurViewController *firstTimeUserAddNewsBlurViewController;
 
 @property (nonatomic) AFHTTPSessionManager *networkManager;
 @property (nonatomic, readwrite) StoriesCollection *storiesCollection;
@@ -203,8 +164,6 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 
 @property (nonatomic, readonly) NSHTTPCookie *sessionIdCookie;
 @property (readwrite) NSString * activeUsername;
-@property (readwrite) NSString * activeUserProfileId;
-@property (readwrite) NSString * activeUserProfileName;
 @property (nonatomic, readwrite) BOOL hasNoSites;
 @property (nonatomic, readwrite) BOOL isTryFeedView;
 @property (nonatomic, readwrite) BOOL skipTryFeedCleanup;
@@ -215,15 +174,12 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 @property (nonatomic) NSString *tryFeedStoryId;
 @property (nonatomic) NSString *tryFeedFeedId;
 @property (nonatomic) NSString *tryFeedStoryTitle;
-@property (nonatomic) NSString *tryFeedCategory;
 @property (nonatomic, readwrite) BOOL popoverHasFeedView;
 @property (nonatomic, readwrite) BOOL inFeedDetail;
 @property (nonatomic, readwrite) BOOL inStoryDetail;
 @property (nonatomic, readwrite) BOOL isPresentingActivities;
 @property (readwrite) NSDictionary * activeStory;
 @property (readwrite) NSURL * activeOriginalStoryURL;
-@property (readwrite) NSDictionary * activeComment;
-@property (readwrite) NSString * activeShareType;
 @property (readwrite) NSInteger feedDetailPortraitYCoordinate;
 @property (readwrite) NSInteger originalStoryCount;
 @property (readwrite) NSInteger savedSearchesCount;
@@ -252,7 +208,6 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 @property (nonatomic, strong) NSMutableDictionary *dictInactiveFeeds;
 @property (nonatomic) NSMutableDictionary *dictActiveFeeds;
 @property (nonatomic, strong) NSDictionary *dictSubfolders;
-@property (nonatomic) NSDictionary *dictSocialFeeds;
 @property (nonatomic) NSDictionary *dictSavedStoryTags;
 @property (nonatomic, strong) NSDictionary *dictSavedStoryFeedCounts;
 @property (nonatomic) NSDictionary *dictSocialProfile;
@@ -264,10 +219,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 @property (nonatomic) NSInteger premiumExpire;
 @property (nonatomic, strong) NSMutableDictionary *dictUnreadCounts;
 @property (nonatomic, strong) NSMutableDictionary *dictTextFeeds;
-@property (nonatomic) NSArray *userInteractionsArray;
-@property (nonatomic) NSArray *userActivitiesArray;
 @property (nonatomic) NSMutableArray *dictFoldersArray;
-@property (nonatomic) NSArray *notificationFeedIds;
 @property (nonatomic) NSArray *dashboardArray;
 @property (nonatomic) NSDictionary *dictFolderIcons;
 @property (nonatomic) NSDictionary *dictFeedIcons;
@@ -296,21 +248,13 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)registerDefaultsFromSettingsBundle;
 - (void)finishBackground;
 - (void)prepareViewControllers;
-- (void)processNotification:(NSDictionary *)content action:(NSString *)action withCompletionHandler:(void (^)(void))completionHandler;
 
 - (BOOL)openURL:(NSURL *)url;
 
-- (void)showFirstTimeUser;
 - (void)showLogin;
 - (void)setupReachability;
-- (void)registerForRemoteNotifications;
 - (void)registerForBadgeNotifications;
 
-// social
-- (NSDictionary *)getUser:(NSInteger)userId;
-- (void)showUserProfileModal:(id)sender;
-- (void)pushUserProfile;
-- (void)hideUserProfileModal;
 - (void)showSendTo:(UIViewController *)vc sender:(id)sender;
 - (void)showSendTo:(UIViewController *)vc sender:(id)sender
            withUrl:(NSURL *)url
@@ -319,7 +263,6 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
              title:(NSString *)title
          feedTitle:(NSString *)title
             images:(NSArray *)images;
-- (void)showFindFriends;
 - (void)showMuteSites;
 - (void)showOrganizeSites;
 - (void)showWidgetSites;
@@ -333,11 +276,8 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)popToRootWithCompletion:(void (^)(void))completion;
 - (void)showColumn:(UISplitViewControllerColumn)column debugInfo:(NSString *)debugInfo animated:(BOOL)animated;
 
+- (void)showFirstTimeUser;
 - (void)showMoveSite;
-- (void)openNotificationsWithFeed:(NSString *)feedId;
-- (void)openNotificationsWithFeed:(NSString *)feedId sender:(id)sender;
-- (void)updateNotifications:(NSDictionary *)params feed:(NSString *)feedId;
-- (void)checkForFeedNotifications;
 - (void)openStatisticsWithFeed:(NSString *)feedId sender:(id)sender;
 - (void)openAddSiteWithFeedAddress:(NSString *)feedAddress;
 - (void)openDiscoverSitesView;
@@ -350,7 +290,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
        withStory:(NSString *)contentId
       storyTitle:(NSString *)storyTitle
         animated:(BOOL)animated;
-- (void)loadTryFeedDetailView:(NSString *)feedId withStory:(NSString *)contentId isSocial:(BOOL)social withUser:(NSDictionary *)user showFindingStory:(BOOL)showHUD;
+- (void)loadTryFeedDetailView:(NSString *)feedId withStory:(NSString *)contentId withUser:(NSDictionary *)user showFindingStory:(BOOL)showHUD;
 - (void)addTryFeedToSidebar:(NSDictionary *)feed;
 - (void)removeTryFeedFromSidebar;
 - (void)backgroundLoadNotificationStory;
@@ -408,11 +348,6 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)hideStoryDetailView;
 - (void)showFeedsListAnimated:(BOOL)animated;
 - (void)changeActiveFeedDetailRow;
-- (void)showShareView:(NSString *)type setUserId:(NSString *)userId setUsername:(NSString *)username setReplyId:(NSString *)commentIndex;
-- (void)showShareView:(NSString *)type setUserId:(NSString *)userId setUsername:(NSString *)username setReplyId:(NSString *)commentIndex sourceRect:(NSValue *)sourceRectValue;
-- (void)hideShareView:(BOOL)resetComment;
-- (void)resetShareComments;
-- (BOOL)isSocialFeed:(NSString *)feedIdStr;
 - (BOOL)isSavedSearch:(NSString *)feedIdStr;
 - (BOOL)isSavedFeed:(NSString *)feedIdStr;
 - (NSInteger)savedStoriesCountForFeed:(NSString *)feedIdStr;
@@ -421,7 +356,6 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (NSArray *)feedIdsForTopLevelRiverWithReadFilter:(NSString *)readFilter;
 - (NSArray *)feedIdsForFolderTitle:(NSString *)folderTitle;
 - (void)confirmLogout;
-- (void)showConnectToService:(NSString *)serviceName;
 - (void)showAlert:(UIAlertController *)alert withViewController:(UIViewController *)vc;
 - (void)refreshUserProfile:(void(^)(void))callback;
 - (void)refreshFeedCount:(id)feedId;
@@ -508,8 +442,9 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (NSObject *)prepareFavicons:(NSArray<FeedIconPreparationRequest *> *)requests maximumRequestCount:(NSInteger)maximumRequestCount;
 - (void)cancelFaviconPreparation;
 - (void)cancelFaviconPreparation:(NSObject *)preparation;
-- (UIImage *)getFavicon:(NSString *)filename isSocial:(BOOL)isSocial;
-- (UIImage *)getFavicon:(NSString *)filename isSocial:(BOOL)isSocial isSaved:(BOOL)isSaved;
+- (UIImage *)getFavicon:(NSString *)filename isSaved:(BOOL)isSaved;
+/// The cached favicon for a feed, or nil when none is cached (NewsBlurAppDelegate.m remembers misses).
+- (UIImage *)faviconImageForKey:(NSString *)key;
 
 - (void)saveUserAvatar:(UIImage *)image forUserId:(NSString *)userId;
 - (UIImage *)getCachedUserAvatar:(NSString *)userId;
@@ -525,7 +460,6 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)startOfflineFetchText;
 - (void)startOfflineFetchImages;
 - (BOOL)isReachableForOffline;
-- (void)storeUserProfiles:(NSArray *)userProfiles;
 - (void)markScrollPosition:(NSInteger)position inStory:(NSDictionary *)story;
 - (void)queueReadStories:(NSDictionary *)feedsStories;
 - (BOOL)dequeueReadStoryHash:(NSString *)storyHash inFeed:(NSString *)storyFeedId;

@@ -8,12 +8,7 @@
 
 #import "FeedsObjCViewController.h"
 #import "NewsBlurAppDelegate.h"
-#import "ActivitiesViewController.h"
-#import "InteractionsModule.h"
-#import "ActivityModule.h"
 #import "FeedTableCell.h"
-#import "ActivitiesViewController.h"
-#import "UserProfileViewController.h"
 #import "MBProgressHUD.h"
 #import "SBJson4.h"
 #import "NSObject+SBJSON.h"
@@ -33,8 +28,7 @@
 
 static const CGFloat kPhoneTableViewRowHeight = 8.0f;
 static const CGFloat kTableViewRowHeight = 8.0f;
-static const CGFloat kBlurblogTableViewRowHeight = 9.0f;
-static const CGFloat kPhoneBlurblogTableViewRowHeight = 9.0f;
+static const CGFloat kEmptyFeedListRowHeight = 9.0f;
 static const CGFloat kFolderTitleHeight = 12.0f;
 #if TARGET_OS_MACCATALYST
 static const CGFloat kMacFeedHeaderHorizontalInset = 12.0f;
@@ -88,7 +82,6 @@ static NSDictionary *NBUserProfilePreferencesDictionary(NSDictionary *userProfil
 @property (nonatomic, strong) FeedRailView *splitFeedRail;
 @property (nonatomic, strong) NSArray<UIBarButtonItem *> *verticalIntelligenceItems;
 @property (nonatomic, strong) UIView *feedSearchContainerView;
-@property (nonatomic, strong) UIView *scrollingFeedHeaderView;
 @property (nonatomic, strong) UIView *searchOnlyFeedHeaderView;
 @property (nonatomic) CGFloat horizontalFeedTopMargin;
 @property (nonatomic) BOOL hidNavigationBarForFeedHeader;
@@ -180,8 +173,7 @@ static NSDictionary *NBUserProfilePreferencesDictionary(NSDictionary *userProfil
     // keep in sync with NewsBlurTopSection
     NewsBlurTopSectionNames = @[/* 0 */ @"dashboard",
                                         /* 1 */ @"discover_sites",
-                                        /* 2 */ @"infrequent",
-                                        /* 3 */ @"everything"];
+                                        /* 2 */ @"everything"];
 }
 
 - (void)viewDidLoad {
@@ -685,7 +677,7 @@ static NSDictionary *NBUserProfilePreferencesDictionary(NSDictionary *userProfil
 - (void)viewSafeAreaInsetsDidChange {
     [super viewSafeAreaInsetsDidChange];
     // FeedsObjCViewController.m recomputes the search field's corner clearance when folding or rotating moves the status bar.
-    if (!NewsNativeFeatures.showsAccountHeader && self.searchOnlyFeedHeaderView) {
+    if (self.searchOnlyFeedHeaderView) {
         [self layoutHeaderCounts:UIInterfaceOrientationUnknown];
     }
 }
@@ -693,10 +685,9 @@ static NSDictionary *NBUserProfilePreferencesDictionary(NSDictionary *userProfil
 - (void)updateFeedNavigationBarForHeader {
 #if !TARGET_OS_MACCATALYST
     if (!self.feedSearchContainerView) return;
-    // FeedsObjCViewController.m: without the account header (NewsNativeFeatures.swift) the title bar is empty unless
-    // it carries the sidebar button, so it hides the same way Duo's scrolling header does.
-    BOOL scrollingHeader = [self usesVerticalFeedToolbar] ||
-        (!NewsNativeFeatures.showsAccountHeader && self.navigationItem.rightBarButtonItem == nil);
+    // FeedsObjCViewController.m: the title bar is empty unless it carries the sidebar button, so it hides the same
+    // way Duo's toolbar rail does.
+    BOOL scrollingHeader = [self usesVerticalFeedToolbar] || self.navigationItem.rightBarButtonItem == nil;
     NSDirectionalEdgeInsets margins = self.view.directionalLayoutMargins;
     CGFloat topMargin = scrollingHeader ? 0 : self.horizontalFeedTopMargin;
     if (margins.top != topMargin) {
@@ -821,12 +812,6 @@ static NSDictionary *NBUserProfilePreferencesDictionary(NSDictionary *userProfil
 
     BOOL usesSplitRail = [self updateSplitFeedRail];
     BOOL usesVerticalToolbar = [self usesVerticalFeedToolbar];
-    BOOL hasScrollingHeader = self.scrollingFeedHeaderView && self.feedTitlesTable.tableHeaderView == self.scrollingFeedHeaderView;
-    // FeedsObjCViewController.m: with the account header hidden there is no scrolling header to keep in step.
-    if (NewsNativeFeatures.showsAccountHeader && usesVerticalToolbar != hasScrollingHeader) {
-        [self layoutHeaderCounts:UIInterfaceOrientationUnknown];
-        [self refreshHeaderCounts];
-    }
     if (!usesSplitRail && usesVerticalToolbar != self.feedViewToolbar.hidden) {
         [self configureFeedToolbarItemsForOrientation:UIInterfaceOrientationUnknown];
     }
@@ -1506,14 +1491,6 @@ static NSDictionary *NBUserProfilePreferencesDictionary(NSDictionary *userProfil
              [NSDate date],
              [results JSONRepresentation]
              ];
-            for (NSDictionary *feed in [results objectForKey:@"social_feeds"]) {
-                [db executeUpdate:@"INSERT INTO unread_counts (feed_id, ps, nt, ng) VALUES "
-                 "(?, ?, ?, ?)",
-                 [feed objectForKey:@"id"],
-                 [feed objectForKey:@"ps"],
-                 [feed objectForKey:@"nt"],
-                 [feed objectForKey:@"ng"]];
-            }
             for (NSString *feedId in [results objectForKey:@"feeds"]) {
                 NSDictionary *feed = [[results objectForKey:@"feeds"] objectForKey:feedId];
                 [db executeUpdate:@"INSERT INTO unread_counts (feed_id, ps, nt, ng) VALUES "
@@ -1577,35 +1554,18 @@ static NSDictionary *NBUserProfilePreferencesDictionary(NSDictionary *userProfil
 //    settingsButton.accessibilityLabel = @"Settings";
 //    [settingsBarButton setCustomView:settingsButton];
     
-    // Activity button moved to sidebar as "Interactions" folder
-    // Keeping code commented for reference:
-    // UIImage *activityImage = [Utilities templateImageNamed:@"dialog-notifications" sized:32];
-    // [self.activityButton removeFromSuperview];
-    // self.activityButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
-    // self.activityButton.accessibilityLabel = @"Activities";
-    // [self.activityButton setImage:activityImage forState:UIControlStateNormal];
-    // self.activityButton.tintColor = UIColorFromRGB(0x8F918B);
-    // [self.activityButton setImageEdgeInsets:UIEdgeInsetsMake(4, 0, 4, 0)];
-    // [self.activityButton addTarget:self
-    //                    action:@selector(showInteractionsPopover:)
-    //          forControlEvents:UIControlEventTouchUpInside];
-    // activitiesButton = [[UIBarButtonItem alloc]
-    //                     initWithCustomView:self.activityButton];
-    // activitiesButton.width = 32;
-    // self.navigationItem.rightBarButtonItem = activitiesButton;
     [self updateSidebarButton];
     
     NSMutableDictionary *sortedFolders = [[NSMutableDictionary alloc] init];
     NSArray *sortedArray;
     
-    // Set up dictSocialProfile and userActivitiesArray
+    // Set up dictSocialProfile
     appDelegate.dictUnreadCounts = [NSMutableDictionary dictionary];
     appDelegate.dictSocialProfile = [results objectForKey:@"social_profile"];
     appDelegate.dictUserProfile = [results objectForKey:@"user_profile"];
     // StoryButtonPreferences.swift adopts the synced story button preferences.
     [StoryButtonPreferences syncFromUserProfile:appDelegate.dictUserProfile];
     appDelegate.dictSocialServices = [results objectForKey:@"social_services"];
-    appDelegate.userActivitiesArray = [results objectForKey:@"activities"];
     
     appDelegate.dashboardArray = [results objectForKey:@"dashboard_rivers"];
     
@@ -1617,22 +1577,8 @@ static NSDictionary *NBUserProfilePreferencesDictionary(NSDictionary *userProfil
         appDelegate.premiumExpire = [premiumExpire integerValue];
     }
     
-    // Set up dictSocialFeeds
-    NSArray *socialFeedsArray = [results objectForKey:@"social_feeds"];
-    NSMutableArray *socialFolder = [[NSMutableArray alloc] init];
-    NSMutableDictionary *socialDict = [[NSMutableDictionary alloc] init];
     NSMutableDictionary *tempActiveFeeds = [[NSMutableDictionary alloc] init];
     appDelegate.dictActiveFeeds = tempActiveFeeds;
-    
-    for (int i = 0; i < socialFeedsArray.count; i++) {
-        NSString *userKey = [NSString stringWithFormat:@"%@", 
-                             [[socialFeedsArray objectAtIndex:i] objectForKey:@"id"]];
-        [socialFolder addObject: [[socialFeedsArray objectAtIndex:i] objectForKey:@"id"]];
-        [socialDict setObject:[socialFeedsArray objectAtIndex:i] 
-                       forKey:userKey];
-    }
-    
-    appDelegate.dictSocialFeeds = socialDict;
     
     // set up dictFolders
     NSMutableDictionary * allFolders = [[NSMutableDictionary alloc] init];
@@ -1642,12 +1588,6 @@ static NSDictionary *NBUserProfilePreferencesDictionary(NSDictionary *userProfil
     }
     
     [self fixFolderNames:allFolders];
-    
-    [allFolders setValue:socialFolder forKey:@"river_blurblogs"];
-    [allFolders setValue:[[NSMutableArray alloc] init] forKey:@"river_global"];
-    [allFolders setValue:@[] forKey:@"trending:well_read"];
-    [allFolders setValue:@[] forKey:@"trending:long_reads"];
-    [allFolders setValue:@[] forKey:@"trending:good_reads"];
     
     NSArray *savedSearches = [appDelegate updateSavedSearches:results];
     [allFolders setValue:savedSearches forKey:@"saved_searches"];
@@ -1704,8 +1644,6 @@ static NSDictionary *NBUserProfilePreferencesDictionary(NSDictionary *userProfil
             
             if ([appDelegate isSavedSearch:feedIdStr] || [appDelegate isSavedFeed:feedIdStr]) {
                 feed = @{@"id" : feedId};
-            } else if ([appDelegate isSocialFeed:feedIdStr]) {
-                feed = appDelegate.dictSocialFeeds[feedIdStr];
             } else {
                 feed = appDelegate.dictFeeds[feedIdStr];
             }
@@ -1748,25 +1686,6 @@ static NSDictionary *NBUserProfilePreferencesDictionary(NSDictionary *userProfil
     [appDelegate.dictFoldersArray removeObject:@"read_stories"];
     [appDelegate.dictFoldersArray addObject:@"read_stories"];
 
-    // Add Global Shared Stories folder to bottom
-    [appDelegate.dictFoldersArray removeObject:@"river_global"];
-    [appDelegate.dictFoldersArray addObject:@"river_global"];
-
-    // Add trending story folders to bottom
-    [appDelegate.dictFoldersArray removeObject:@"trending:well_read"];
-    [appDelegate.dictFoldersArray addObject:@"trending:well_read"];
-    [appDelegate.dictFoldersArray removeObject:@"trending:long_reads"];
-    [appDelegate.dictFoldersArray addObject:@"trending:long_reads"];
-    [appDelegate.dictFoldersArray removeObject:@"trending:good_reads"];
-    [appDelegate.dictFoldersArray addObject:@"trending:good_reads"];
-    
-    // Add All Shared Stories folder to bottom
-    [appDelegate.dictFoldersArray removeObject:@"river_blurblogs"];
-    // FeedsObjCViewController.m leaves out shared stories while NewsNativeFeatures.swift sets social reading aside.
-    if (NewsNativeFeatures.socialFeatures && [[appDelegate.dictSocialFeeds allKeys] count] > 0) {
-        [appDelegate.dictFoldersArray addObject:@"river_blurblogs"];
-    }
-    
     // Add Saved Searches folder to bottom
     [appDelegate.dictFoldersArray removeObject:@"saved_searches"];
     if (appDelegate.savedSearchesCount) {
@@ -1780,8 +1699,7 @@ static NSDictionary *NBUserProfilePreferencesDictionary(NSDictionary *userProfil
     }
     
     // test for empty    
-    if ([[appDelegate.dictFeeds allKeys] count] == 0 &&
-        [[appDelegate.dictSocialFeeds allKeys] count] == 0) {
+    if ([[appDelegate.dictFeeds allKeys] count] == 0) {
         appDelegate.hasNoSites = YES;
     }
     
@@ -1797,8 +1715,7 @@ static NSDictionary *NBUserProfilePreferencesDictionary(NSDictionary *userProfil
     
     if (!self.isOffline) {
         // start up the first time user experience
-        if ([[results objectForKey:@"social_feeds"] count] == 0 &&
-            [[[results objectForKey:@"feeds"] allKeys] count] == 0 &&
+        if ([[[results objectForKey:@"feeds"] allKeys] count] == 0 &&
             [OnboardingViewController shouldShowForUsername:appDelegate.activeUsername]) {
             [self layoutHeaderCounts:0];
             [self refreshHeaderCounts];
@@ -1819,7 +1736,6 @@ static NSDictionary *NBUserProfilePreferencesDictionary(NSDictionary *userProfil
     [self showExplainerOnEmptyFeedlist];
     [self layoutHeaderCounts:0];
     [self refreshHeaderCounts];
-    [appDelegate checkForFeedNotifications];
 
     if (!self.appDelegate.detailViewController.isPhoneOrCompact && finished) {
         [self cacheFeedRowLocations];
@@ -1975,17 +1891,6 @@ static NSDictionary *NBUserProfilePreferencesDictionary(NSDictionary *userProfil
     @throw [NSException exceptionWithName:@"Missing fullFolderPathForFolderTitle: implementation" reason:@"This is implemented in the Swift subclass, so should never reach here." userInfo:nil];
 }
 
-- (void)showUserProfile {
-    appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [appDelegate.dictSocialProfile objectForKey:@"user_id"]];
-    appDelegate.activeUserProfileName = [NSString stringWithFormat:@"%@", [appDelegate.dictSocialProfile objectForKey:@"username"]];
-//    appDelegate.activeUserProfileName = @"You";
-#if TARGET_OS_MACCATALYST
-        [appDelegate showUserProfileModal:self.userAvatarButton];
-#else
-        [appDelegate showUserProfileModal:[self usesVerticalFeedToolbar] ? self.userAvatarButton : self.navigationItem.titleView];
-#endif
-}
-
 - (IBAction)tapAddSite:(id)sender {
     [self.appDelegate showFeedsListAnimated:NO];
     [self.appDelegate openAddSiteWithFeedAddress:@""];
@@ -2022,19 +1927,6 @@ static NSDictionary *NBUserProfilePreferencesDictionary(NSDictionary *userProfil
     [viewController addFeedListTitle:[NBLocalization text:@"Widgets"] iconName:@"feed-menu-widget" selectionShouldDismiss:YES handler:^{
         [self.appDelegate showWidgetSites];
     }];
-    
-    // FeedsObjCViewController.m offers Interactions and Find Friends only with social reading (NewsNativeFeatures.swift).
-    if (NewsNativeFeatures.socialFeatures) {
-        [viewController startNewSection];
-
-        [viewController addFeedListTitle:[NBLocalization text:@"Interactions"] iconName:@"feed-menu-interactions" selectionShouldDismiss:YES handler:^{
-            [self showInteractionsPopover:nil];
-        }];
-
-        [viewController addFeedListTitle:[NBLocalization text:@"Find Friends"] iconName:@"feed-menu-friends" selectionShouldDismiss:YES handler:^{
-            [self.appDelegate showFindFriends];
-        }];
-    }
     
     [viewController startNewSection];
 
@@ -2137,34 +2029,6 @@ static NSDictionary *NBUserProfilePreferencesDictionary(NSDictionary *userProfil
     [appDelegate.feedsViewController presentViewController:alertController animated:YES completion:nil];
 }
 
-- (IBAction)showInteractionsPopover:(id)sender {
-    if (self.presentedViewController) {
-        [self.presentedViewController dismissViewControllerAnimated:YES completion:nil];
-        return;
-    }
-
-    if (!self.appDelegate.isPhone) {
-        CGSize size = CGSizeMake(self.view.frame.size.width - 36,
-                                 self.view.frame.size.height - 60);
-
-        // Use settings button as the popover anchor since activities button was removed from nav bar
-        [self.appDelegate showPopoverWithViewController:self.appDelegate.activitiesViewController contentSize:size barButtonItem:self.settingsBarButton];
-    } else {
-        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:self.appDelegate.activitiesViewController];
-        navController.navigationBarHidden = YES;
-        navController.modalPresentationStyle = UIModalPresentationPageSheet;
-        if (navController.sheetPresentationController) {
-            navController.sheetPresentationController.detents = @[UISheetPresentationControllerDetent.largeDetent];
-            navController.sheetPresentationController.prefersGrabberVisible = YES;
-            navController.sheetPresentationController.preferredCornerRadius = 12.0;
-        }
-        [self.appDelegate.feedsNavigationController presentViewController:navController animated:YES completion:nil];
-    }
-
-    [appDelegate.activitiesViewController refreshInteractions];
-    [appDelegate.activitiesViewController refreshActivity];
-}
-
 - (void)handleLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
     CGPoint p = [gestureRecognizer locationInView:self.feedTitlesTable];
     NSIndexPath *indexPath = [self.feedTitlesTable indexPathForRowAtPoint:p];
@@ -2181,7 +2045,6 @@ static NSDictionary *NBUserProfilePreferencesDictionary(NSDictionary *userProfil
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
     id feedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
-//    BOOL isSocial = [appDelegate isSocialFeed:feedIdStr];
     BOOL isSaved = [appDelegate isSavedFeed:feedIdStr] || self.appDelegate.isSavedStoriesIntelligenceMode;
     
     if (isSaved) return;
@@ -2189,10 +2052,6 @@ static NSDictionary *NBUserProfilePreferencesDictionary(NSDictionary *userProfil
     [self performSelector:@selector(highlightCell:) withObject:cell afterDelay:0.0];
 
     if ([longPressTitle isEqualToString:@"mark_read_choose_days"]) {
-//        NSDictionary *feed = isSocial ?
-//                            [appDelegate.dictSocialFeeds objectForKey:feedIdStr] :
-//                            [appDelegate.dictFeeds objectForKey:feedIdStr];
-        
         [self.appDelegate showMarkReadMenuWithFeedIds:@[feedIdStr] collectionTitle:@"site" sourceView:self.feedTitlesTable sourceRect:cell.frame completionHandler:^(BOOL marked){
             for (FeedTableCell *cell in [self.feedTitlesTable visibleCells]) {
                 if (cell.highlighted) {
@@ -2425,7 +2284,6 @@ static NSDictionary *NBUserProfilePreferencesDictionary(NSDictionary *userProfil
             [folder isEqualToString:@"dashboard"] ||
             [folder isEqualToString:@"discover_sites"] ||
             [folder isEqualToString:@"everything"] ||
-            [folder isEqualToString:@"infrequent"] ||
             [folder isEqualToString:@"widget"] ||
             [folder isEqualToString:@"read_stories"] ||
             [folder hasPrefix:@"saved_"]) {
@@ -2617,11 +2475,9 @@ static NSDictionary *NBUserProfilePreferencesDictionary(NSDictionary *userProfil
     NSString *identifier = [NSString stringWithFormat:@"%@", folder[indexPath.row]];
     NSString *feedID = [appDelegate feedIdWithoutSearchQuery:identifier];
     if ([appDelegate isSavedFeed:feedID]) return nil;
-    BOOL social = [appDelegate isSocialFeed:feedID];
     NSDictionary *customIcon = appDelegate.dictFeedIcons[feedID];
-    if (!social && customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) return nil;
-    CGFloat side = social ? (appDelegate.isPhone ? 26 : 28) : 16;
-    return [[FeedIconPreparationRequest alloc] initWithKey:feedID size:CGSizeMake(side, side)];
+    if (customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) return nil;
+    return [[FeedIconPreparationRequest alloc] initWithKey:feedID size:CGSizeMake(16, 16)];
 }
 
 - (void)prepareVisibleFeedFavicons {
@@ -2739,14 +2595,11 @@ static NSDictionary *NBUserProfilePreferencesDictionary(NSDictionary *userProfil
     NSString *searchQuery = [appDelegate searchQueryForFeedId:feedIdStr];
     NSString *searchFolder = [appDelegate searchFolderForFeedId:feedIdStr];
     feedIdStr = [appDelegate feedIdWithoutSearchQuery:feedIdStr];
-    BOOL isSocial = [appDelegate isSocialFeed:feedIdStr];
     BOOL isSaved = [appDelegate isSavedFeed:feedIdStr];
     BOOL isInactive = appDelegate.dictInactiveFeeds[feedIdStr] != nil;
     NSString *CellIdentifier;
     
-    if (indexPath.section == 0 || indexPath.section == 1) {
-        CellIdentifier = @"BlurblogCellIdentifier";
-    } else if (isSaved) {
+    if (isSaved) {
         CellIdentifier = @"SavedCellIdentifier";
     } else {
         CellIdentifier = @"FeedCellIdentifier";
@@ -2761,26 +2614,22 @@ static NSDictionary *NBUserProfilePreferencesDictionary(NSDictionary *userProfil
         cell.appDelegate = appDelegate;
     }
     
-    NSDictionary *feed = isSocial ?
-                         [appDelegate.dictSocialFeeds objectForKey:feedIdStr] :
-                         isSaved ?
+    NSDictionary *feed = isSaved ?
                          [appDelegate.dictSavedStoryTags objectForKey:feedIdStr] :
                          [appDelegate.dictFeeds objectForKey:feedIdStr];
-    // Check for custom feed icon (only for regular feeds, not social or saved)
+    // Check for custom feed icon (only for regular feeds, not saved)
     UIImage *customFeedIcon = nil;
-    if (!isSocial && !isSaved) {
+    if (!isSaved) {
         NSDictionary *customIcon = appDelegate.dictFeedIcons[feedIdStr];
         if (customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) {
             customFeedIcon = [CustomIconRenderer renderIcon:customIcon size:CGSizeMake(16, 16)];
         }
     }
-    CGFloat faviconSide = isSocial ? (appDelegate.isPhone ? 26 : 28) : 16;
-    UIImage *preparedFavicon = (customFeedIcon || isSaved) ? nil : [appDelegate preparedFavicon:feedIdStr size:CGSizeMake(faviconSide, faviconSide)];
-    cell.feedFavicon = customFeedIcon ?: preparedFavicon ?: [appDelegate getFavicon:feedIdStr isSocial:isSocial isSaved:isSaved];
+    UIImage *preparedFavicon = (customFeedIcon || isSaved) ? nil : [appDelegate preparedFavicon:feedIdStr size:CGSizeMake(16, 16)];
+    cell.feedFavicon = customFeedIcon ?: preparedFavicon ?: [appDelegate getFavicon:feedIdStr isSaved:isSaved];
     cell.feedFaviconPrepared = preparedFavicon != nil;
 
     cell.feedTitle     = [feed objectForKey:@"feed_title"];
-    cell.isSocial      = isSocial;
     cell.isSearch      = isSavedSearch;
     cell.isSaved       = isSaved;
     cell.isInactive    = isInactive;
@@ -2911,11 +2760,7 @@ static NSDictionary *NBUserProfilePreferencesDictionary(NSDictionary *userProfil
 
 - (CGFloat)calculateHeightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (appDelegate.hasNoSites) {
-        if (!self.appDelegate.detailViewController.isPhoneOrCompact) {
-            return kBlurblogTableViewRowHeight;
-        } else {
-            return kPhoneBlurblogTableViewRowHeight;
-        }
+        return kEmptyFeedListRowHeight;
     }
     
     NSString *folderName = appDelegate.dictFoldersArray[indexPath.section];
@@ -2953,19 +2798,10 @@ static NSDictionary *NBUserProfilePreferencesDictionary(NSDictionary *userProfil
     
     NSInteger height;
     
-    if ([folderName isEqualToString:@"river_blurblogs"] ||
-        [folderName isEqualToString:@"river_global"]) { // blurblogs
-        if (!self.appDelegate.detailViewController.isPhoneOrCompact) {
-            height = kBlurblogTableViewRowHeight;
-        } else {
-            height = kPhoneBlurblogTableViewRowHeight;
-        }
+    if (!self.appDelegate.detailViewController.isPhoneOrCompact) {
+        height = kTableViewRowHeight;
     } else {
-        if (!self.appDelegate.detailViewController.isPhoneOrCompact) {
-            height = kTableViewRowHeight;
-        } else {
-            height = kPhoneTableViewRowHeight;
-        }
+        height = kPhoneTableViewRowHeight;
     }
     
     UIFontDescriptor *fontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
@@ -3203,11 +3039,7 @@ heightForHeaderInSection:(NSInteger)section {
     BOOL visibleFeeds = [[self.visibleFolders objectForKey:folderName] boolValue];
     if (!visibleFeeds && section != NewsBlurTopSectionDashboard &&
         section != NewsBlurTopSectionDiscoverSites &&
-        section != NewsBlurTopSectionInfrequentSiteStories &&
         section != NewsBlurTopSectionAllStories &&
-        ![folderName isEqualToString:@"river_global"] &&
-        ![folderName isEqualToString:@"river_blurblogs"] &&
-        ![folderName hasPrefix:@"trending:"] &&
         ![folderName isEqualToString:@"saved_searches"] &&
         ![folderName isEqualToString:@"saved_stories"] &&
         ![folderName isEqualToString:@"read_stories"] &&
@@ -3226,37 +3058,6 @@ heightForHeaderInSection:(NSInteger)section {
         return 0;
     }
 
-    // FeedsObjCViewController.m: NewsNativeFeatures.swift sets these special sections aside.
-    if (!NewsNativeFeatures.showsSpecialFeedSections &&
-        (section == NewsBlurTopSectionInfrequentSiteStories || [NewsNativeFeatures.specialFeedFolders containsObject:folderName])) {
-        return 0;
-    }
-
-    if (section == NewsBlurTopSectionInfrequentSiteStories &&
-        ![prefs boolForKey:@"show_infrequent_site_stories"]) {
-        return 0;
-    }
-
-    if ([folderName isEqual:@"river_global"] &&
-        ![prefs boolForKey:@"show_global_shared_stories"]) {
-        return 0;
-    }
-
-    if ([folderName isEqualToString:@"trending:well_read"] &&
-        ![prefs boolForKey:@"show_widely_read_stories"]) {
-        return 0;
-    }
-
-    if ([folderName isEqualToString:@"trending:long_reads"] &&
-        ![prefs boolForKey:@"show_long_reads"]) {
-        return 0;
-    }
-
-    if ([folderName isEqualToString:@"trending:good_reads"] &&
-        ![prefs boolForKey:@"show_good_reads"]) {
-        return 0;
-    }
-    
     for (NSString *parentName in [self parentTitlesForFolderTitle:folderName]) {
         if ([appDelegate isFolderCollapsed:parentName]) {
             return 0;
@@ -3297,9 +3098,7 @@ heightForHeaderInSection:(NSInteger)section {
     
     if (tag >= 0 && tag < [NewsBlurTopSectionNames count]) {
         folder = NewsBlurTopSectionNames[tag];
-    } else if (![folder isEqualToString:@"river_global"] &&
-               ![folder isEqualToString:@"river_blurblogs"] &&
-               ![folder hasPrefix:@"trending:"]) {
+    } else {
         folder = [NSString stringWithFormat:@"%ld", (long)tag];
     }
     
@@ -3528,8 +3327,8 @@ heightForHeaderInSection:(NSInteger)section {
     NSArray *feedsInFolder = appDelegate.dictFolders[folderName];
     id feedId = feedsInFolder[indexPath.row];
     NSString *feedIdStr = [appDelegate feedIdWithoutSearchQuery:[NSString stringWithFormat:@"%@", feedId]];
-    NSDictionary *feed = appDelegate.dictFeeds[feedIdStr] ?: appDelegate.dictSocialFeeds[feedIdStr];
-    NSString *title = feed[@"feed_title"] ?: feed[@"username"] ?: feed[@"title"];
+    NSDictionary *feed = appDelegate.dictFeeds[feedIdStr];
+    NSString *title = feed[@"feed_title"] ?: feed[@"title"];
 
     return title.length ? title : nil;
 }
@@ -3539,20 +3338,8 @@ heightForHeaderInSection:(NSInteger)section {
 
     if ([folderName isEqualToString:@"dashboard"]) {
         return @"Dashboard";
-    } else if ([folderName isEqualToString:@"infrequent"]) {
-        return @"Infrequent Site Stories";
     } else if ([folderName isEqualToString:@"everything"]) {
         return @"All Site Stories";
-    } else if ([folderName isEqualToString:@"river_global"]) {
-        return @"Global Shared Stories";
-    } else if ([folderName isEqualToString:@"trending:well_read"]) {
-        return @"Widely Read Stories";
-    } else if ([folderName isEqualToString:@"trending:long_reads"]) {
-        return @"Long Reads";
-    } else if ([folderName isEqualToString:@"trending:good_reads"]) {
-        return @"Good Reads";
-    } else if ([folderName isEqualToString:@"river_blurblogs"]) {
-        return @"All Shared Stories";
     } else if ([folderName isEqualToString:@"saved_stories"]) {
         return @"Saved Stories";
     } else if ([folderName isEqualToString:@"saved_searches"]) {
@@ -3581,10 +3368,9 @@ heightForHeaderInSection:(NSInteger)section {
 
     NSString *rawFeedId = [NSString stringWithFormat:@"%@", feedsInFolder[indexPath.row]];
     NSString *feedIdStr = [appDelegate feedIdWithoutSearchQuery:rawFeedId];
-    BOOL isSocial = [appDelegate isSocialFeed:feedIdStr];
     BOOL isSaved = [appDelegate isSavedFeed:feedIdStr];
 
-    if (!isSocial && !isSaved) {
+    if (!isSaved) {
         NSDictionary *customIcon = appDelegate.dictFeedIcons[feedIdStr];
         if (customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) {
             UIImage *customFeedIcon = [CustomIconRenderer renderIcon:customIcon size:CGSizeMake(28, 28)];
@@ -3594,7 +3380,7 @@ heightForHeaderInSection:(NSInteger)section {
         }
     }
 
-    return [appDelegate getFavicon:feedIdStr isSocial:isSocial isSaved:isSaved];
+    return [appDelegate getFavicon:feedIdStr isSaved:isSaved];
 }
 
 - (UIImage *)iconForFolderAtSection:(NSInteger)section {
@@ -3832,15 +3618,7 @@ heightForHeaderInSection:(NSInteger)section {
     NSString *swipe = state == MCSwipeTableViewCellState1 ? GesturePreferences.feedRightAction : GesturePreferences.feedLeftAction;
     if (![swipe isEqualToString:@"read"]) {
         
-        if (indexPath.section == 1) {
-            // Profile
-            NSDictionary *feed = [appDelegate.dictSocialFeeds objectForKey:feedId];
-            appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [feed objectForKey:@"user_id"]];
-            appDelegate.activeUserProfileName = [NSString stringWithFormat:@"%@", [feed objectForKey:@"username"]];
-            [appDelegate showUserProfileModal:cell];
-        } else {
-            [appDelegate openStatisticsWithFeed:feedId sender:cell];
-        }
+        [appDelegate openStatisticsWithFeed:feedId sender:cell];
     } else {
         // Mark read
         [self markFeedRead:feedId cutoffDays:0];
@@ -3864,8 +3642,8 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)markFeedsRead:(NSArray *)feedIds cutoffDays:(NSInteger)days {
-    if (feedIds.count == 1 && ([feedIds.firstObject isEqual:@"dashboard"] || [feedIds.firstObject isEqual:@"everything"] || [feedIds.firstObject isEqual:@"infrequent"])) {
-        [self markEverythingReadWithDays:days infrequent:[feedIds.firstObject isEqual:@"infrequent"]];
+    if (feedIds.count == 1 && ([feedIds.firstObject isEqual:@"dashboard"] || [feedIds.firstObject isEqual:@"everything"])) {
+        [self markEverythingReadWithDays:days];
         return;
     }
     
@@ -3906,10 +3684,6 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)markEverythingReadWithDays:(NSInteger)days {
-    [self markEverythingReadWithDays:days infrequent:NO];
-}
-
-- (void)markEverythingReadWithDays:(NSInteger)days infrequent:(BOOL)infrequent {
     NSString *account = [appDelegate.activeUsername copy] ?: @"";
     NSString *host = [appDelegate.url copy] ?: @"";
     NSArray *feedIds = [appDelegate allFeedIds];
@@ -3920,12 +3694,6 @@ heightForHeaderInSection:(NSInteger)section {
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:[NSNumber numberWithInteger:days]
                forKey:@"days"];
-
-    if (infrequent || [appDelegate.storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
-        NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
-        NSString *infrequent = [NSString stringWithFormat:@"%ld", (long)[prefs integerForKey:@"infrequent_stories_per_month"]];
-        [params setObject:infrequent forKey:@"infrequent"];
-    }
 
     [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [[StoryFirstPageCache shared] invalidateSnapshotsForAccount:account host:host];
@@ -4034,14 +3802,9 @@ heightForHeaderInSection:(NSInteger)section {
         if ([folderName isEqualToString:@"dashboard"] ||
             [folderName isEqualToString:@"discover_sites"] ||
             [folderName isEqualToString:@"everything"] ||
-            [folderName isEqualToString:@"infrequent"] ||
             [folderName isEqualToString:@"saved_stories"] ||
             [folderName isEqualToString:@"saved_searches"] ||
             [folderName isEqualToString:@"read_stories"] ||
-            [folderName isEqualToString:@"interactions"] ||
-            [folderName isEqualToString:@"river_global"] ||
-            [folderName isEqualToString:@"river_blurblogs"] ||
-            [folderName hasPrefix:@"trending:"] ||
             [folderName isEqualToString:@"widget_stories"]) {
             continue;
         }
@@ -4065,14 +3828,9 @@ heightForHeaderInSection:(NSInteger)section {
         if ([folderName isEqualToString:@"dashboard"] ||
             [folderName isEqualToString:@"discover_sites"] ||
             [folderName isEqualToString:@"everything"] ||
-            [folderName isEqualToString:@"infrequent"] ||
             [folderName isEqualToString:@"saved_stories"] ||
             [folderName isEqualToString:@"saved_searches"] ||
             [folderName isEqualToString:@"read_stories"] ||
-            [folderName isEqualToString:@"interactions"] ||
-            [folderName isEqualToString:@"river_global"] ||
-            [folderName isEqualToString:@"river_blurblogs"] ||
-            [folderName hasPrefix:@"trending:"] ||
             [folderName isEqualToString:@"widget_stories"]) {
             continue;
         }
@@ -4303,8 +4061,6 @@ heightForHeaderInSection:(NSInteger)section {
     self.visibleFolders = [NSMutableDictionary dictionary];
     
     for (NSString *folderName in appDelegate.dictFoldersArray) {
-        if ([folderName isEqualToString:@"river_global"]) continue;
-        if ([folderName hasPrefix:@"trending:"]) continue;
         NSArray *folder = [appDelegate.dictFolders objectForKey:folderName];
         NSMutableArray *feedLocations = [NSMutableArray array];
         for (int f = 0; f < [folder count]; f++) {
@@ -4340,27 +4096,6 @@ heightForHeaderInSection:(NSInteger)section {
     [appDelegate GET:urlString parameters:nil target:self success:@selector(saveAndDrawFavicons:) failure:@selector(requestFailed:)];
 }
 
-- (void)loadAvatars {
-    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul);
-    dispatch_async(queue, ^{
-        for (NSString *feed_id in [self.appDelegate.dictSocialFeeds allKeys]) {
-            NSDictionary *feed = [self.appDelegate.dictSocialFeeds objectForKey:feed_id];
-            NSURL *imageURL = [NSURL URLWithString:[feed objectForKey:@"photo_url"]];
-            NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
-            if (!imageData) continue;
-            UIImage *faviconImage = [UIImage imageWithData:imageData];
-            if (!faviconImage) continue;
-            faviconImage = [Utilities roundCorneredImage:faviconImage radius:6];
-            
-            [self.appDelegate saveFavicon:faviconImage feedId:feed_id];
-        }
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self reloadFeedTitlesTable];
-        });
-    });
-}
-
 
 
 - (void)saveAndDrawFavicons:(NSDictionary *)results {
@@ -4383,7 +4118,6 @@ heightForHeaderInSection:(NSInteger)section {
         
         dispatch_async(dispatch_get_main_queue(), ^{
             [self reloadFeedTitlesTable];
-            [self loadAvatars];
         });
     });
 }
@@ -4694,17 +4428,13 @@ heightForHeaderInSection:(NSInteger)section {
 
     userAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [userAvatarButton setImage:initialImage forState:UIControlStateNormal];
-    [userAvatarButton addTarget:self action:@selector(showUserProfile) forControlEvents:UIControlEventTouchUpInside];
     userAvatarButton.imageView.contentMode = UIViewContentModeScaleAspectFill;
-    userAvatarButton.pointerInteractionEnabled = YES;
     userAvatarButton.accessibilityLabel = [NBLocalization text:@"User info"];
 #if TARGET_OS_MACCATALYST
-    userAvatarButton.accessibilityHint = [NBLocalization text:@"Double-click for information about your account."];
     userAvatarButton.frame = CGRectMake(kMacFeedHeaderHorizontalInset,
                                        (CGRectGetHeight(self.userInfoView.bounds) - 38) / 2, 38, 38);
     CGFloat avatarXOffset = kMacFeedHeaderHorizontalInset + 48; // FeedsObjCViewController.m keeps 10 points after the 38-point avatar.
 #else
-    userAvatarButton.accessibilityHint = [NBLocalization text:@"Double-tap for information about your account."];
     userAvatarButton.frame = CGRectMake(scrollingHeader ? 16 : -10, yOffset, 38, 38);
     int avatarXOffset = scrollingHeader ? 64 : 38; // FeedsObjCViewController.m keeps 10 points between avatar and account text.
 #endif
@@ -4797,61 +4527,30 @@ heightForHeaderInSection:(NSInteger)section {
 //    self.userInfoView.backgroundColor = UIColor.blueColor;
 
 #if TARGET_OS_MACCATALYST
-    self.activityButton.frame = CGRectMake(self.innerView.bounds.size.width - 36, 10, 32, 32);
-    
-    [self.userInfoView addSubview:self.activityButton];
-    
     [self.innerView addSubview:self.userInfoView];
     
-    self.activityButton.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
     self.userInfoView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     
     self.feedTitlesTopConstraint.constant = 50;
 #else
-    if (!NewsNativeFeatures.showsAccountHeader) {
-        // FeedsObjCViewController.m: NewsNativeFeatures.swift hides the account header, so only search tops the feed list.
-        self.navigationItem.titleView = nil;
-        if (!self.searchOnlyFeedHeaderView) {
-            self.searchOnlyFeedHeaderView = [[UIView alloc] init];
-            self.searchOnlyFeedHeaderView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        }
-        CGFloat width = CGRectGetWidth(self.feedTitlesTable.bounds);
-        // FeedsObjCViewController.m keeps the search field clear of a rounded screen corner. With no status bar above
-        // the column (Duo's open display puts it in the side rail), the top-leading corner is the screen's own
-        // 55-point continuous curve, which reaches about 1.53 times its radius along each edge; 28 points keeps the
-        // field and its touch area inside the visible display.
-        CGFloat topClearance = self.view.safeAreaInsets.top > 0 ? 8 : 28;
-        self.searchOnlyFeedHeaderView.frame = CGRectMake(0, 0, width, topClearance + 28 + 4);
-        self.searchOnlyFeedHeaderView.backgroundColor = self.feedSearchContainerView.backgroundColor;
-        self.feedSearchContainerView.frame = CGRectMake(0, topClearance, width, 28);
-        self.feedSearchContainerView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        [self.searchOnlyFeedHeaderView addSubview:self.feedSearchContainerView];
-        self.feedTitlesTable.tableHeaderView = self.searchOnlyFeedHeaderView;
-    } else if (scrollingHeader) {
-        // FeedsObjCViewController.m puts account details and search in the table so both scroll away together on Duo.
-        self.navigationItem.titleView = nil;
-        if (!self.scrollingFeedHeaderView) {
-            self.scrollingFeedHeaderView = [[UIView alloc] init];
-            self.scrollingFeedHeaderView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        }
-        CGFloat width = CGRectGetWidth(self.feedTitlesTable.bounds);
-        self.scrollingFeedHeaderView.frame = CGRectMake(0, 0, width, 86);
-        self.scrollingFeedHeaderView.backgroundColor = self.feedSearchContainerView.backgroundColor;
-        self.userInfoView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        [self.scrollingFeedHeaderView addSubview:self.userInfoView];
-        self.feedSearchContainerView.frame = CGRectMake(0, 58, width, 28);
-        self.feedSearchContainerView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        [self.scrollingFeedHeaderView addSubview:self.feedSearchContainerView];
-        self.feedTitlesTable.tableHeaderView = self.scrollingFeedHeaderView;
-    } else {
-        if (self.feedTitlesTable.tableHeaderView == self.scrollingFeedHeaderView) {
-            [self.feedSearchContainerView removeFromSuperview];
-            self.feedSearchContainerView.frame = CGRectMake(0, 0, CGRectGetWidth(self.feedTitlesTable.bounds), 28);
-            self.feedTitlesTable.tableHeaderView = self.feedSearchContainerView;
-        }
-        [self.userInfoView sizeToFit];
-        self.navigationItem.titleView = self.userInfoView;
+    // FeedsObjCViewController.m: NewsNative has no account header on iPhone and iPad, so only search tops the feed list.
+    self.navigationItem.titleView = nil;
+    if (!self.searchOnlyFeedHeaderView) {
+        self.searchOnlyFeedHeaderView = [[UIView alloc] init];
+        self.searchOnlyFeedHeaderView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     }
+    CGFloat width = CGRectGetWidth(self.feedTitlesTable.bounds);
+    // FeedsObjCViewController.m keeps the search field clear of a rounded screen corner. With no status bar above
+    // the column (Duo's open display puts it in the side rail), the top-leading corner is the screen's own
+    // 55-point continuous curve, which reaches about 1.53 times its radius along each edge; 28 points keeps the
+    // field and its touch area inside the visible display.
+    CGFloat topClearance = self.view.safeAreaInsets.top > 0 ? 8 : 28;
+    self.searchOnlyFeedHeaderView.frame = CGRectMake(0, 0, width, topClearance + 28 + 4);
+    self.searchOnlyFeedHeaderView.backgroundColor = self.feedSearchContainerView.backgroundColor;
+    self.feedSearchContainerView.frame = CGRectMake(0, topClearance, width, 28);
+    self.feedSearchContainerView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    [self.searchOnlyFeedHeaderView addSubview:self.feedSearchContainerView];
+    self.feedTitlesTable.tableHeaderView = self.searchOnlyFeedHeaderView;
 #endif
 }
 

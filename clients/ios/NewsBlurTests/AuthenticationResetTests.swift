@@ -1081,7 +1081,7 @@ private final class AuthenticationRefreshPublication: @unchecked Sendable {
 @MainActor private final class StoryPreviewRoutingApp: NewsBlurAppDelegate {
     var previewFeedID: String?
     var previewStoryID: String?
-    override func loadTryFeedDetailView(_ feedId: String!, withStory contentId: String!, isSocial social: Bool,
+    override func loadTryFeedDetailView(_ feedId: String!, withStory contentId: String!,
                                        withUser user: [AnyHashable: Any]!, showFindingStory showHUD: Bool) {
         previewFeedID = feedId
         previewStoryID = contentId

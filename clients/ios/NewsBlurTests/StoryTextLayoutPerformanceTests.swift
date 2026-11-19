@@ -103,7 +103,7 @@ import ObjectiveC.runtime
                             let cell = makeCell(app: app)
                             cell.textSize = FeedDetailTextSize(rawValue: UInt(cases % 4))!
                             cell.isShort = cases % 3 == 0
-                            cell.isRiverOrSocial = cases % 2 == 0
+                            cell.isMultiFeedView = cases % 2 == 0
                             cell.isRead = cases % 3 == 1
                             cell.isSaved = cases % 7 == 0
                             cell.isShared = cases % 11 == 0
@@ -262,8 +262,8 @@ import ObjectiveC.runtime
             preview: (cell.storyContent ?? "") as NSString,
             contentWidth: StoryTextLayoutRequest.contentWidth(boundsWidth: size.width, imageStyle: imageStyle, hasImage: hasImage),
             boundsHeight: size.height, fontPointSize: app.fontDescriptorTitleSize.pointSize,
-            textSize: Int(cell.textSize.rawValue), shortTitles: cell.isShort, river: cell.isRiverOrSocial,
-            comfortMargin: margin, riverPadding: (cell.isRiverOrSocial ? 20 : -10) + margin,
+            textSize: Int(cell.textSize.rawValue), shortTitles: cell.isShort, river: cell.isMultiFeedView,
+            comfortMargin: margin, riverPadding: (cell.isMultiFeedView ? 20 : -10) + margin,
             hasImage: hasImage, paragraphStyle: style)
     }
 
@@ -318,7 +318,7 @@ import ObjectiveC.runtime
                 }
                 contentSize = (content as NSString).boundingRect(with: CGSize(width: rect.width, height: font.pointSize * rows),
                     options: options, attributes: [.font: font, .paragraphStyle: style], context: nil).size
-                gap = max((bounds.height - 18 - margin - (cell.isRiverOrSocial ? river : 0)
+                gap = max((bounds.height - 18 - margin - (cell.isMultiFeedView ? river : 0)
                     - titleSize.height - contentSize.height) / 3, 2)
             }
             view.setValue(NSValue(cgSize: titleSize), forKey: "cachedRegularTitleSize")

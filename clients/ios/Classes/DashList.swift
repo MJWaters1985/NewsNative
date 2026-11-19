@@ -47,7 +47,7 @@ import Foundation
                 feedId = localRiverId.deletingPrefix("feed:")
             } else if localRiverId.hasPrefix("starred:") {
                 feedId = localRiverId.replacingOccurrences(of: "starred:", with: "saved:")
-            } else if appDelegate.isSocialFeed(localRiverId) || appDelegate.isSavedFeed(localRiverId) {
+            } else if appDelegate.isSavedFeed(localRiverId) {
                 feedId = localRiverId
             } else {
                 feedId = nil
@@ -57,16 +57,6 @@ import Foundation
             
             if localRiverId == "river:" {
                 folderId = "everything"
-            } else if localRiverId == "river:global" {
-                folderId = "river_global"
-            } else if localRiverId == "river:blurblogs" {
-                folderId = "river_blurblogs"
-            } else if localRiverId == "trending:well_read" {
-                folderId = "trending:well_read"
-            } else if localRiverId == "trending:long_reads" {
-                folderId = "trending:long_reads"
-            } else if localRiverId == "trending:good_reads" {
-                folderId = "trending:good_reads"
             } else if localRiverId.hasPrefix("river:") {
                 folderId = localRiverId.deletingPrefix("river:")
             } else if localRiverId.hasPrefix("starred:") {
@@ -136,14 +126,6 @@ import Foundation
             return String(format: NBLocalization.text("\"%1$@\" in %2$@"), searchQuery, baseName)
         } else if let feedId, riverId.hasPrefix("starred:") {
             return String(format: NBLocalization.text("Saved Stories — %@"), feedId.deletingPrefix("saved:"))
-        } else if baseName == "global" {
-            return NBLocalization.text("Global Shared Stories")
-        } else if folderId == "trending:well_read" {
-            return NBLocalization.text("Widely Read Stories")
-        } else if folderId == "trending:long_reads" {
-            return NBLocalization.text("Long Reads")
-        } else if folderId == "trending:good_reads" {
-            return NBLocalization.text("Good Reads")
         } else {
             return baseName
         }
@@ -152,14 +134,6 @@ import Foundation
     var image: UIImage? {
         if riverId.hasPrefix("starred:") {
             return UIImage(named: "tag")
-        } else if riverId == "river:global" {
-            return UIImage(named: "global-shares")
-        } else if folderId == "trending:well_read" {
-            return UIImage(named: "trending-well-read")
-        } else if folderId == "trending:long_reads" {
-            return UIImage(named: "trending-long-reads")
-        } else if folderId == "trending:good_reads" {
-            return UIImage(systemName: "star.fill")
         } else if isFolder {
             return folder?.image ?? UIImage(named: "folder-open")
         } else {

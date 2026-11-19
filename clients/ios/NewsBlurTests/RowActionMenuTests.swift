@@ -101,7 +101,7 @@ import UIKit
         let source = try XCTUnwrap(menu as? UITableViewDataSource)
         let delegate = try XCTUnwrap(menu as? UITableViewDelegate)
         let table = UITableView()
-        XCTAssertFalse(groups.contains { $0.contains(NSNumber(value: 3)) }, "Training is set aside in NewsNativeFeatures.swift")
+        XCTAssertFalse(groups.contains { $0.contains(NSNumber(value: 3)) }, "NewsNative has no training")
         for (action, label) in [(2, "Send to...")] {
             let section = try XCTUnwrap(groups.firstIndex { $0.contains(NSNumber(value: action)) })
             let row = try XCTUnwrap(groups[section].firstIndex(of: NSNumber(value: action)))
@@ -119,43 +119,6 @@ import UIKit
         }
     }
 
-    func test_goToFeedFromUnsubscribedSharedStoryOpensFeedPreview() throws {
-        let app = GoToFeedMenuApp()
-        app.dictFeeds = [:]
-        app.dictFolders = ["Tech": [42]]
-        app.dictFoldersArray = ["Tech"]
-        app.dictActiveFeeds = ["77": ["id": 77, "feed_title": "Shared source", "feed_link": "https://example.com/"]]
-        app.storiesCollection = StoriesCollection()
-        app.storiesCollection.isSocialRiverView = true
-        app.storiesCollection.isSocialView = true
-        app.storiesCollection.isRiverView = true
-        app.activeStory = ["story_feed_id": 77, "story_hash": "77:shared"]
-        let controllerType = try XCTUnwrap(NSClassFromString("FontSettingsViewController") as? UIViewController.Type)
-        let controller = controllerType.init(nibName: nil, bundle: nil)
-        controller.setValue(app, forKey: "appDelegate")
-        XCTAssertEqual(controller.value(forKey: "isGoToFeedEnabled") as? Bool, true)
-
-        // RowActionMenuTests.swift invokes the same selector as the enabled Story Options menu row.
-        controller.perform(NSSelectorFromString("goToFeed"))
-
-        XCTAssertEqual(app.previewFeedID, "77", "A social story's unsubscribed source still needs a destination")
-        XCTAssertEqual(app.previewFeed?["feed_title"] as? String, "Shared source")
-        XCTAssertEqual(app.previewFeed?["id"] as? Int, 77)
-        XCTAssertFalse(app.previewIsSocial ?? true, "Open the source website, not its social feed")
-        XCTAssertNil(app.previewStoryID, "Go to feed opens the story list rather than reopening the shared story")
-        XCTAssertNil(app.openedFolder)
-        XCTAssertNil(app.activeStory)
-        XCTAssertFalse(app.storiesCollection.isSocialRiverView)
-        XCTAssertFalse(app.storiesCollection.isSocialView)
-        XCTAssertFalse(app.storiesCollection.isRiverView)
-        XCTAssertTrue(app.isTryFeedView)
-        XCTAssertTrue(app.didPresentFeed)
-        XCTAssertEqual((app.dictFeeds["77"] as? [String: Any])?["temp"] as? Bool, true)
-        XCTAssertEqual(app.dictFolders["Tech"] as? [Int], [42], "Preview must not subscribe the source")
-        app.cleanUpTryFeed()
-        XCTAssertNil(app.dictFeeds["77"], "Leaving the preview removes its temporary source")
-    }
-
     func test_goToFeedWithoutSourceMetadataIsUnavailable() throws {
         let app = GoToFeedMenuApp()
         app.dictFeeds = [:]
@@ -163,7 +126,7 @@ import UIKit
         app.dictFolders = [:]
         app.dictFoldersArray = []
         app.storiesCollection = StoriesCollection()
-        app.storiesCollection.isSocialRiverView = true
+        app.storiesCollection.isRiverView = true
         app.activeStory = ["story_feed_id": 77, "story_hash": "77:shared"]
         let controllerType = try XCTUnwrap(NSClassFromString("FontSettingsViewController") as? UIViewController.Type)
         let controller = controllerType.init(nibName: nil, bundle: nil)
@@ -176,13 +139,13 @@ import UIKit
         XCTAssertNotNil(app.activeStory)
     }
 
-    func test_goToFeedFromSubscribedSharedStoryKeepsFolderNavigation() throws {
+    func test_goToFeedFromSubscribedRiverStoryKeepsFolderNavigation() throws {
         let app = GoToFeedMenuApp()
         app.dictFeeds = ["42": ["id": 42, "feed_title": "Subscribed source"]]
         app.dictFolders = ["Tech": [42]]
         app.dictFoldersArray = ["Tech"]
         app.storiesCollection = StoriesCollection()
-        app.storiesCollection.isSocialRiverView = true
+        app.storiesCollection.isRiverView = true
         app.activeStory = ["story_feed_id": 42, "story_hash": "42:shared"]
         let controllerType = try XCTUnwrap(NSClassFromString("FontSettingsViewController") as? UIViewController.Type)
         let controller = controllerType.init(nibName: nil, bundle: nil)
@@ -194,7 +157,7 @@ import UIKit
         XCTAssertEqual(app.openedFeedID, "42")
         XCTAssertNil(app.previewFeedID)
         XCTAssertNil(app.activeStory)
-        XCTAssertFalse(app.storiesCollection.isSocialRiverView)
+        XCTAssertFalse(app.storiesCollection.isRiverView)
     }
 
     func test_authoritativeBulkReadCountIsPersistedForOfflineFeedAndFolder() async throws {
@@ -385,14 +348,6 @@ import UIKit
 
     func test_phoneFolderAgeMarkReadNavigationChangeDoesNotReloadTheNewList() throws {
         try verifyBulkRead(older: true, days: 3, replaceGeneration: true)
-    }
-
-    func test_infrequentAgeMarkReadReloadsServerStateWithoutMarkingOtherCachedFeeds() throws {
-        try verifyBulkRead(older: true, days: 3, infrequent: true)
-    }
-
-    func test_offlineInfrequentAgeMarkReadReportsFailureWithoutQueuingUnknownFeedScope() throws {
-        try verifyBulkRead(older: true, succeeds: false, days: 3, infrequent: true)
     }
 
     func test_allSiteStoriesAgeMarkReadPostsDaysOnceAndUpdatesCachedStories() throws {
@@ -623,9 +578,8 @@ import UIKit
         let folder = controller.feedActions(feedID: nil, folder: "Tech", source: UIView())
         XCTAssertEqual(folder.first?.first?.id, "mark-read")
         XCTAssertEqual(folder.last?.first?.id, "delete")
-        for name in ["everything", "infrequent", "dashboard", "discover_sites",
-                     "try_feed", "saved_searches", "saved_stories", "read_stories", "widget_stories",
-                     "river_global", "river_blurblogs", "trending:good_reads", ""] {
+        for name in ["everything", "dashboard", "discover_sites",
+                     "try_feed", "saved_searches", "saved_stories", "read_stories", "widget_stories", ""] {
             XCTAssertFalse(RowActionMenus.isUserFolder(name), name)
             let actions = controller.feedActions(feedID: nil, folder: name, source: UIView()).flatMap { $0 }
             XCTAssertFalse(actions.contains { $0.destructive || $0.id == "rename" }, name)
@@ -652,9 +606,9 @@ import UIKit
         story.isRead = false
         story.isSaved = false
         let groups = RowActionMenus.story(story, controller: controller, source: UIView())
-        // RowActionMenuTests.swift: Listen's Up Next, training and Ask AI are set aside (NewsNativeFeatures.swift).
+        // RowActionMenuTests.swift: NewsNative has no Listen, training or Ask AI actions.
         XCTAssertEqual(groups.map { $0.map(\.id) }, [["read", "newer", "older"], ["save"],
-                                                   ["share-link", "share-story", "share-newsblur"]])
+                                                   ["share-link", "share-story"]])
         XCTAssertNil(app.activeStory)
         for action in groups.flatMap({ $0 }) { XCTAssertNotNil(action.native.image, action.symbol) }
         app.storiesCollection.isSavedView = true
@@ -678,49 +632,10 @@ import UIKit
                                                         "story_permalink": "https://example.com/menu"], app: app)
         let actions = RowActionMenus.story(story, controller: controller, source: UIView()).flatMap { $0 }
         // RowActionMenuTests.swift requires the pressed story to expose the reader's sharing tools without selecting it,
-        // and never Ask AI, which NewsNativeFeatures.swift sets aside even when the synced preference is on.
+        // and never Ask AI, even when the synced preference is on.
         XCTAssertFalse(actions.contains { $0.id == "ask-ai" })
-        XCTAssertTrue(actions.contains { $0.id == "share-newsblur" })
+        XCTAssertTrue(actions.contains { $0.id == "share-link" })
         XCTAssertNil(app.activeStory)
-    }
-
-    func test_storyReaderActionsCapturePressedStoryAndMatchItsOwnShareComment() throws {
-        let defaults = UserDefaults.standard
-        let previous = defaults.object(forKey: "show_ask_ai")
-        defer { defaults.set(previous, forKey: "show_ask_ai") }
-        defaults.set(true, forKey: "show_ask_ai")
-        let (app, _) = feedFixture()
-        app.dictSocialProfile = ["user_id": 7]
-        let controller = FeedDetailViewController()
-        controller.appDelegate = app
-        controller.storiesCollection = app.storiesCollection
-        let dictionary: [String: Any] = ["story_hash": "42:pressed", "story_title": "Pressed story",
-                                         "story_feed_id": 42, "id": "pressed", "shared": true,
-                                         "friend_comments": [["user_id": 8, "comments": "Another reader"],
-                                                             ["user_id": "7", "comments": "My comment"]]]
-        let story = try makeStory(index: 0, dictionary: dictionary, app: app)
-        story.isShared = true
-        let actions = RowActionMenus.story(story, controller: controller, source: UIView()).flatMap { $0 }
-        app.activeStory = ["story_hash": "99:current"]
-        app.activeComment = ["user_id": 99, "comments": "Previous story comment"]
-
-        XCTAssertNil(actions.first { $0.id == "ask-ai" }, "NewsNativeFeatures.swift sets Ask AI aside")
-
-        let share = try XCTUnwrap(actions.first { $0.id == "share-newsblur" })
-        XCTAssertEqual(share.title, "Edit NewsBlur share…")
-        share.perform()
-        XCTAssertEqual(app.sharedStory?["story_hash"] as? String, "42:pressed")
-        XCTAssertEqual(app.shareType, "edit-share")
-        XCTAssertEqual(app.activeComment["comments"] as? String, "My comment")
-
-        let unshared = try makeStory(index: 1, dictionary: ["story_hash": "42:unshared", "story_title": "New share"], app: app)
-        let newShare = try XCTUnwrap(RowActionMenus.story(unshared, controller: controller, source: UIView())
-            .flatMap { $0 }.first { $0.id == "share-newsblur" })
-        newShare.perform()
-        XCTAssertEqual(app.sharedStory?["story_hash"] as? String, "42:unshared")
-        XCTAssertEqual(app.shareType, "share")
-        XCTAssertNil(app.activeComment, "RowActionMenus.swift must not reuse a comment from another story")
-        XCTAssertNil(app.lastURL, "Opening the composer must never post the story")
     }
 
     private func makeStory(index: Int, dictionary: [String: Any], app: RowMenuTestApp) throws -> Story {
@@ -781,7 +696,6 @@ import UIKit
     var openedFeedID: String?
     var previewFeedID: String?
     var previewStoryID: String?
-    var previewIsSocial: Bool?
     var previewFeed: [AnyHashable: Any]?
     var didPresentFeed = false
 
@@ -792,26 +706,17 @@ import UIKit
         openedFeedID = feedId
     }
 
-    override func loadTryFeedDetailView(_ feedId: String!, withStory contentId: String!, isSocial social: Bool,
+    override func loadTryFeedDetailView(_ feedId: String!, withStory contentId: String!,
                                         withUser user: [AnyHashable: Any]!, showFindingStory showHUD: Bool) {
         previewFeedID = feedId
         previewStoryID = contentId
-        previewIsSocial = social
         previewFeed = user
-        XCTAssertFalse(storiesCollection.isSocialRiverView)
-        XCTAssertFalse(storiesCollection.isSocialView)
         XCTAssertFalse(storiesCollection.isRiverView)
-        super.loadTryFeedDetailView(feedId, withStory: contentId, isSocial: social, withUser: user, showFindingStory: showHUD)
+        super.loadTryFeedDetailView(feedId, withStory: contentId,  withUser: user, showFindingStory: showHUD)
     }
 }
 
 @MainActor private final class RowMenuTestApp: NewsBlurAppDelegate {
-    var sharedStory: [AnyHashable: Any]?
-    var shareType: String?
-    override func showShareView(_ type: String!, setUserId userId: String!, setUsername username: String!, setReplyId commentIndex: String!) {
-        shareType = type
-        sharedStory = activeStory
-    }
     var lastURL: String?
     var lastParameters: [String: Any]?
     var succeedPOST: (() -> Void)?

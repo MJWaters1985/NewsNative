@@ -21,7 +21,7 @@ final class Test_FaviconCache: XCTestCase {
         let (appDelegate, cache) = makeCache()
 
         for _ in 0..<500 {
-            XCTAssertNil(appDelegate.getFavicon("missing", isSocial: true))
+            XCTAssertNil(appDelegate.faviconImage(forKey: "missing"))
         }
 
         XCTAssertEqual(cache.diskCache.readCount, 1)
@@ -29,7 +29,7 @@ final class Test_FaviconCache: XCTestCase {
 
     func test_savedFaviconReplacesRememberedMiss() {
         let (appDelegate, cache) = makeCache()
-        XCTAssertNil(appDelegate.getFavicon("feed", isSocial: true))
+        XCTAssertNil(appDelegate.faviconImage(forKey: "feed"))
         let image = makeImage()
 
         appDelegate.saveFavicon(image, feedId: "feed")
@@ -42,7 +42,7 @@ final class Test_FaviconCache: XCTestCase {
 
     func test_accountResetInvalidatesRememberedMisses() {
         let (appDelegate, cache) = makeCache()
-        XCTAssertNil(appDelegate.getFavicon("feed", isSocial: true))
+        XCTAssertNil(appDelegate.faviconImage(forKey: "feed"))
         let image = makeImage()
         cache.diskCache.setObject(image, forKey: "feed")
 

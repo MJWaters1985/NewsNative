@@ -75,10 +75,9 @@ import XCTest
         let firstHTML = draw(page)
         page.activeStory["story_content"] = "<p>Updated body with <em>formatting</em></p>"
         page.activeStory["story_title"] = "Updated title"
-        page.commentText = "Updated comments"
         page.inTextView = true
         page.activeStory["original_text"] = "<p>Updated text view</p>"
-        UserDefaults.standard.set("ChronicleSSm-Book", forKey: "fontStyle")
+        UserDefaults.standard.set("NB-newyork", forKey: "fontStyle")
         UserDefaults.standard.set("large", forKey: "story_font_size")
         UserDefaults.standard.set("wide", forKey: "story_line_spacing")
         page.view.frame.size.width = 300
@@ -87,9 +86,8 @@ import XCTest
         XCTAssertTrue(firstHTML.contains("Fixture body"))
         XCTAssertFalse(firstHTML.contains("Updated title"))
         XCTAssertTrue(secondHTML.contains("Updated title"))
-        XCTAssertTrue(secondHTML.contains("Updated comments"))
         XCTAssertTrue(secondHTML.contains("Updated text view"))
-        XCTAssertTrue(secondHTML.contains("font-family: ChronicleSSm-Book"))
+        XCTAssertTrue(secondHTML.contains("NB-newyork"))
         XCTAssertTrue(secondHTML.contains("NB-large"))
         XCTAssertTrue(secondHTML.contains("NB-line-spacing-wide"))
         XCTAssertTrue(secondHTML.contains("NB-width-300"))
@@ -144,13 +142,10 @@ import XCTest
 }
 
 @MainActor private final class StaticAssetStoryPage: StoryDetailViewController {
-    var commentText = "Fixture comments"
     override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 844)) }
     override func viewDidLoad() {}
     override func viewWillLayoutSubviews() {}
     override func getHeader() -> String! { activeStory["story_title"] as? String }
-    override func getShareBar() -> String! { "Fixture sharing" }
-    override func getComments() -> String! { commentText }
 
     // StoryDetailAssetPerformanceTests.swift intercepts deferred WebKit work while exercising the real drawStory HTML preparation.
     @objc(getSideOptions) func fixtureSideOptions() -> String { "Fixture options" }

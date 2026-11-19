@@ -242,7 +242,6 @@
         }
     }];
     
-    if (!self.isCancelled) [self.appDelegate storeUserProfiles:[results objectForKey:@"user_profiles"]];
 }
 
 

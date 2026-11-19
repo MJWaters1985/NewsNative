@@ -135,10 +135,7 @@ import XCTest
     override func viewDidLoad() {}
     override func viewWillLayoutSubviews() {}
     override func getHeader() -> String! { "<h1>Fixture article</h1>" }
-    override func getShareBar() -> String! { "" }
-    override func getComments() -> String! { "" }
     override func changeWebViewWidth() {}
-    override func checkTryFeedStory() {}
     @objc(getSideOptions) func sideOptions() -> String { "" }
 }
 

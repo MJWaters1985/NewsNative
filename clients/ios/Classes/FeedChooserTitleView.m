@@ -105,8 +105,6 @@
         return @"accept";
     } else if (self.isFlat) {
         return @"dialog-organize";
-    } else if ([self.title isEqualToString:@"All Shared Stories"]) {
-        return @"all-shares";
     } else if ([self.title isEqualToString:@"Saved Searches"]) {
         return @"search";
     } else if ([self.title isEqualToString:@"Saved Stories"]) {

@@ -71,31 +71,20 @@ UIActionSheetDelegate, WKNavigationDelegate> {
 - (void)clearStory;
 - (void)hideStory;
 
-- (void)toggleLikeComment:(BOOL)likeComment;
 - (void)flashCheckmarkHud:(NSString *)messageType;
-- (void)scrolltoComment;
 - (void)tryScrollingDown:(BOOL)down;
 - (void)scrollPageDown:(id)sender;
 - (void)scrollPageUp:(id)sender;
 - (void)realignScroll;
 - (void)changeWebViewWidth;
-- (void)showUserProfile:(NSString *)userId xCoordinate:(int)x yCoordinate:(int)y width:(int)width height:(int)height;
-- (void)checkTryFeedStory;
 - (void)setFontStyle:(NSString *)fontStyle;
 - (void)changeFontSize:(NSString *)fontSize;
 - (void)changeLineSpacing:(NSString *)lineSpacing;
-- (void)refreshComments:(NSString *)replyId;
 
-- (void)openShareDialog;
 - (void)openUserTagsDialog:(int)x yCoordinate:(int)y width:(int)width height:(int)height;
 - (void)subscribeToBlurblog;
 - (void)setActiveStoryAtIndex:(NSInteger)activeStoryIndex;
 - (NSString *)getHeader;
-- (NSString *)getShareBar;
-- (NSString *)getComments;
-- (NSString *)getComment:(NSDictionary *)commentDict;
-- (NSString *)getReplies:(NSArray *)replies forUserId:(NSString *)commentUserId;
-- (NSString *)getAvatars:(NSString *)key;
 - (void)refreshHeader;
 - (void)refreshSideOptions;
 

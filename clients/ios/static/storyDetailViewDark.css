@@ -82,8 +82,7 @@ body {
 }
 .NB-story-tag .NB-highlight,
 .NB-user-tag .NB-highlight,
-.NB-story-author .NB-highlight,
-.NB-show-profile .NB-highlight {
+.NB-story-author .NB-highlight {
     background-color: #000;
 }
 
@@ -161,31 +160,6 @@ del {
     background-color: #000000 !important;
 }
 
-/* Comments */
-
-.NB-story-comments-group:last-child {
-    border-bottom: 1px solid #000;
-}
-
-#story_pane .NB-story-comments-shares-teaser.NB-highlighted {
-    color: #aaaaaa;
-    background-color: #111111;
-}
-
-#story_pane .NB-story-comment-reply.NB-highlighted {
-    color: #aaaaaa;
-    background-color: #111111;
-}
-
-#story_pane .NB-story-comment.NB-highlighted {
-    color: #aaaaaa;
-    background-color: #111111;
-}
-
-.NB-story-comment:last-child {
-            border-bottom: 1px solid #A6A6A6;
-}
-
 /* Edit, Like, and Reply buttons */
 
 .NB-button {
@@ -232,59 +206,6 @@ del {
     color: rgba(200, 200, 200, 0.8);
     background: rgba(255, 255, 255, 0.12);
     text-shadow: none;
-}
-
-/* Story Comments */
-
-#story_pane .NB-story-comment {
-    border-bottom: 1px solid #222222;
-    background:#111111;
-}
-
-#story_pane .NB-story-comment .NB-story-comment-username {
-    color: lightblue;
-    text-shadow: 0 1px 0 #333333;
-}
-#story_pane .NB-story-comment .NB-story-comment-date {
-    color: #808080;
-}
-
-#story_pane .NB-story-comment .NB-story-comment-content {
-    color: #aaaaaa;
-}
-
-#story_pane .NB-story-comment-reply {
-    border-top: 1px solid #222222;
-}
-
-#story_pane .NB-story-comment-reply-content {
-    color: #aaaaaa;
-}
-
-#story_pane .NB-story-comment-reply-form .NB-error {
-    color: #6A1000;
-}
-#story_pane .NB-story-comment .NB-story-comment-location {
-    color: #606060;
-}
-#story_pane .NB-story-comments-public-teaser,
-#story_pane .NB-story-comments-public-header,
-#story_pane .NB-story-comments-friends-header {
-    background-color: #222222;
-    color: white;
-    text-shadow: 0 1px 0 #505050;
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#363636), to(#262626));
-    color: #dddddd;
-    text-shadow: 0 1px 0 black;
-    border-color: rgba(0, 0, 0, .1) transparent #202020;
-    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .05);
-}
-#story_pane .NB-story-comments-shares-teaser {
-    background-color: #333333;
-    color: #dddddd;
-    text-shadow: 0 1px 0 #202020;
-    border-bottom: 1px solid #444444;
-    -webkit-box-shadow: inset 0px 1px 1px rgba(0, 0, 0, .1);
 }
 
 .NB-text-view-premium-only {

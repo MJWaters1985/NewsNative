@@ -223,286 +223,6 @@ private final class SocketEndpointProbe: NewsBlurSocketClient {
 }
 
 @MainActor
-final class Test_InteractionCellLayout: XCTestCase {
-    func test_interactionTextStaysWithinContentBeforeTheAccessory() throws {
-        try assertTextFitsContent(cellNames: ["InteractionCell", "SmallInteractionCell"], labelKey: "interactionLabel")
-    }
-
-    func test_activityTextStaysWithinContentBeforeTheAccessory() throws {
-        try assertTextFitsContent(cellNames: ["ActivityCell", "SmallActivityCell"], labelKey: "activityLabel")
-    }
-
-    private func assertTextFitsContent(cellNames: [String], labelKey: String) throws {
-        for className in cellNames {
-            let cellType = try XCTUnwrap(NSClassFromString(className) as? UITableViewCell.Type)
-            let cell = cellType.init(style: .default, reuseIdentifier: nil)
-            let label = try XCTUnwrap(cell.value(forKey: labelKey) as? UILabel)
-            let rightMargin = CGFloat(try XCTUnwrap(cell.value(forKey: "rightMargin") as? NSNumber).doubleValue)
-            label.numberOfLines = 0
-            label.text = String(repeating: "A long interaction and reply must wrap before the disclosure control. ", count: 4)
-
-            for width in [CGFloat(320), 466, 768] {
-                for accessoryWidth in [CGFloat(84), 28, 0] {
-                    cell.frame = CGRect(x: 0, y: 0, width: width, height: 260)
-                    // LoginViewControllerTests.swift lets UIKit reserve the accessory region, including a Duo-sized exclusion.
-                    cell.accessoryView = accessoryWidth > 0 ? UIImageView(frame: CGRect(x: 0, y: 0, width: accessoryWidth, height: 24)) : nil
-                    cell.setNeedsLayout()
-                    cell.layoutIfNeeded()
-                    if accessoryWidth > 0 {
-                        XCTAssertLessThan(cell.contentView.bounds.width, cell.bounds.width,
-                                          "The fixture must exercise a narrower system content area")
-                    }
-                    XCTAssertGreaterThan(label.bounds.width, 0)
-                    XCTAssertLessThanOrEqual(label.frame.maxX + rightMargin, cell.contentView.bounds.maxX + 0.5,
-                                             "\(className) must not render interaction text over its accessory")
-                }
-            }
-        }
-    }
-
-    func test_interactionRowHeightFitsTextAtTheVisibleContentWidth() throws {
-        try assertModuleRowFits(moduleName: "InteractionsModule", tableKey: "interactionsTable", labelKey: "interactionLabel")
-    }
-
-    func test_activityModuleRowHeightFitsTextAtTheVisibleContentWidth() throws {
-        try assertModuleRowFits(moduleName: "ActivityModule", tableKey: "activitiesTable", labelKey: "activityLabel")
-    }
-
-    private func assertModuleRowFits(moduleName: String, tableKey: String, labelKey: String) throws {
-        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
-        let moduleType = try XCTUnwrap(NSClassFromString(moduleName) as? UIView.Type)
-        for phone in [true, false] {
-            let app = DuoInteractionSizingApp()
-            app.usesPhoneCells = phone
-            let records: [[String: Any]] = [[
-                "category": "comment_reply", "title": "A long article discussion", "time_since": "1 hour",
-                "content": String(repeating: "A long reply must remain readable within the content area reserved before the disclosure indicator. ", count: 12),
-                "with_user": ["username": "Reader", "photo_url": ""]
-            ]]
-            app.dictSocialProfile = ["username": "You"]
-            if moduleName == "ActivityModule" {
-                app.userActivitiesArray = records
-            } else {
-                app.userInteractionsArray = records
-            }
-            let window = UIWindow(windowScene: scene)
-            window.rootViewController = UIViewController()
-            window.isHidden = false
-            defer { window.isHidden = true }
-            let module = moduleType.init(frame: window.bounds)
-            module.setValue(app, forKey: "appDelegate")
-            module.setValue(true, forKey: "pageFinished")
-            window.rootViewController?.view.addSubview(module)
-            module.setNeedsLayout()
-            module.layoutIfNeeded()
-            let table = try XCTUnwrap(module.value(forKey: tableKey) as? UITableView)
-            table.reloadData()
-            window.layoutIfNeeded()
-            table.layoutIfNeeded()
-            let cell = try XCTUnwrap(table.cellForRow(at: IndexPath(row: 0, section: 0)))
-            let label = try XCTUnwrap(cell.value(forKey: labelKey) as? UILabel)
-            func metric(_ key: String) throws -> CGFloat {
-                CGFloat(try XCTUnwrap(cell.value(forKey: key) as? NSNumber).doubleValue)
-            }
-            let textWidth = try cell.contentView.bounds.width - 2 * metric("leftMargin") - metric("avatarSize") - metric("rightMargin")
-            let textHeight = label.sizeThatFits(CGSize(width: textWidth, height: .greatestFiniteMagnitude)).height
-            let requiredHeight = try textHeight + metric("topMargin") + metric("bottomMargin")
-            let geometry = XCTAttachment(string: "phone=\(phone), table=\(table.bounds), safe=\(table.safeAreaInsets), adjusted=\(table.adjustedContentInset), cell=\(cell.frame), content=\(cell.contentView.frame), label=\(label.frame), requiredHeight=\(requiredHeight)")
-            geometry.name = "\(moduleName)-row-sizing-\(phone ? "phone" : "regular")"
-            geometry.lifetime = .keepAlways
-            add(geometry)
-            XCTAssertLessThan(cell.contentView.bounds.width, cell.bounds.width)
-            XCTAssertGreaterThanOrEqual(cell.bounds.height + 1, requiredHeight,
-                                        "\(moduleName) row measurement must use the same available width as its visible label")
-            let expectedHeight = try max(requiredHeight, metric("avatarSize") + metric("topMargin") + metric("bottomMargin"))
-            XCTAssertLessThanOrEqual(cell.bounds.height, expectedHeight + 4,
-                                     "\(moduleName) must not estimate extra blank space from a narrower prototype cell")
-        }
-    }
-
-    func test_profileActivityRowHeightFitsTextAtTheVisibleContentWidth() throws {
-        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
-        let profileType = try XCTUnwrap(NSClassFromString("UserProfileViewController") as? UIViewController.Type)
-        let profile = profileType.init(nibName: nil, bundle: nil)
-        let window = UIWindow(windowScene: scene)
-        window.rootViewController = UIViewController()
-        window.isHidden = false
-        defer { window.isHidden = true }
-        profile.view = UIView(frame: window.bounds)
-        profile.setValue(["username": "Reader"], forKey: "userProfile")
-        profile.setValue([[
-            "category": "sharedstory", "title": "An article with a long discussion", "time_since": "1 hour",
-            "content": String(repeating: "A long shared-story comment must stay readable before the disclosure indicator and retain all its lines. ", count: 12)
-        ]], forKey: "activitiesArray")
-        let source = try XCTUnwrap(profile as? UITableViewDataSource)
-        let delegate = try XCTUnwrap(profile as? UITableViewDelegate)
-        let activityOnly = DuoProfileActivityTable(source: source, delegate: delegate)
-        let table = UITableView(frame: window.bounds, style: .grouped)
-        profile.setValue(table, forKey: "profileTable")
-        table.dataSource = activityOnly
-        table.delegate = activityOnly
-        profile.view.addSubview(table)
-        window.rootViewController?.view.addSubview(profile.view)
-        table.reloadData()
-        window.layoutIfNeeded()
-        table.layoutIfNeeded()
-        let cell = try XCTUnwrap(table.cellForRow(at: IndexPath(row: 0, section: 0)))
-        let label = try XCTUnwrap(cell.value(forKey: "activityLabel") as? UILabel)
-        func metric(_ key: String) throws -> CGFloat {
-            CGFloat(try XCTUnwrap(cell.value(forKey: key) as? NSNumber).doubleValue)
-        }
-        let textWidth = try cell.contentView.bounds.width - 2 * metric("leftMargin") - metric("avatarSize") - metric("rightMargin")
-        let requiredHeight = try label.sizeThatFits(CGSize(width: textWidth, height: .greatestFiniteMagnitude)).height + metric("topMargin") + metric("bottomMargin")
-        let geometry = XCTAttachment(string: "table=\(table.bounds), safe=\(table.safeAreaInsets), cell=\(cell.frame), content=\(cell.contentView.frame), label=\(label.frame), requiredHeight=\(requiredHeight)")
-        geometry.name = "profile-activity-row-sizing"
-        geometry.lifetime = .keepAlways
-        add(geometry)
-        XCTAssertGreaterThanOrEqual(cell.bounds.height + 1, requiredHeight,
-                                    "The profile's real activity delegate must reserve enough height for the visible text width")
-        let expectedHeight = try max(requiredHeight, metric("avatarSize") + metric("topMargin") + metric("bottomMargin"))
-        XCTAssertLessThanOrEqual(cell.bounds.height, expectedHeight + 4,
-                                 "Grouped profile activity rows must use their own actual content width")
-        withExtendedLifetime(activityOnly) {}
-    }
-
-    func test_profileActivityRendersHTMLCommentsAsReadableParagraphs() throws {
-        let html = "<blockquote><p>I&#x27;ve found <em>useful</em> software.</p><p>Second &amp; final paragraph.</p></blockquote>"
-        let htmlText = try profileActivityText(content: html)
-        XCTAssertTrue(htmlText.contains("I've found useful software."))
-        XCTAssertTrue(htmlText.contains("Second & final paragraph."))
-        XCTAssertNotNil(htmlText.range(of: "software\\.\\n+Second", options: .regularExpression),
-                        "HTML paragraphs must remain separate readable paragraphs")
-        XCTAssertFalse(htmlText.contains("<blockquote>"))
-        XCTAssertFalse(htmlText.contains("<p>"))
-        XCTAssertFalse(htmlText.contains("&#x27;"))
-
-        let plainText = try profileActivityText(content: "2 < 3\n\nAlready readable &amp; preserved.")
-        XCTAssertTrue(plainText.contains("2 < 3\n\nAlready readable & preserved."),
-                      "Plain comments must retain their line breaks and literal comparisons")
-    }
-
-    func test_modulesPreserveCollapsedRowsForMissingAuthors() throws {
-        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
-        for moduleName in ["InteractionsModule", "ActivityModule"] {
-            let isInteraction = moduleName == "InteractionsModule"
-            let categories = isInteraction ? ["follow", "comment_reply", "reply_reply", "story_reshare", "comment_like"] :
-                ["follow", "comment_reply", "comment_like", "signup", "sharedstory", "feedsub", "star"]
-            let collapsedCount = isInteraction ? categories.count : 4
-            for phone in [true, false] {
-                let app = DuoInteractionSizingApp()
-                app.usesPhoneCells = phone
-                app.dictSocialProfile = ["username": "You"]
-                var records = categories.map { missingAuthorRecord(category: $0) }
-                records.append(["category": "follow", "title": "An article", "content": "A comment", "time_since": "1 hour",
-                                "with_user": ["username": "Reader", "photo_url": ""]])
-                if isInteraction { app.userInteractionsArray = records } else { app.userActivitiesArray = records }
-                let window = UIWindow(windowScene: scene)
-                window.rootViewController = UIViewController()
-                window.isHidden = false
-                defer { window.isHidden = true }
-                let moduleType = try XCTUnwrap(NSClassFromString(moduleName) as? UIView.Type)
-                let module = moduleType.init(frame: window.bounds)
-                module.setValue(app, forKey: "appDelegate")
-                module.setValue(true, forKey: "pageFinished")
-                window.rootViewController?.view.addSubview(module)
-                module.setNeedsLayout()
-                module.layoutIfNeeded()
-                let table = try XCTUnwrap(module.value(forKey: isInteraction ? "interactionsTable" : "activitiesTable") as? UITableView)
-                table.reloadData()
-                window.layoutIfNeeded()
-                table.layoutIfNeeded()
-                assertMissingAuthorRowHeights(table: table, recordCount: records.count, collapsedCount: collapsedCount)
-            }
-        }
-    }
-
-    func test_profilePreservesCollapsedActivityRowsForMissingAuthors() throws {
-        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
-        let categories = ["follow", "comment_reply", "comment_like", "signup", "sharedstory", "feedsub", "star"]
-        let profileType = try XCTUnwrap(NSClassFromString("UserProfileViewController") as? UIViewController.Type)
-        let profile = profileType.init(nibName: nil, bundle: nil)
-        let window = UIWindow(windowScene: scene)
-        window.rootViewController = UIViewController()
-        window.isHidden = false
-        defer { window.isHidden = true }
-        profile.view = UIView(frame: window.bounds)
-        profile.setValue(["username": "Reader"], forKey: "userProfile")
-        profile.setValue(categories.map { missingAuthorRecord(category: $0) }, forKey: "activitiesArray")
-        let activityOnly = DuoProfileActivityTable(source: try XCTUnwrap(profile as? UITableViewDataSource),
-                                                   delegate: try XCTUnwrap(profile as? UITableViewDelegate))
-        let table = UITableView(frame: window.bounds, style: .grouped)
-        profile.setValue(table, forKey: "profileTable")
-        table.dataSource = activityOnly
-        table.delegate = activityOnly
-        profile.view.addSubview(table)
-        window.rootViewController?.view.addSubview(profile.view)
-        table.reloadData()
-        window.layoutIfNeeded()
-        table.layoutIfNeeded()
-        assertMissingAuthorRowHeights(table: table, recordCount: categories.count, collapsedCount: 4)
-        withExtendedLifetime(activityOnly) {}
-    }
-
-    private func missingAuthorRecord(category: String) -> [String: Any] {
-        ["category": category, "title": "An article", "content": "A comment", "time_since": "1 hour", "with_user": NSNull()]
-    }
-
-    private func assertMissingAuthorRowHeights(table: UITableView, recordCount: Int, collapsedCount: Int,
-                                               file: StaticString = #filePath, line: UInt = #line) {
-        for row in 0..<recordCount {
-            let height = table.rectForRow(at: IndexPath(row: row, section: 0)).height
-            if row < collapsedCount {
-                XCTAssertEqual(height, 1, accuracy: 0.01, "Missing-author rows must retain their previous collapsed height", file: file, line: line)
-            } else {
-                XCTAssertGreaterThan(height, 1, "Valid activity and categories without authors must retain normal automatic sizing", file: file, line: line)
-            }
-        }
-    }
-
-    private func profileActivityText(content: String) throws -> String {
-        let profileType = try XCTUnwrap(NSClassFromString("UserProfileViewController") as? UIViewController.Type)
-        let profile = profileType.init(nibName: nil, bundle: nil)
-        profile.view = UIView(frame: CGRect(x: 0, y: 0, width: 466, height: 678))
-        profile.setValue(["username": "Reader"], forKey: "userProfile")
-        // LoginViewControllerTests.swift omits a feed identifier to render real activity text without fetching a favicon.
-        profile.setValue([[
-            "category": "sharedstory", "title": "An article", "time_since": "1 hour", "content": content
-        ]], forKey: "activitiesArray")
-        let table = UITableView(frame: profile.view.bounds, style: .grouped)
-        profile.setValue(table, forKey: "profileTable")
-        let source = try XCTUnwrap(profile as? UITableViewDataSource)
-        let cell = source.tableView(table, cellForRowAt: IndexPath(row: 0, section: 1))
-        let label = try XCTUnwrap(cell.value(forKey: "activityLabel") as? UILabel)
-        return try XCTUnwrap(label.attributedText?.string)
-    }
-}
-
-@MainActor private final class DuoInteractionSizingApp: NewsBlurAppDelegate {
-    var usesPhoneCells = true
-    override var isPhone: Bool { usesPhoneCells }
-}
-
-@MainActor private final class DuoProfileActivityTable: NSObject, UITableViewDataSource, UITableViewDelegate {
-    let source: UITableViewDataSource
-    let delegate: UITableViewDelegate
-    init(source: UITableViewDataSource, delegate: UITableViewDelegate) {
-        self.source = source
-        self.delegate = delegate
-        super.init()
-    }
-    // LoginViewControllerTests.swift calls the real profile activity section without loading badges, followers, or network data.
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        source.tableView(tableView, numberOfRowsInSection: 1)
-    }
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        source.tableView(tableView, cellForRowAt: IndexPath(row: indexPath.row, section: 1))
-    }
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        delegate.tableView?(tableView, heightForRowAt: IndexPath(row: indexPath.row, section: 1)) ?? 0
-    }
-}
-
-@MainActor
 final class Test_FeedDetailEmptyState: XCTestCase {
     func test_selectionPromptCommitsLoadingRowsBeforeNavigationReattachment() throws {
         let preferences = UserDefaults.standard
@@ -2365,7 +2085,7 @@ final class DetailViewControllerTests: XCTestCase {
         app.feedsViewController = feeds
         navigation.setViewControllers([feeds, discovery], animated: false)
 
-        app.loadTryFeedDetailView("1", withStory: nil, isSocial: false, withUser: nil, showFindingStory: false)
+        app.loadTryFeedDetailView("1", withStory: nil, withUser: nil, showFindingStory: false)
 
         XCTAssertEqual(app.readerLoads, 1)
         XCTAssertEqual(navigation.viewControllers.map(ObjectIdentifier.init), [feeds, discovery, reader].map(ObjectIdentifier.init))
@@ -3097,10 +2817,10 @@ final class StoryPagesViewControllerTests: XCTestCase {
                           "Registered reader command has no handler: \(NSStringFromSelector(action))")
         }
 
-        let comments = try XCTUnwrap(commands.first { $0.input == "c" && $0.modifierFlags.isEmpty })
-        let share = try XCTUnwrap(commands.first { $0.input == "s" && $0.modifierFlags == .shift })
-        let commentsAction = try XCTUnwrap(comments.action)
-        let shareAction = try XCTUnwrap(share.action)
+        let pageDown = try XCTUnwrap(commands.first { $0.input == " " && $0.modifierFlags.isEmpty })
+        let pageUp = try XCTUnwrap(commands.first { $0.input == " " && $0.modifierFlags == .shift })
+        let pageDownAction = try XCTUnwrap(pageDown.action)
+        let pageUpAction = try XCTUnwrap(pageUp.action)
         let pages = DuoReaderAppearancePages(nibName: nil, bundle: nil)
         let first = DuoKeyboardArticlePage(nibName: nil, bundle: nil)
         let second = DuoKeyboardArticlePage(nibName: nil, bundle: nil)
@@ -3111,7 +2831,7 @@ final class StoryPagesViewControllerTests: XCTestCase {
 
         for current in [first, second] {
             pages.currentPage = current
-            for command in [comments, share] {
+            for command in [pageDown, pageUp] {
                 let action = try XCTUnwrap(command.action)
                 XCTAssertTrue(pages.canPerformAction(action, withSender: command))
                 // LoginViewControllerTests.swift reports a missing selector without repeating the normal-app crash.
@@ -3121,14 +2841,14 @@ final class StoryPagesViewControllerTests: XCTestCase {
                 }
                 XCTAssertTrue(UIApplication.shared.sendAction(action, to: pages, from: command, for: nil))
             }
-            XCTAssertEqual(current.commentsCommands, 1)
-            XCTAssertEqual(current.shareCommands, 1)
+            XCTAssertEqual(current.pageDownCommands, 1)
+            XCTAssertEqual(current.pageUpCommands, 1)
         }
-        XCTAssertEqual(first.commentsCommands, 1, "Changing pages must not send commands to the outgoing article")
-        XCTAssertEqual(first.shareCommands, 1)
+        XCTAssertEqual(first.pageDownCommands, 1, "Changing pages must not send commands to the outgoing article")
+        XCTAssertEqual(first.pageUpCommands, 1)
         second.pageIndex = -1
-        XCTAssertFalse(pages.canPerformAction(commentsAction, withSender: comments))
-        XCTAssertFalse(pages.canPerformAction(shareAction, withSender: share))
+        XCTAssertFalse(pages.canPerformAction(pageDownAction, withSender: pageDown))
+        XCTAssertFalse(pages.canPerformAction(pageUpAction, withSender: pageUp))
         pages.currentPage = nil
     }
 
@@ -3984,10 +3704,10 @@ final class StoryPagesViewControllerTests: XCTestCase {
 }
 
 @MainActor private final class DuoKeyboardArticlePage: StoryDetailViewController {
-    var commentsCommands = 0
-    var shareCommands = 0
-    override func scrolltoComment() { commentsCommands += 1 }
-    override func openShareDialog() { shareCommands += 1 }
+    var pageDownCommands = 0
+    var pageUpCommands = 0
+    override func scrollPageDown(_ sender: Any!) { pageDownCommands += 1 }
+    override func scrollPageUp(_ sender: Any!) { pageUpCommands += 1 }
 }
 
 @MainActor private final class DuoEmbeddedReaderDetail: DuoRegularHeightDetailController {

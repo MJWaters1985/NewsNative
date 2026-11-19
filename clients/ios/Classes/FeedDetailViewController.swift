@@ -206,7 +206,7 @@ class FeedDetailViewController: FeedDetailObjCViewController {
     private var tryFeedRefreshContext: TryFeedRefreshContext? {
         guard let app = appDelegate, let collection = storiesCollection,
               !collection.inSearch, (!app.inFindingStoryMode || app.tryFeedStoryId == nil),
-              !collection.isRiverView, !collection.isSocialView,
+              !collection.isRiverView,
               !collection.isSavedView, !collection.isReadView, !collection.isWidgetView,
               app.isTryFeedView || app.detailViewController?.canReturnToDiscoverSites == true,
               let feedID = collection.activeFeed?["id"],
@@ -798,7 +798,6 @@ extension FeedDetailViewController: FeedDetailInteraction {
         storiesCollection.isRiverView &&
         !storiesCollection.isReadView &&
         !storiesCollection.isWidgetView &&
-        !storiesCollection.isSocialView &&
         !storiesCollection.isSavedView
     }
     

@@ -33,8 +33,7 @@ import UIKit
 @MainActor enum RowActionMenus {
     static func isUserFolder(_ folder: String) -> Bool {
         !folder.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
-        !["everything", "infrequent", "dashboard", "discover_sites", "try_feed"].contains(folder) &&
-        !folder.hasPrefix("river_") && !folder.hasPrefix("trending:") &&
+        !["everything", "dashboard", "discover_sites", "try_feed"].contains(folder) &&
         !folder.hasPrefix("saved_") && !folder.hasSuffix("_stories")
     }
 
@@ -79,7 +78,7 @@ import UIKit
                 collection.toggleStoryUnread(dictionary)
                 controller.reload()
             })
-            if !collection.isSavedView && !collection.isReadView && !collection.isSocialView && !collection.isTrending && !collection.isInfrequent {
+            if !collection.isSavedView && !collection.isReadView {
                 reading += [
                     action("newer", NBLocalization.text("Mark newer as read"), newestFirst ? "arrow.up.to.line" : "arrow.down.to.line") {
                         controller.markFeedsRead(fromTimestamp: story.timestamp, andOlder: false)
@@ -109,20 +108,8 @@ import UIKit
                 }
             ]
         }
-        sharing.append(action("share-newsblur", story.isShared ? NBLocalization.text("Edit NewsBlur share…") : NBLocalization.text("Share on NewsBlur…"), "quote.bubble") {
-            // ShareViewController.m reads the active story and comment when the composer opens and submits.
-            app.activeStory = dictionary
-            let userID = app.dictSocialProfile?["user_id"].map { String(describing: $0) }
-            let comments = dictionary["friend_comments"] as? [[String: Any]] ?? []
-            app.activeComment = comments.first { comment in
-                guard let userID, let author = comment["user_id"] else { return false }
-                return String(describing: author) == userID
-            }
-            app.showShareView(app.activeComment == nil ? "share" : "edit-share", setUserId: nil,
-                              setUsername: nil, setReplyId: nil)
-        })
         var tools: [RowMenuAction] = []
-        if !dashboard && collection.isRiverView && !collection.isSavedView && !collection.isSocialView,
+        if !dashboard && collection.isRiverView && !collection.isSavedView,
            let id = dictionary["story_feed_id"], let feed = app.getFeed(String(describing: id)), !feed.isEmpty {
             tools.append(action("open-feed", NBLocalization.text("Open feed"), "dot.radiowaves.left.and.right") {
                 app.loadFeed(String(describing: id), withStory: nil, animated: true)
@@ -151,7 +138,7 @@ extension FeedsViewController: UIContextMenuInteractionDelegate {
             RowMenuAction(id: id, title: title, symbol: icon, destructive: destructive, perform: handler)
         }
         var reading: [RowMenuAction] = []
-        if !feedIDs.isEmpty && !app.isSavedStoriesIntelligenceMode() && !folder.hasPrefix("saved_") && !folder.hasPrefix("trending:") && folder != "read_stories" {
+        if !feedIDs.isEmpty && !app.isSavedStoriesIntelligenceMode() && !folder.hasPrefix("saved_") && folder != "read_stories" {
             reading.append(action("mark-read", NBLocalization.text("Mark as read…"), "checkmark.circle") { [weak self] in
                 guard let self else { return }
                 app.showMarkReadMenu(withFeedIds: feedIDs, collectionTitle: folder == "everything" ? "everything" : feedID == nil ? "entire folder" : "site",
@@ -163,7 +150,7 @@ extension FeedsViewController: UIContextMenuInteractionDelegate {
         var tools: [RowMenuAction] = []
         var organize: [RowMenuAction] = []
         var deletion: [RowMenuAction] = []
-        if let feedID, feed != nil, !app.isSocialFeed(feedID), !app.isSavedFeed(feedID) {
+        if let feedID, feed != nil, !app.isSavedFeed(feedID) {
             reading.append(action("refresh", NBLocalization.text("Refresh site"), "arrow.clockwise") { [weak self] in
                 app.get("\(app.url!)/reader/refresh_feed/\(feedID)", parameters: nil, success: { _, _ in
                     app.reloadFeedsView(false)

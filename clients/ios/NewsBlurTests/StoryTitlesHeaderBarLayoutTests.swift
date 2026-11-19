@@ -337,8 +337,8 @@ import UIKit
     func test_moveToMenuExcludesVirtualFoldersAndKeepsRealDestinations() throws {
         let app = NewsBlurAppDelegate()
         app.dictFoldersArray = NSMutableArray(array: [
-            "discover_sites", "dashboard", "infrequent", "everything",
-            "river_global", "river_blurblogs", "saved_stories", "read_stories", "widget_stories", "saved_searches",
+            "discover_sites", "dashboard", "everything",
+            "saved_stories", "read_stories", "widget_stories", "saved_searches",
             "Technology", "Technology ▸ iOS", "discover_sites_notes", "daily_briefing_notes"
         ])
         let stories = HeaderDuoStories()

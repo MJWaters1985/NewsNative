@@ -229,7 +229,7 @@ const NSInteger kHeaderHeight = 24;
         title = [tag objectForKey:@"feed_title"];
         count = [[tag objectForKey:@"ps"] intValue];
     }
-    cell.feedFavicon = [appDelegate getFavicon:nil isSocial:NO isSaved:YES];
+    cell.feedFavicon = [appDelegate getFavicon:nil isSaved:YES];
     cell.feedTitle     = title;
     cell.positiveCount = count;
     cell.neutralCount  = 0;

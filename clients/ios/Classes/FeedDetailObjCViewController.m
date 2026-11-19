@@ -10,7 +10,6 @@
 #import "FeedDetailObjCViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "FeedDetailTableCell.h"
-#import "UserProfileViewController.h"
 #import "NSString+HTML.h"
 #import "MBProgressHUD.h"
 #import "SBJson4.h"
@@ -70,7 +69,6 @@ static const NSInteger NBTryFeedTitleFallbackPageCount = 5;
 @property (nonatomic) BOOL reconcilingFirstPageArticle;
 @property (nonatomic, strong) NSURLSessionDataTask *notificationStoryLookupTask;
 @property (nonatomic, copy) NSString *notificationStoryLookupHash;
-@property (nonatomic, copy) NSArray *notificationStoryProfiles;
 @property (nonatomic, copy) NSString *pendingNotificationAnchorHash;
 @property (nonatomic) CGFloat pendingNotificationAnchorOffset;
 @property (nonatomic, copy) NSString *notificationSelectionAnchorHash;
@@ -737,8 +735,6 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         @"show_hidden": @(storiesCollection.showHiddenStories),
         @"archive": @(appDelegate.isPremiumArchive),
         @"river": @(storiesCollection.isRiverView),
-        @"social": @(storiesCollection.isSocialView),
-        @"social_river": @(storiesCollection.isSocialRiverView),
         @"saved": @(storiesCollection.isSavedView),
         @"read": @(storiesCollection.isReadView),
         @"widget": @(storiesCollection.isWidgetView),
@@ -842,10 +838,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     
     [self reload];
     
-    [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
-        UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
-        [self setUserAvatarLayout:orientation];
-    } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
+    [coordinator animateAlongsideTransition:nil completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
         [self checkScroll];
         NSLog(@"Feed detail did re-orient.");
     }];
@@ -984,8 +977,6 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     }
     [self configureInteractivePopGesture];
     
-    UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
-    [self setUserAvatarLayout:orientation];
     self.finishedAnimatingIn = NO;
     [MBProgressHUD hideHUDForView:self.view animated:NO];
     self.messageView.hidden = YES;
@@ -1031,18 +1022,11 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     appDelegate.originalStoryCount = (int)[appDelegate unreadCount];
     self.scrollingMarkReadRow = NSNotFound;
     
-    if ((storiesCollection.isSocialRiverView ||
-         storiesCollection.isSocialView)) {
-        settingsBarButton.enabled = NO;
-    } else {
-        settingsBarButton.enabled = YES;
-    }
+    settingsBarButton.enabled = YES;
     
     BOOL markReadEnabled = !(self.isDashboard ||
-        storiesCollection.isSocialRiverView ||
         storiesCollection.isSavedView ||
-        storiesCollection.isReadView ||
-        storiesCollection.isTrending);
+        storiesCollection.isReadView);
     feedMarkReadButton.enabled = markReadEnabled;
     [self.storyTitlesHeaderBar updateMarkReadEnabled:markReadEnabled];
 
@@ -1701,22 +1685,6 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     }
 }
 
-- (void)setUserAvatarLayout:(UIInterfaceOrientation)orientation {
-    if (self.isPhoneOrCompact && storiesCollection.isSocialView) {
-        if (UIInterfaceOrientationIsPortrait(orientation)) {
-            NBBarButtonItem *avatar = (NBBarButtonItem *)titleImageBarButton.customView;
-            CGRect buttonFrame = avatar.frame;
-            buttonFrame.size = CGSizeMake(32, 32);
-            avatar.frame = buttonFrame;
-        } else {
-            NBBarButtonItem *avatar = (NBBarButtonItem *)titleImageBarButton.customView;
-            CGRect buttonFrame = avatar.frame;
-            buttonFrame.size = CGSizeMake(28, 28);
-            avatar.frame = buttonFrame;
-        }
-    }
-}
-
 - (BOOL)isPhoneOrCompact {
     if (self.appDelegate.detailViewController) {
         return self.appDelegate.detailViewController.isPhoneOrCompact;
@@ -1752,10 +1720,8 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 - (void)finishedLoadingFeedsNotification:(NSNotification *)notification {
     if (self.restoringFeedID.length > 0) {
         NSDictionary *feed = [appDelegate getFeed:self.restoringFeedID];
-        BOOL isSocial = [appDelegate isSocialFeed:self.restoringFeedID];
         
         if (feed != nil) {
-            appDelegate.storiesCollection.isSocialView = isSocial;
             appDelegate.storiesCollection.activeFeed = feed;
             [appDelegate loadFeedDetailView:NO];
             [self viewWillAppear:NO];
@@ -1826,7 +1792,6 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     }
     [self clearStoryRenderCaches];
     [storiesCollection setStories:nil];
-    [storiesCollection setFeedUserProfiles:nil];
     storiesCollection.storyCount = 0;
     if (storiesCollection && self.isViewLoaded && self.storyTitlesTable) {
         [self reloadImmediately];
@@ -1863,7 +1828,6 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     appDelegate.hasLoadedFeedDetail = NO;
     appDelegate.activeStory = nil;
     [storiesCollection setStories:nil];
-    [storiesCollection setFeedUserProfiles:nil];
     storiesCollection.storyCount = 0;
     storiesCollection.activeClassifiers = [NSMutableDictionary dictionary];
     storiesCollection.activePopularAuthors = [NSArray array];
@@ -2129,10 +2093,6 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 }
 
 - (void)beginOfflineTimer {
-    if (self.storiesCollection.isInfrequent) {
-        return;
-    }
-    
     NSUInteger requestId = self.fetchRequestId;
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         if (requestId != self.fetchRequestId || self.firstPageLoad.pending) return;
@@ -2343,30 +2303,12 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     }
 }
 
-- (void)flashInfrequentStories {
-    NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
-    NSInteger infrequent = [prefs integerForKey:@"infrequent_stories_per_month"];
-    [MBProgressHUD hideHUDForView:self.storyTitlesTable animated:NO];
-    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    hud.mode = MBProgressHUDModeText;
-    hud.removeFromSuperViewOnHide = YES;
-    
-    hud.labelText = [NSString stringWithFormat:@"< %@", [NBLocalization plural:@"%@ stories/month" count:@(infrequent)]];
-    
-    [hud hide:YES afterDelay:0.5];
-}
-
 #pragma mark -
-#pragma mark Regular and Social Feeds
+#pragma mark Regular Feeds
 
 - (NSString *)feedRequestURLForPage:(int)page {
     NSString *theFeedDetailURL;
-    if (storiesCollection.isSocialView) {
-        theFeedDetailURL = [NSString stringWithFormat:@"%@/social/stories/%@/?page=%d",
-                            self.appDelegate.url,
-                            [storiesCollection.activeFeed objectForKey:@"user_id"],
-                            page];
-    } else if (storiesCollection.isSavedView) {
+    if (storiesCollection.isSavedView) {
         theFeedDetailURL = [NSString stringWithFormat:
                             @"%@/reader/starred_stories/?page=%d&v=2&tag=%@",
                             self.appDelegate.url,
@@ -2402,20 +2344,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 - (NSString *)riverRequestURLForPage:(int)page {
     NSString *theFeedDetailURL;
 
-    if (storiesCollection.isSocialRiverView) {
-        if ([storiesCollection.activeFolder isEqualToString:@"river_global"]) {
-            theFeedDetailURL = [NSString stringWithFormat:
-                                @"%@/social/river_stories/?global_feed=true&page=%d",
-                                self.appDelegate.url,
-                                page];
-
-        } else {
-            theFeedDetailURL = [NSString stringWithFormat:
-                                @"%@/social/river_stories/?page=%d",
-                                self.appDelegate.url,
-                                page];
-        }
-    } else if (storiesCollection.isSavedView) {
+    if (storiesCollection.isSavedView) {
         theFeedDetailURL = [NSString stringWithFormat:
                             @"%@/reader/starred_stories/?page=%d&v=2",
                             self.appDelegate.url,
@@ -2425,13 +2354,6 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
                             @"%@/reader/read_stories/?page=%d&v=2",
                             self.appDelegate.url,
                             page];
-    } else if ([storiesCollection.activeFolder hasPrefix:@"trending:"]) {
-        NSString *trendingType = [storiesCollection.activeFolder stringByReplacingOccurrencesOfString:@"trending:" withString:@""];
-        theFeedDetailURL = [NSString stringWithFormat:
-                            @"%@/reader/trending_stories/?trending_type=%@&page=%d",
-                            self.appDelegate.url,
-                            trendingType,
-                            page];
     } else {
         NSString *feeds = @"";
         if (storiesCollection.activeFolderFeeds.count) {
@@ -2439,17 +2361,11 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
                       subarrayWithRange:NSMakeRange(0, MIN(storiesCollection.activeFolderFeeds.count, 800))]
                      componentsJoinedByString:@"&f="];
         }
-        NSString *infrequent = @"false";
-        if ([storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
-            NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
-            infrequent = [NSString stringWithFormat:@"%ld", (long)[prefs integerForKey:@"infrequent_stories_per_month"]];
-        }
         theFeedDetailURL = [NSString stringWithFormat:
-                            @"%@/reader/river_stories/?include_hidden=true&f=%@&page=%d&infrequent=%@",
+                            @"%@/reader/river_stories/?include_hidden=true&f=%@&page=%d",
                             self.appDelegate.url,
                             feeds,
-                            page,
-                            infrequent];
+                            page];
     }
 
 
@@ -2470,9 +2386,8 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 
 - (NSString *)normalFirstPageRequestURL {
     if (!self.isLegacyTable || self.isDashboard || self.dashboardIndex >= 0 ||
-        storiesCollection.inSearch || storiesCollection.isSocialView || storiesCollection.isSocialRiverView ||
+        storiesCollection.inSearch ||
         storiesCollection.isSavedView || storiesCollection.isReadView || storiesCollection.isWidgetView ||
-        storiesCollection.isTrending || storiesCollection.isInfrequent ||
         appDelegate.isSavedStoriesIntelligenceMode || appDelegate.tryFeedFeedId || appDelegate.inFindingStoryMode) return nil;
     if (storiesCollection.isRiverView) {
         if (!storiesCollection.activeFolder || [@[@"dashboard", @"notifications"] containsObject:storiesCollection.activeFolder]) return nil;
@@ -2542,7 +2457,6 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         }
         self.storiesCollection.activePopularAuthors = response[@"feed_authors"];
         self.storiesCollection.activePopularTags = response[@"feed_tags"];
-        [self.storiesCollection setFeedUserProfiles:response[@"user_profiles"]];
         self.storiesCollection.activeFeedStories = cachedStories;
         self.storiesCollection.storyCount = (int)cachedStories.count;
         [self.storiesCollection calculateStoryLocations];
@@ -2592,7 +2506,6 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     [self.notificationStoryLookupTask cancel];
     self.notificationStoryLookupTask = nil;
     self.notificationStoryLookupHash = nil;
-    self.notificationStoryProfiles = nil;
     self.notificationFirstPageReceived = NO;
     self.pendingNotificationAnchorHash = nil;
     self.notificationSelectionAnchorHash = nil;
@@ -2601,7 +2514,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 - (void)beginNotificationStoryLookupIfNeeded {
     NSString *hash = storiesCollection.notificationStoryHash;
     if (!hash.length || self.notificationStoryLookupHash || !appDelegate.inFindingStoryMode ||
-        ![appDelegate.tryFeedStoryId isEqualToString:hash] || storiesCollection.isRiverOrSocial) return;
+        ![appDelegate.tryFeedStoryId isEqualToString:hash] || storiesCollection.isMultiFeedView) return;
     self.notificationStoryLookupHash = hash;
     StoriesCollection *collection = storiesCollection;
     NSString *feedId = collection.activeFeedIdStr;
@@ -2645,8 +2558,6 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         collection.notificationStory = target;
         NSDictionary *classifiers = [response[@"classifiers"] isKindOfClass:NSDictionary.class] ? response[@"classifiers"][feedId] : nil;
         if ([classifiers isKindOfClass:NSDictionary.class]) collection.activeClassifiers[feedId] = classifiers;
-        controller.notificationStoryProfiles = [response[@"user_profiles"] isKindOfClass:NSArray.class] ? response[@"user_profiles"] : @[];
-        [controller mergeNotificationStoryProfiles];
         if (controller.notificationFirstPageReceived) {
             [controller updateNotificationStories:^{ [collection addStories:@[]]; }];
         }
@@ -2692,7 +2603,6 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     self.restoringFirstPageViewport = YES;
     self.reconcilingFirstPageArticle = openHash != nil;
     update();
-    [self mergeNotificationStoryProfiles];
     [(FeedDetailViewController *)self resetPendingReloadsForFeedChange];
     [self reloadImmediately];
     [table layoutIfNeeded];
@@ -2784,16 +2694,8 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     [self checkScroll];
 }
 
-- (void)mergeNotificationStoryProfiles {
-    NSMutableArray *profiles = [storiesCollection.activeFeedUserProfiles mutableCopy] ?: [NSMutableArray array];
-    for (NSDictionary *profile in self.notificationStoryProfiles) {
-        if ([profile isKindOfClass:NSDictionary.class] && ![profiles containsObject:profile]) [profiles addObject:profile];
-    }
-    [storiesCollection setFeedUserProfiles:profiles];
-}
-
 - (void)finishFirstPageResponse:(NSDictionary *)response feedPage:(NSInteger)page feedId:(NSString *)feedId load:(StoryFirstPageLoad *)load {
-    if (storiesCollection.notificationStory && !storiesCollection.isRiverOrSocial) {
+    if (storiesCollection.notificationStory && !storiesCollection.isMultiFeedView) {
         NSDictionary *updated = response;
         if (load && page == 1) {
             if (![self isCurrentFirstPageLoad:load]) return;
@@ -3207,9 +3109,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     if (!(storiesCollection.isRiverView ||
           storiesCollection.isSavedView ||
           storiesCollection.isReadView ||
-          storiesCollection.isWidgetView ||
-          storiesCollection.isSocialView ||
-          storiesCollection.isSocialRiverView)
+          storiesCollection.isWidgetView)
         && ![receivedFeedId isEqualToString:sentFeedId]) {
         return;
     }
@@ -3231,10 +3131,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     if (storiesCollection.isRiverView ||
         storiesCollection.isSavedView ||
         storiesCollection.isReadView ||
-        storiesCollection.isWidgetView ||
-        storiesCollection.isSocialView ||
-        storiesCollection.isSocialRiverView ||
-        storiesCollection.isTrending) {
+        storiesCollection.isWidgetView) {
         for (id key in [newClassifiers allKeys]) {
             [storiesCollection.activeClassifiers setObject:[newClassifiers objectForKey:key] forKey:key];
         }
@@ -3257,41 +3154,6 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
             if (![storyIds containsObject:[story objectForKey:@"story_hash"]]) {
                 [confirmedNewStories addObject:story];
             }
-        }
-    }
-    
-    // Adding new user profiles to appDelegate.activeFeedUserProfiles
-    
-    NSArray *newUserProfiles = [[NSArray alloc] init];
-    if ([results objectForKey:@"user_profiles"] != nil) {
-        newUserProfiles = [results objectForKey:@"user_profiles"];
-    }
-    // add self to user profiles
-    if (storiesCollection.feedPage == 1 && appDelegate.dictSocialProfile != nil) {
-        newUserProfiles = [newUserProfiles arrayByAddingObject:appDelegate.dictSocialProfile];
-    }
-    
-    if ([newUserProfiles count]){
-        NSMutableArray *confirmedNewUserProfiles = [NSMutableArray array];
-        if ([storiesCollection.activeFeedUserProfiles count]) {
-            NSMutableSet *userProfileIds = [NSMutableSet set];
-            for (id userProfile in storiesCollection.activeFeedUserProfiles) {
-                [userProfileIds addObject:[userProfile objectForKey:@"id"]];
-            }
-            for (id userProfile in newUserProfiles) {
-                if (![userProfileIds containsObject:[userProfile objectForKey:@"id"]]) {
-                    [confirmedNewUserProfiles addObject:userProfile];
-                }
-            }
-        } else {
-            confirmedNewUserProfiles = [newUserProfiles copy];
-        }
-        
-        
-        if (storiesCollection.feedPage == 1) {
-            [storiesCollection setFeedUserProfiles:confirmedNewUserProfiles];
-        } else if (newUserProfiles.count > 0) {
-            [storiesCollection addFeedUserProfiles:confirmedNewUserProfiles];
         }
     }
     
@@ -3414,7 +3276,6 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     storiesCollection.isRiverView &&
     !storiesCollection.isReadView &&
     !storiesCollection.isWidgetView &&
-    !storiesCollection.isSocialView &&
     !storiesCollection.isSavedView;
     
     if (newStoriesCount > 0) {
@@ -4049,7 +3910,6 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         storiesCollection.isRiverView &&
         !storiesCollection.isReadView &&
         !storiesCollection.isWidgetView &&
-        !storiesCollection.isSocialView &&
         !storiesCollection.isSavedView;
         
         UIImage *img = [UIImage imageNamed:@"fleuron.png"];
@@ -4245,8 +4105,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     NSString *imageStyle = [preferences stringForKey:@"story_list_preview_images_size"] ?: @"";
     CGFloat comfortMargin = [[preferences stringForKey:@"feed_list_spacing"] isEqualToString:@"compact"] ? 0 : 10;
     BOOL river = storiesCollection.isRiverView || storiesCollection.isSavedView ||
-        storiesCollection.isReadView || storiesCollection.isWidgetView || storiesCollection.isSocialView ||
-        storiesCollection.isSocialRiverView;
+        storiesCollection.isReadView || storiesCollection.isWidgetView;
     CGFloat riverPadding = (river ? 20 : -10) + comfortMargin;
     UIFontDescriptor *fontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
     NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
@@ -4356,7 +4215,6 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     
     
     if (storiesCollection.isRiverView ||
-        storiesCollection.isSocialView ||
         storiesCollection.isSavedView ||
         storiesCollection.isReadView ||
         storiesCollection.isReadView) {
@@ -4387,8 +4245,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
     feedIdStr = [appDelegate feedIdWithoutSearchQuery:feedIdStr];
     
-    BOOL preferActiveFeeds = storiesCollection.isSocialView || storiesCollection.isSocialRiverView;
-    feed = [appDelegate feedMetadataForStory:story preferActiveFeeds:preferActiveFeeds];
+    feed = [appDelegate feedMetadataForStory:story preferActiveFeeds:NO];
     
     NSString *siteTitle = [feed objectForKey:@"feed_title"];
     cell.siteTitle = siteTitle; 
@@ -4463,14 +4320,12 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         cell.isShort = YES;
     }
     
-    cell.isRiverOrSocial = NO;
+    cell.isMultiFeedView = NO;
     if ((storiesCollection.isRiverView ||
         storiesCollection.isSavedView ||
         storiesCollection.isReadView ||
-        storiesCollection.isWidgetView ||
-        storiesCollection.isSocialView ||
-        storiesCollection.isSocialRiverView)) {
-        cell.isRiverOrSocial = YES;
+        storiesCollection.isWidgetView)) {
+        cell.isMultiFeedView = YES;
     }
 
     if (!self.isPhoneOrCompact) {
@@ -4555,18 +4410,10 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
                 feedTitle = [NBLocalization text:@"All Shared Stories"];
             } else if ([storiesCollection.activeFolder isEqualToString:@"river_global"]) {
                 feedTitle = [NBLocalization text:@"Global Shared Stories"];
-            } else if ([storiesCollection.activeFolder isEqualToString:@"trending:well_read"]) {
-                feedTitle = [NBLocalization text:@"Widely Read Stories"];
-            } else if ([storiesCollection.activeFolder isEqualToString:@"trending:long_reads"]) {
-                feedTitle = [NBLocalization text:@"Long Reads"];
-            } else if ([storiesCollection.activeFolder isEqualToString:@"trending:good_reads"]) {
-                feedTitle = [NBLocalization text:@"Good Reads"];
             } else if ([storiesCollection.activeFolder isEqualToString:@"dashboard"]) {
                 feedTitle = [NBLocalization text:@"NewsNative Dashboard"];
             } else if ([storiesCollection.activeFolder isEqualToString:@"everything"]) {
                 feedTitle = [NBLocalization text:@"All Stories"];
-            } else if ([storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
-                feedTitle = [NBLocalization text:@"Infrequent Site Stories"];
             } else if (storiesCollection.isSavedView && storiesCollection.activeSavedStoryTag) {
                 feedTitle = storiesCollection.activeSavedStoryTag;
             } else if ([storiesCollection.activeFolder isEqualToString:@"widget_stories"]) {
@@ -4888,9 +4735,7 @@ leadingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
         if (storiesCollection.isRiverView ||
             storiesCollection.isSavedView ||
             storiesCollection.isReadView ||
-            storiesCollection.isWidgetView ||
-            storiesCollection.isSocialView ||
-            storiesCollection.isSocialRiverView) {
+            storiesCollection.isWidgetView) {
             height = kTableViewRiverRowHeight;
         }
         if ([self isShortTitles]) {
@@ -4910,9 +4755,7 @@ leadingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
             NSString *layoutMode = (storiesCollection.isRiverView ||
                                     storiesCollection.isSavedView ||
                                     storiesCollection.isReadView ||
-                                    storiesCollection.isWidgetView ||
-                                    storiesCollection.isSocialView ||
-                                    storiesCollection.isSocialRiverView) ? @"river" : @"feed";
+                                    storiesCollection.isWidgetView) ? @"river" : @"feed";
             heightCacheKey = [NSString stringWithFormat:@"%@|%@|%ld|%@|%.1f|%d",
                               [self storyRenderCacheKeyForStory:story location:location],
                               layoutMode,
@@ -5764,13 +5607,11 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     NSString *account = [appDelegate.activeUsername copy] ?: @"";
     NSString *host = [appDelegate.url copy] ?: @"";
     NSUInteger generation = self.fetchRequestId;
-    BOOL infrequent = [storiesCollection.activeFolder isEqualToString:@"infrequent"];
     BOOL everything = storiesCollection.isRiverView &&
-        ([storiesCollection.activeFolder isEqual:@"dashboard"] || [storiesCollection.activeFolder isEqual:@"everything"] || infrequent);
+        ([storiesCollection.activeFolder isEqual:@"dashboard"] || [storiesCollection.activeFolder isEqual:@"everything"]);
     // FeedDetailObjCViewController.m sends the footer's age for All Site Stories and Dashboard as days to
-    // mark_all_as_read, which marks every subscription and blurblog in one pass. The Infrequent river lists its
-    // feeds for mark_feed_as_read instead, because mark_all_as_read would also mark every blurblog read.
-    BOOL markAll = everything && !infrequent && footerDays > 0;
+    // mark_all_as_read, which marks every subscription in one pass.
+    BOOL markAll = everything && footerDays > 0;
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/%@",
                            self.appDelegate.url, markAll ? @"mark_all_as_read" : @"mark_feed_as_read"];
     NSMutableArray *feedIds = [NSMutableArray array];
@@ -5781,10 +5622,6 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
             for (NSString *folderName in appDelegate.dictFoldersArray) {
                 for (id feedId in [appDelegate.dictFolders objectForKey:folderName]) {
                     BOOL isString = [feedId isKindOfClass:[NSString class]];
-                    // FeedDetailObjCViewController.m sends only subscribed feeds for the Infrequent river. Blurblogs
-                    // and saved searches are not in it, and the server's infrequent filter only accepts numeric IDs.
-                    NSCharacterSet *nonDigits = [[NSCharacterSet decimalDigitCharacterSet] invertedSet];
-                    if (isString && infrequent && (![feedId length] || [feedId rangeOfCharacterFromSet:nonDigits].location != NSNotFound)) continue;
                     if (!isString || ![feedId startsWith:@"saved:"]) {
                         [feedIds addObject:feedId];
                     }
@@ -5808,12 +5645,6 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         [params setObject:direction forKey:@"direction"];
     }
     
-    if (infrequent) {
-        NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
-        NSString *infrequent = [NSString stringWithFormat:@"%ld", (long)[prefs integerForKey:@"infrequent_stories_per_month"]];
-        [params setObject:infrequent forKey:@"infrequent"];
-    }
-    
     // FeedDetailObjCViewController.m owns one progress view per request, including replies after navigation or account changes.
     MBProgressHUD *progressHUD = self.viewIfLoaded ? [MBProgressHUD showHUDAddedTo:self.viewIfLoaded animated:YES] : nil;
     progressHUD.removeFromSuperViewOnHide = YES;
@@ -5822,8 +5653,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         [[StoryFirstPageCache shared] invalidateSnapshotsForAccount:account host:host];
         if (![(self.appDelegate.activeUsername ?: @"") isEqualToString:account] ||
             ![(self.appDelegate.url ?: @"") isEqualToString:host]) return;
-        // FeedDetailObjCViewController.m leaves infrequent-feed filtering to the server; the reply does not identify the filtered feeds.
-        if (!infrequent) [self.appDelegate markFeedReadInCache:feedIds cutoffTimestamp:cutoffTimestamp older:older];
+        [self.appDelegate markFeedReadInCache:feedIds cutoffTimestamp:cutoffTimestamp older:older];
         if (queueOffline) {
             self.appDelegate.feedsViewController.isOffline = NO;
             [self.appDelegate.storyPagesViewController reloadWidget];
@@ -5837,7 +5667,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         [progressHUD hide:NO];
         if (![(self.appDelegate.activeUsername ?: @"") isEqualToString:account] ||
             ![(self.appDelegate.url ?: @"") isEqualToString:host]) return;
-        if (queueOffline && !infrequent) {
+        if (queueOffline) {
             [self.appDelegate markStoriesRead:nil inFeeds:feedIds cutoffTimestamp:cutoffTimestamp];
             self.appDelegate.feedsViewController.isOffline = YES;
             [self.appDelegate.feedsViewController showOfflineNotifier];
@@ -5845,8 +5675,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
             [self.appDelegate.feedsViewController refreshHeaderCounts];
             if (self.fetchRequestId == generation) [self reloadStories];
         } else {
-            // FeedDetailObjCViewController.m reports the failure from the story row menu and from the footer in the
-            // Infrequent river, where only the server knows which feeds are in scope, so nothing can be queued for replay.
+            // FeedDetailObjCViewController.m reports the failure from the story row menu, where nothing is queued for replay.
             [self requestFailed:error];
         }
     }];
@@ -5936,9 +5765,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 }
 
 - (BOOL)isRiver {
-    return appDelegate.storiesCollection.isSocialRiverView ||
-    appDelegate.storiesCollection.isSocialView ||
-    appDelegate.storiesCollection.isSavedView ||
+    return appDelegate.storiesCollection.isSavedView ||
     appDelegate.storiesCollection.isWidgetView ||
     appDelegate.storiesCollection.isReadView;
 }
@@ -5958,10 +5785,8 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     
     BOOL dashboard = self.isDashboard;
     BOOL everything = appDelegate.storiesCollection.isEverything;
-    BOOL infrequent = appDelegate.storiesCollection.isInfrequent || appDelegate.storiesCollection.isTrending;
     BOOL read = appDelegate.storiesCollection.isReadView;
     BOOL widget = appDelegate.storiesCollection.isWidgetView;
-    BOOL social = appDelegate.storiesCollection.isSocialRiverView;
     BOOL saved = appDelegate.storiesCollection.isSavedView;
     
     if (storiesCollection.inSearch) {
@@ -5976,7 +5801,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }
     }
     
-    if ((!everything || !appDelegate.storiesCollection.isRiverView) && !infrequent && !saved && !read && !social && !widget && !dashboard) {
+    if ((!everything || !appDelegate.storiesCollection.isRiverView) && !saved && !read && !widget && !dashboard) {
         NSString *manageText = appDelegate.storiesCollection.isRiverView ? [NBLocalization text:@"Manage this folder…"] : [NBLocalization text:@"Manage this site…"];
         
         [viewController addTitle:manageText iconName:@"menu_icn_move.png" selectionShouldDismiss:NO handler:^{
@@ -5984,7 +5809,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }];
     }
     
-    if (!appDelegate.storiesCollection.isRiverView && !infrequent && !saved && !read && !social && !widget && !dashboard) {
+    if (!appDelegate.storiesCollection.isRiverView && !saved && !read && !widget && !dashboard) {
         if ([appDelegate.storiesCollection.activeFeed[@"ng"] integerValue] > 0) {
             NSString *title =  appDelegate.storiesCollection.showHiddenStories ? [NBLocalization text:@"Hide hidden stories"] : [NBLocalization text:@"Show hidden stories"];
             
@@ -6033,17 +5858,6 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     // Layout and display controls moved to Options pill (doOpenOptionsMenu:)
 
     [viewController addThemeSegmentedControl];
-
-    if (infrequent) {
-        NSString *preferenceKey = @"infrequent_stories_per_month";
-        NSArray *titles = @[@"5", @"15", @"30", @"60", @"90"];
-        NSArray *values = @[@5, @15, @30, @60, @90];
-
-        [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
-            [self.appDelegate.feedDetailViewController reloadStories];
-            [self.appDelegate.feedDetailViewController flashInfrequentStories];
-        }];
-    }
 
     UINavigationController *navController = self.navigationController ?: appDelegate.storyPagesViewController.navigationController;
 
@@ -6104,10 +5918,9 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
             [self updateStoryTitlesHeaderPillState];
         }];
 
-        BOOL infrequent = appDelegate.storiesCollection.isInfrequent || appDelegate.storiesCollection.isTrending;
         BOOL river = [self isRiver];
 
-        if (!dashboard || infrequent || !river) {
+        if (!dashboard || !river) {
             [viewController addSegmentedControlWithTitles:@[@"All stories", @"Unread only"] selectIndex:[appDelegate.storiesCollection.activeReadFilter isEqualToString:@"all"] ? 0 : 1 selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
                 self.appDelegate.storiesCollection.readFilterOverride = nil;
                 self.appDelegate.storiesCollection.notificationStoryHash = nil;
@@ -6264,9 +6077,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 
     // Build mark-read menu with timing submenu
     NSString *collectionTitle;
-    if (storiesCollection.isTrending) {
-        collectionTitle = @"this list";
-    } else if (storiesCollection.isRiverView) {
+    if (storiesCollection.isRiverView) {
         collectionTitle = [storiesCollection.activeFolder isEqualToString:@"everything"] ? @"everything" : @"entire folder";
     } else {
         collectionTitle = @"this site";
@@ -6288,8 +6099,6 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         return [NSString stringWithFormat:@"feed:%@", [storiesCollection.activeFeed objectForKey:@"id"]];
     } else if ([storiesCollection.activeFolder isEqualToString:@"everything"]) {
         return @"river:";
-    } else if ([storiesCollection.activeFolder hasPrefix:@"trending:"]) {
-        return storiesCollection.activeFolder;
     } else {
         return [NSString stringWithFormat:@"river:%@", storiesCollection.activeFolder];
     }
@@ -6629,7 +6438,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
             if ([title isEqualToString:@"everything"]) {
                 title = [NBLocalization text:@"Top Level"];
                 iconName = @"menu_icn_all.png";
-            } else if ([title isEqualToString:@"dashboard"] || [title isEqualToString:@"infrequent"] ||
+            } else if ([title isEqualToString:@"dashboard"] ||
                        [title isEqualToString:@"discover_sites"]) {
                 continue;
             } else {
@@ -6654,16 +6463,6 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     appDelegate.storiesCollection.showHiddenStories = !appDelegate.storiesCollection.showHiddenStories;
     [appDelegate.storiesCollection calculateStoryLocations];
     [self reload];
-}
-
-- (IBAction)openNotifications:(id)sender {
-    NSString *feedIdStr = storiesCollection.activeFeedIdStr;
-    
-    [appDelegate openNotificationsWithFeed:feedIdStr];
-}
-
-- (void)openNotificationsWithFeed:(NSString *)feedId {
-    [appDelegate openNotificationsWithFeed:feedId];
 }
 
 - (IBAction)openStatistics:(id)sender {
@@ -6705,14 +6504,6 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     } else {
         [self presentViewController:alert animated:YES completion:nil];
     }
-}
-
-- (void)showUserProfile {
-    appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@",
-                                       [storiesCollection.activeFeed objectForKey:@"user_id"]];
-    appDelegate.activeUserProfileName = [NSString stringWithFormat:@"%@",
-                                         [storiesCollection.activeFeed objectForKey:@"username"]];
-    [appDelegate showUserProfileModal:titleImageBarButton];
 }
 
 - (void)changeActiveFeedDetailRow {
@@ -6951,12 +6742,11 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 
 - (BOOL)canPullToRefresh {
     BOOL river = appDelegate.storiesCollection.isRiverView;
-    BOOL infrequent = appDelegate.storiesCollection.isInfrequent || appDelegate.storiesCollection.isTrending;
     BOOL read = appDelegate.storiesCollection.isReadView;
     BOOL widget = appDelegate.storiesCollection.isWidgetView;
     BOOL saved = appDelegate.storiesCollection.isSavedView;
     
-    return appDelegate.storiesCollection.activeFeed != nil && !river && !infrequent && !saved && !read && !widget;
+    return appDelegate.storiesCollection.activeFeed != nil && !river && !saved && !read && !widget;
 }
 
 #if !TARGET_OS_MACCATALYST

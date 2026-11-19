@@ -172,7 +172,7 @@ import Combine
         // DiscoverSitesViewController.swift reuses the reader's exact-hash lookup for cached stories outside the first page.
         app.storiesCollection.notificationStoryHash = story?.id
         app.storiesCollection.notificationStory = nil
-        app.loadTryFeedDetailView(resolved.id, withStory: story?.id, isSocial: false,
+        app.loadTryFeedDetailView(resolved.id, withStory: story?.id,
                                   withUser: resolved.rawFeedDict, showFindingStory: story != nil)
         // DiscoverSitesViewController.swift restores lookup metadata after NewsBlurAppDelegate.m clears prior preview state.
         app.inFindingStoryMode = story != nil

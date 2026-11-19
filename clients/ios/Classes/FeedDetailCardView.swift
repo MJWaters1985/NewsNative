@@ -499,7 +499,7 @@ struct CardContentView: View {
 
     var body: some View {
         VStack(alignment: .leading) {
-            if let feed = story.feed, feed.isRiverOrSocial, let feedImage = feed.image {
+            if let feed = story.feed, feed.isMultiFeedView, let feedImage = feed.image {
                 HStack {
                     Image(uiImage: feedImage)
                         .resizable()

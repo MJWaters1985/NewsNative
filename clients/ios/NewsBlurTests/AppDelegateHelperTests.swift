@@ -839,14 +839,6 @@ final class AppDelegateHelperTests: XCTestCase {
         XCTAssertEqual(userValue("default_mark_read_filter") as? String, "selection")
     }
 
-    func test_storiesCollectionTitlesGoodReadsRiver() {
-        let storiesCollection = StoriesCollection()
-        storiesCollection.isRiverView = true
-        storiesCollection.activeFolder = "trending:good_reads"
-
-        XCTAssertEqual(storiesCollection.activeTitle, "Good Reads")
-    }
-
     func test_upgradeSettings_doesNotMigrateWhenAlreadyPastMigrationRelease() {
         defaults.set(false, forKey: "default_scroll_read_filter")
 
@@ -1523,78 +1515,6 @@ final class AppDelegateHelperTests: XCTestCase {
         let tableView = feedDetailViewController.storyTitlesTable as? BottomNextFeedTestTableView
         tableView?.trackingForTest = active
         tableView?.draggingForTest = active
-    }
-}
-
-final class ActivityModulesLayoutTests: XCTestCase {
-    func test_refreshInteractionsLoadsViewBeforeFetching() {
-        let controller = makeActivitiesViewController()
-
-        XCTAssertFalse(controller.isViewLoaded)
-
-        controller.perform(NSSelectorFromString("refreshInteractions"))
-
-        XCTAssertTrue(controller.isViewLoaded)
-        XCTAssertNotNil(activityModule(named: "interactionsModule", tableName: "interactionsTable", on: controller))
-    }
-
-    func test_refreshActivityLoadsViewBeforeFetching() {
-        let controller = makeActivitiesViewController()
-
-        XCTAssertFalse(controller.isViewLoaded)
-
-        controller.perform(NSSelectorFromString("refreshActivity"))
-
-        XCTAssertTrue(controller.isViewLoaded)
-        XCTAssertNotNil(activityModule(named: "activitiesModule", tableName: "activitiesTable", on: controller))
-    }
-
-    func test_interactionsModuleReusesTableAcrossLayoutPasses() {
-        let module = makeModule(named: "InteractionsModule")
-
-        module.layoutSubviews()
-        module.layoutSubviews()
-
-        XCTAssertEqual(module.subviews.compactMap { $0 as? UITableView }.count, 1)
-    }
-
-    func test_activityModuleReusesTableAcrossLayoutPasses() {
-        let module = makeModule(named: "ActivityModule")
-
-        module.layoutSubviews()
-        module.layoutSubviews()
-
-        XCTAssertEqual(module.subviews.compactMap { $0 as? UITableView }.count, 1)
-    }
-
-    private func makeModule(named className: String) -> UIView {
-        let type = NSClassFromString(className) as? UIView.Type
-            ?? NSClassFromString("NewsBlur.\(className)") as? UIView.Type
-        guard let type else {
-            XCTFail("Missing \(className)")
-            return UIView(frame: .zero)
-        }
-
-        return type.init(frame: CGRect(x: 0, y: 0, width: 320, height: 480))
-    }
-
-    private func makeActivitiesViewController() -> UIViewController {
-        let type = NSClassFromString("ActivitiesViewController") as? UIViewController.Type
-            ?? NSClassFromString("NewsBlur.ActivitiesViewController") as? UIViewController.Type
-        guard let type else {
-            XCTFail("Missing ActivitiesViewController")
-            return UIViewController()
-        }
-
-        return type.init(nibName: nil, bundle: nil)
-    }
-
-    private func activityModule(named name: String, tableName: String, on controller: UIViewController) -> UIView? {
-        let module = controller.value(forKey: name) as? UIView
-        let table = module?.value(forKey: tableName) as? UITableView
-        XCTAssertNotNil(table)
-        XCTAssertEqual(module?.subviews.compactMap { $0 as? UITableView }.count, 1)
-        return module
     }
 }
 

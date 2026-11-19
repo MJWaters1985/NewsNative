@@ -1328,28 +1328,6 @@ final class ReaderUITests: XCTestCase {
         XCTAssertTrue(reveal(feedCell("910003"), in: feedsList))
     }
 
-    func test_sharingKeepsTheStoryInTheFocusedList() {
-        app.launchArguments += ["-newsblur-ui-test-share-focus"]
-        launch(on: "reader-story-swift-1")
-        let shareLink = app.webViews.links["Share"].firstMatch
-        XCTAssertTrue(shareLink.waitForExistence(timeout: 15), app.debugDescription)
-        if !shareLink.isHittable { app.webViews.firstMatch.swipeUp() }
-        shareLink.tap()
-        let submit = app.buttons["Share"].firstMatch
-        XCTAssertTrue(submit.waitForExistence(timeout: 5), app.debugDescription)
-        submit.tap()
-        XCTAssertTrue(app.webViews.links["Shared"].firstMatch.waitForExistence(timeout: 10), app.debugDescription)
-        attachScreenshot(named: "shared-story-still-in-reader")
-        app.webViews.firstMatch.swipeDown()
-        let back = app.buttons.containing(.staticText, identifier: "Swift Weekly").firstMatch
-        XCTAssertTrue(back.waitForExistence(timeout: 5), app.debugDescription)
-        back.tap()
-        let sharedRow = app.tables["story-titles-list"].cells["story-row-ui-story-swift-1"]
-        XCTAssertTrue(sharedRow.waitForExistence(timeout: 5))
-        XCTAssertTrue(sharedRow.isHittable)
-        attachScreenshot(named: "shared-story-remains-in-focus")
-    }
-
     func test_focusedRiverLoadsFollowingPagesWithoutScrolling() {
         app.launchArguments += ["-newsblur-ui-test-focused-pagination"]
         launch(on: "reader-folder-tech", storyTitlesStyle: "standard")
@@ -1780,22 +1758,6 @@ final class ReaderUITests: XCTestCase {
         start.press(forDuration: 0.05, thenDragTo: end, withVelocity: .slow, thenHoldForDuration: 0)
         XCTAssertTrue(app.tables["feeds-list"].firstMatch.waitForExistence(timeout: 5))
         attachScreenshot(named: classic ? "classic-after-edge-back" : "current-after-swipe-back")
-    }
-
-    func test_goodReadsAppearsAtBottomAndLoadsTrendingStories() {
-        launch(on: "reader-good-reads")
-
-        let feedsList = app.tables["feeds-list"].firstMatch
-        XCTAssertTrue(feedsList.waitForExistence(timeout: 10))
-
-        let goodReadsFolder = folderButton(named: "Good Reads")
-        XCTAssertTrue(reveal(goodReadsFolder, in: feedsList))
-        attachScreenshot(named: "good-reads-feed-list")
-        tapElementCenter(goodReadsFolder)
-
-        let storyList = app.tables["story-titles-list"]
-        XCTAssertTrue(storyList.waitForExistence(timeout: 10))
-        XCTAssertTrue(storyRow("ui-story-good-reads-1").waitForExistence(timeout: 10))
     }
 
     func test_selectingFolderLoadsRiverStories() {

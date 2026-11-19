@@ -451,7 +451,7 @@ import SwiftUI
             cell.siteFavicon = app.image
             cell.feedColorBar = .cyan
             cell.feedColorBarTopBorder = .blue
-            cell.isRiverOrSocial = true
+            cell.isMultiFeedView = true
             cell.isSaved = true
             cell.textSize = .short
             cell.isRead = false

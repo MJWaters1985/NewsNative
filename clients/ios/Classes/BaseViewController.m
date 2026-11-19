@@ -230,8 +230,6 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
         [self addReaderShortcutWithInput:@"\r" modifierFlags:UIKeyModifierShift readerAction:@selector(toggleTextView:) discoverabilityTitle:@"Text View"];
         [self addReaderShortcutWithInput:@" " modifierFlags:0 readerAction:@selector(scrollPageDown:) discoverabilityTitle:@"Page Down"];
         [self addReaderShortcutWithInput:@" " modifierFlags:UIKeyModifierShift readerAction:@selector(scrollPageUp:) discoverabilityTitle:@"Page Up"];
-        [self addReaderShortcutWithInput:@"c" modifierFlags:0 readerAction:@selector(scrolltoComment) discoverabilityTitle:@"Scroll to Comments"];
-        [self addReaderShortcutWithInput:@"s" modifierFlags:UIKeyModifierShift readerAction:@selector(openShareDialog) discoverabilityTitle:@"Share This Story"];
     }
 }
 
@@ -398,11 +396,7 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
         return self.isFeedShown && !self.isGrid;
     } else if (action == @selector(chooseGridColumns:) || action == @selector(chooseGridHeight:)) {
         return self.isFeedShown && self.isGrid;
-    } else if (action == @selector(showFindFriends:)) {
-        // BaseViewController.m: social reading is set aside in NewsNativeFeatures.swift.
-        return NewsNativeFeatures.socialFeatures && [super canPerformAction:action withSender:sender];
-    } else if (action == @selector(openNotifications:) ||
-        action == @selector(openStatistics:) ||
+    } else if (action == @selector(openStatistics:) ||
         action == @selector(moveSite:) ||
         action == @selector(openRenameSite:) ||
         action == @selector(deleteSite:)) {
@@ -414,7 +408,6 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
                action == @selector(doMarkAllRead:)) {
         return self.isFeedShown && !self.isDashboard;
     } else if (action == @selector(showSendTo:) ||
-               action == @selector(showShare:) ||
                action == @selector(nextUnreadStory:) ||
                action == @selector(nextStory:) ||
                action == @selector(previousStory:) ||
@@ -481,13 +474,13 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
             command.state = [command.propertyList isEqualToString:ThemeManager.themeManager.effectiveTheme];
         }
     } else if (command.action == @selector(openRenameSite:)) {
-        if (appDelegate.storiesCollection.isRiverOrSocial) {
+        if (appDelegate.storiesCollection.isMultiFeedView) {
             command.title = [NBLocalization text:@"Rename Folder…"];
         } else {
             command.title = [NBLocalization text:@"Rename Site…"];
         }
     } else if (command.action == @selector(deleteSite:)) {
-        if (appDelegate.storiesCollection.isRiverOrSocial) {
+        if (appDelegate.storiesCollection.isMultiFeedView) {
             command.title = [NBLocalization text:@"Delete Folder…"];
         } else {
             command.title = [NBLocalization text:@"Delete Site…"];
@@ -533,14 +526,6 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
 
 - (IBAction)showWidgetSites:(id)sender {
     [self.appDelegate showWidgetSites];
-}
-
-- (IBAction)showNotifications:(id)sender {
-    [self.appDelegate openNotificationsWithFeed:nil];
-}
-
-- (IBAction)showFindFriends:(id)sender {
-    [self.appDelegate showFindFriends];
 }
 
 - (IBAction)showManageAccount:(id)sender {
@@ -782,10 +767,6 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
     [[NSUserDefaults standardUserDefaults] setObject:string forKey:@"default_mark_read_filter"];
 }
 
-- (IBAction)openNotifications:(id)sender {
-    [self.appDelegate.feedDetailViewController openNotifications:sender];
-}
-
 - (IBAction)openStatistics:(id)sender {
     [self.appDelegate.feedDetailViewController openStatistics:sender];
 }
@@ -836,10 +817,6 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
 
 - (IBAction)showSendTo:(id)sender {
     [appDelegate showSendTo:self sender:sender];
-}
-
-- (IBAction)showShare:(id)sender {
-    [self.appDelegate.storyPagesViewController.currentPage openShareDialog];
 }
 
 - (IBAction)nextUnreadStory:(id)sender {

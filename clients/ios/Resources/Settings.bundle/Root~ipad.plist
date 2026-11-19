@@ -11,8 +11,10 @@
 			<string>PSGroupSpecifier</string>
 		</dict>
 		<dict>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
+			<key>DefaultValue</key>
+			<string>newest</string>
+			<key>Key</key>
+			<string>default_order</string>
 			<key>Title</key>
 			<string>Story order</string>
 			<key>Titles</key>
@@ -20,19 +22,19 @@
 				<string>Newest first</string>
 				<string>Oldest first</string>
 			</array>
-			<key>DefaultValue</key>
-			<string>newest</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
 			<key>Values</key>
 			<array>
 				<string>newest</string>
 				<string>oldest</string>
 			</array>
-			<key>Key</key>
-			<string>default_order</string>
 		</dict>
 		<dict>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
+			<key>DefaultValue</key>
+			<string>unread</string>
+			<key>Key</key>
+			<string>default_folder_read_filter</string>
 			<key>Title</key>
 			<string>Stories in a folder</string>
 			<key>Titles</key>
@@ -40,19 +42,19 @@
 				<string>All stories</string>
 				<string>Unread only</string>
 			</array>
-			<key>DefaultValue</key>
-			<string>unread</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
 			<key>Values</key>
 			<array>
 				<string>all</string>
 				<string>unread</string>
 			</array>
-			<key>Key</key>
-			<string>default_folder_read_filter</string>
 		</dict>
 		<dict>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
+			<key>DefaultValue</key>
+			<string>all</string>
+			<key>Key</key>
+			<string>default_feed_read_filter</string>
 			<key>Title</key>
 			<string>Stories in a site</string>
 			<key>Titles</key>
@@ -60,21 +62,21 @@
 				<string>All stories</string>
 				<string>Unread only</string>
 			</array>
-			<key>DefaultValue</key>
-			<string>all</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
 			<key>Values</key>
 			<array>
 				<string>all</string>
 				<string>unread</string>
 			</array>
-			<key>Key</key>
-			<string>default_feed_read_filter</string>
 		</dict>
 		<dict>
+			<key>DefaultValue</key>
+			<string>folders</string>
 			<key>FooterText</key>
 			<string>The mark read options are always available via a long press on the mark read button in the stories list.</string>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
+			<key>Key</key>
+			<string>default_confirm_read_filter</string>
 			<key>Title</key>
 			<string>Confirm mark read</string>
 			<key>Titles</key>
@@ -83,20 +85,20 @@
 				<string>On folders only</string>
 				<string>Never</string>
 			</array>
-			<key>DefaultValue</key>
-			<string>folders</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
 			<key>Values</key>
 			<array>
 				<string>all</string>
 				<string>folders</string>
 				<string>never</string>
 			</array>
-			<key>Key</key>
-			<string>default_confirm_read_filter</string>
 		</dict>
 		<dict>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
+			<key>DefaultValue</key>
+			<string>next</string>
+			<key>Key</key>
+			<string>after_mark_read</string>
 			<key>Title</key>
 			<string>After mark read</string>
 			<key>Titles</key>
@@ -104,19 +106,19 @@
 				<string>Open the next site/folder</string>
 				<string>Stay on the feeds list</string>
 			</array>
-			<key>DefaultValue</key>
-			<string>next</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
 			<key>Values</key>
 			<array>
 				<string>next</string>
 				<string>stay</string>
 			</array>
-			<key>Key</key>
-			<string>after_mark_read</string>
 		</dict>
 		<dict>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
+			<key>DefaultValue</key>
+			<string>story</string>
+			<key>Key</key>
+			<string>feed_opening</string>
 			<key>Title</key>
 			<string>When opening a site</string>
 			<key>Titles</key>
@@ -124,19 +126,19 @@
 				<string>Open first story</string>
 				<string>Show stories</string>
 			</array>
-			<key>DefaultValue</key>
-			<string>story</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
 			<key>Values</key>
 			<array>
 				<string>story</string>
 				<string>list</string>
 			</array>
-			<key>Key</key>
-			<string>feed_opening</string>
 		</dict>
 		<dict>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
+			<key>DefaultValue</key>
+			<string>vertical</string>
+			<key>Key</key>
+			<string>dashboard_layout</string>
 			<key>Title</key>
 			<string>Dashboard</string>
 			<key>Titles</key>
@@ -146,8 +148,8 @@
 				<string>Two columns</string>
 				<string>Two rows</string>
 			</array>
-			<key>DefaultValue</key>
-			<string>vertical</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
 			<key>Values</key>
 			<array>
 				<string>none</string>
@@ -155,90 +157,12 @@
 				<string>vertical</string>
 				<string>horizontal</string>
 			</array>
-			<key>Key</key>
-			<string>dashboard_layout</string>
 		</dict>
 		<dict>
-			<key>FooterText</key>
-			<string>You can change this setting in the Infrequent Site Stories view.</string>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
-			<key>Title</key>
-			<string>Infrequent stories per month</string>
-			<key>Titles</key>
-			<array>
-				<string>&lt; 5 stories/month</string>
-				<string>&lt; 15 stories/month</string>
-				<string>&lt; 30 stories/month</string>
-				<string>&lt; 60 stories/month</string>
-				<string>&lt; 90 stories/month</string>
-			</array>
 			<key>DefaultValue</key>
-			<integer>30</integer>
-			<key>Values</key>
-			<array>
-				<integer>5</integer>
-				<integer>15</integer>
-				<integer>30</integer>
-				<integer>60</integer>
-				<integer>90</integer>
-			</array>
+			<string>scroll</string>
 			<key>Key</key>
-			<string>infrequent_stories_per_month</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Show Infrequent Site Stories</string>
-			<key>DefaultValue</key>
-			<string>YES</string>
-			<key>Key</key>
-			<string>show_infrequent_site_stories</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Show Global Shared Stories</string>
-			<key>DefaultValue</key>
-			<string>YES</string>
-			<key>Key</key>
-			<string>show_global_shared_stories</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Show Widely Read Stories</string>
-			<key>DefaultValue</key>
-			<string>YES</string>
-			<key>Key</key>
-			<string>show_widely_read_stories</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Show Long Reads</string>
-			<key>DefaultValue</key>
-			<string>YES</string>
-			<key>Key</key>
-			<string>show_long_reads</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Show Good Reads</string>
-			<key>DefaultValue</key>
-			<string>YES</string>
-			<key>Key</key>
-			<string>show_good_reads</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
+			<string>default_mark_read_filter</string>
 			<key>Title</key>
 			<string>Mark stories read</string>
 			<key>Titles</key>
@@ -257,6 +181,8 @@
 				<string>After 60 seconds</string>
 				<string>Manually</string>
 			</array>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
 			<key>Values</key>
 			<array>
 				<string>scroll</string>
@@ -273,14 +199,12 @@
 				<string>after60</string>
 				<string>manually</string>
 			</array>
-			<key>DefaultValue</key>
-			<string>scroll</string>
-			<key>Key</key>
-			<string>default_mark_read_filter</string>
 		</dict>
 		<dict>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
+			<key>DefaultValue</key>
+			<string>auto</string>
+			<key>Key</key>
+			<string>split_behavior</string>
 			<key>Title</key>
 			<string>Column layout</string>
 			<key>Titles</key>
@@ -290,8 +214,8 @@
 				<string>Two columns</string>
 				<string>Full screen</string>
 			</array>
-			<key>DefaultValue</key>
-			<string>auto</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
 			<key>Values</key>
 			<array>
 				<string>auto</string>
@@ -299,12 +223,12 @@
 				<string>displace</string>
 				<string>overlay</string>
 			</array>
-			<key>Key</key>
-			<string>split_behavior</string>
 		</dict>
 		<dict>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
+			<key>DefaultValue</key>
+			<string>titles_on_left</string>
+			<key>Key</key>
+			<string>story_titles_position</string>
 			<key>Title</key>
 			<string>Story titles layout</string>
 			<key>Titles</key>
@@ -316,8 +240,8 @@
 				<string>Titles in magazine</string>
 				<string>Titles in grid</string>
 			</array>
-			<key>DefaultValue</key>
-			<string>titles_on_left</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
 			<key>Values</key>
 			<array>
 				<string>titles_on_left</string>
@@ -327,12 +251,12 @@
 				<string>titles_in_magazine</string>
 				<string>titles_in_grid</string>
 			</array>
-			<key>Key</key>
-			<string>story_titles_position</string>
 		</dict>
 		<dict>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
+			<key>DefaultValue</key>
+			<string>standard</string>
+			<key>Key</key>
+			<string>story_titles_style</string>
 			<key>Title</key>
 			<string>List style</string>
 			<key>Titles</key>
@@ -340,28 +264,21 @@
 				<string>Standard</string>
 				<string>Experimental</string>
 			</array>
-			<key>DefaultValue</key>
-			<string>standard</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
 			<key>Values</key>
 			<array>
 				<string>standard</string>
 				<string>experimental</string>
 			</array>
-			<key>Key</key>
-			<string>story_titles_style</string>
 		</dict>
 		<dict>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
+			<key>DefaultValue</key>
+			<string>medium</string>
+			<key>Key</key>
+			<string>story_list_preview_text_size</string>
 			<key>Title</key>
 			<string>Preview descriptions</string>
-			<key>Values</key>
-			<array>
-				<string>title</string>
-				<string>short</string>
-				<string>medium</string>
-				<string>long</string>
-			</array>
 			<key>Titles</key>
 			<array>
 				<string>Title only</string>
@@ -369,14 +286,21 @@
 				<string>Medium title and content</string>
 				<string>Long title and content</string>
 			</array>
-			<key>Key</key>
-			<string>story_list_preview_text_size</string>
-			<key>DefaultValue</key>
-			<string>medium</string>
-		</dict>
-		<dict>
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
+			<key>Values</key>
+			<array>
+				<string>title</string>
+				<string>short</string>
+				<string>medium</string>
+				<string>long</string>
+			</array>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<string>small_right</string>
+			<key>Key</key>
+			<string>story_list_preview_images_size</string>
 			<key>Title</key>
 			<string>Preview images</string>
 			<key>Titles</key>
@@ -387,6 +311,8 @@
 				<string>Large Right</string>
 				<string>Small Right</string>
 			</array>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
 			<key>Values</key>
 			<array>
 				<string>none</string>
@@ -395,24 +321,22 @@
 				<string>large_right</string>
 				<string>small_right</string>
 			</array>
-			<key>Key</key>
-			<string>story_list_preview_images_size</string>
-			<key>DefaultValue</key>
-			<string>small_right</string>
 		</dict>
 		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Cluster related stories</string>
 			<key>DefaultValue</key>
 			<string>YES</string>
 			<key>Key</key>
 			<string>story_clustering</string>
+			<key>Title</key>
+			<string>Cluster related stories</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
 		</dict>
 		<dict>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
+			<key>DefaultValue</key>
+			<string>related</string>
+			<key>Key</key>
+			<string>cluster_mode</string>
 			<key>Title</key>
 			<string>Cluster matches</string>
 			<key>Titles</key>
@@ -420,15 +344,13 @@
 				<string>Title match only</string>
 				<string>Title match plus related</string>
 			</array>
-			<key>DefaultValue</key>
-			<string>related</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
 			<key>Values</key>
 			<array>
 				<string>title</string>
 				<string>related</string>
 			</array>
-			<key>Key</key>
-			<string>cluster_mode</string>
 		</dict>
 		<dict>
 			<key>Title</key>
@@ -437,8 +359,10 @@
 			<string>PSGroupSpecifier</string>
 		</dict>
 		<dict>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
+			<key>DefaultValue</key>
+			<string>title</string>
+			<key>Key</key>
+			<string>feed_list_sort_order</string>
 			<key>Title</key>
 			<string>Feed list order</string>
 			<key>Titles</key>
@@ -446,29 +370,29 @@
 				<string>Alphabetical</string>
 				<string>Most used then alphabetical</string>
 			</array>
-			<key>DefaultValue</key>
-			<string>title</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
 			<key>Values</key>
 			<array>
 				<string>title</string>
 				<string>usage</string>
 			</array>
-			<key>Key</key>
-			<string>feed_list_sort_order</string>
 		</dict>
 		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Show feeds after being read</string>
-			<key>Key</key>
-			<string>show_feeds_after_being_read</string>
 			<key>DefaultValue</key>
 			<false/>
+			<key>Key</key>
+			<string>show_feeds_after_being_read</string>
+			<key>Title</key>
+			<string>Show feeds after being read</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
 		</dict>
 		<dict>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
+			<key>DefaultValue</key>
+			<string>everything</string>
+			<key>Key</key>
+			<string>app_opening</string>
 			<key>Title</key>
 			<string>When opening app</string>
 			<key>Titles</key>
@@ -476,15 +400,13 @@
 				<string>Show feed list</string>
 				<string>Open All Stories</string>
 			</array>
-			<key>DefaultValue</key>
-			<string>everything</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
 			<key>Values</key>
 			<array>
 				<string>feeds</string>
 				<string>everything</string>
 			</array>
-			<key>Key</key>
-			<string>app_opening</string>
 		</dict>
 		<dict>
 			<key>Title</key>
@@ -493,18 +415,20 @@
 			<string>PSGroupSpecifier</string>
 		</dict>
 		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Use system size</string>
-			<key>Key</key>
-			<string>use_system_font_size</string>
 			<key>DefaultValue</key>
 			<false/>
+			<key>Key</key>
+			<string>use_system_font_size</string>
+			<key>Title</key>
+			<string>Use system size</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
 		</dict>
 		<dict>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
+			<key>DefaultValue</key>
+			<string>medium</string>
+			<key>Key</key>
+			<string>feed_list_font_size</string>
 			<key>Title</key>
 			<string>Feed and story list</string>
 			<key>Titles</key>
@@ -515,8 +439,8 @@
 				<string>Large</string>
 				<string>Extra Large</string>
 			</array>
-			<key>DefaultValue</key>
-			<string>medium</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
 			<key>Values</key>
 			<array>
 				<string>xs</string>
@@ -525,12 +449,12 @@
 				<string>large</string>
 				<string>xl</string>
 			</array>
-			<key>Key</key>
-			<string>feed_list_font_size</string>
 		</dict>
 		<dict>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
+			<key>DefaultValue</key>
+			<string>medium</string>
+			<key>Key</key>
+			<string>story_font_size</string>
 			<key>Title</key>
 			<string>Story detail</string>
 			<key>Titles</key>
@@ -541,8 +465,8 @@
 				<string>Large</string>
 				<string>Extra Large</string>
 			</array>
-			<key>DefaultValue</key>
-			<string>medium</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
 			<key>Values</key>
 			<array>
 				<string>xs</string>
@@ -551,20 +475,20 @@
 				<string>large</string>
 				<string>xl</string>
 			</array>
-			<key>Key</key>
-			<string>story_font_size</string>
 		</dict>
 		<dict>
-			<key>Title</key>
-			<string>Theme</string>
 			<key>FooterText</key>
 			<string>Switch between both light themes and both dark themes by swiping up or down repeatedly with two fingers, like a light switch.</string>
+			<key>Title</key>
+			<string>Theme</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
 		<dict>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
+			<key>DefaultValue</key>
+			<string>auto</string>
+			<key>Key</key>
+			<string>theme_style</string>
 			<key>Title</key>
 			<string>Current theme</string>
 			<key>Titles</key>
@@ -573,16 +497,14 @@
 				<string>Light</string>
 				<string>Dark</string>
 			</array>
-			<key>DefaultValue</key>
-			<string>auto</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
 			<key>Values</key>
 			<array>
 				<string>auto</string>
 				<string>light</string>
 				<string>dark</string>
 			</array>
-			<key>Key</key>
-			<string>theme_style</string>
 		</dict>
 		<dict>
 			<key>Title</key>
@@ -591,38 +513,40 @@
 			<string>PSGroupSpecifier</string>
 		</dict>
 		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Download stories</string>
+			<key>DefaultValue</key>
+			<true/>
 			<key>Key</key>
 			<string>offline_allowed</string>
-			<key>DefaultValue</key>
-			<true/>
-		</dict>
-		<dict>
+			<key>Title</key>
+			<string>Download stories</string>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Download text</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<true/>
 			<key>Key</key>
 			<string>offline_text_download</string>
-			<key>DefaultValue</key>
-			<true/>
-		</dict>
-		<dict>
+			<key>Title</key>
+			<string>Download text</string>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Download images</string>
-			<key>Key</key>
-			<string>offline_image_download</string>
-			<key>DefaultValue</key>
-			<false/>
 		</dict>
 		<dict>
+			<key>DefaultValue</key>
+			<false/>
+			<key>Key</key>
+			<string>offline_image_download</string>
+			<key>Title</key>
+			<string>Download images</string>
 			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
+			<string>PSToggleSwitchSpecifier</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<string>cellular</string>
+			<key>Key</key>
+			<string>offline_download_connection</string>
 			<key>Title</key>
 			<string>Download using</string>
 			<key>Titles</key>
@@ -630,21 +554,21 @@
 				<string>Wifi + Cellular</string>
 				<string>Wifi only</string>
 			</array>
-			<key>DefaultValue</key>
-			<string>cellular</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
 			<key>Values</key>
 			<array>
 				<string>cellular</string>
 				<string>wifi</string>
 			</array>
-			<key>Key</key>
-			<string>offline_download_connection</string>
 		</dict>
 		<dict>
+			<key>DefaultValue</key>
+			<integer>1000</integer>
 			<key>FooterText</key>
 			<string>More stories take more disk space, but otherwise storing more stories has no noticable effect on performance.</string>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
+			<key>Key</key>
+			<string>offline_store_limit</string>
 			<key>Title</key>
 			<string>Store</string>
 			<key>Titles</key>
@@ -656,8 +580,8 @@
 				<string>5,000 stories</string>
 				<string>10,000 stories</string>
 			</array>
-			<key>DefaultValue</key>
-			<integer>1000</integer>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
 			<key>Values</key>
 			<array>
 				<integer>100</integer>
@@ -667,16 +591,14 @@
 				<integer>5000</integer>
 				<integer>10000</integer>
 			</array>
-			<key>Key</key>
-			<string>offline_store_limit</string>
 		</dict>
 		<dict>
-			<key>Type</key>
-			<string>IASKButtonSpecifier</string>
-			<key>Title</key>
-			<string>Delete offline stories...</string>
 			<key>Key</key>
 			<string>offline_cache_empty_stories</string>
+			<key>Title</key>
+			<string>Delete offline stories...</string>
+			<key>Type</key>
+			<string>IASKButtonSpecifier</string>
 		</dict>
 		<dict>
 			<key>Title</key>
@@ -685,46 +607,22 @@
 			<string>PSGroupSpecifier</string>
 		</dict>
 		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Swipe on feeds</string>
-			<key>Key</key>
-			<string>enable_feed_swipes</string>
 			<key>DefaultValue</key>
 			<true/>
+			<key>Key</key>
+			<string>enable_feed_swipes</string>
+			<key>Title</key>
+			<string>Swipe on feeds</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
 		</dict>
 		<dict>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
-			<key>Title</key>
-			<string>Swipe left on feeds</string>
-			<key>Key</key>
-			<string>feed_title_swipe_left</string>
-			<key>Titles</key>
-			<array>
-				<string>Mark all stories read</string>
-				<string>Train intelligence</string>
-				<string>Notifications</string>
-				<string>Statistics</string>
-			</array>
-			<key>Values</key>
-			<array>
-				<string>read</string>
-				<string>trainer</string>
-				<string>notifications</string>
-				<string>statistics</string>
-			</array>
 			<key>DefaultValue</key>
 			<string>read</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
-			<key>Title</key>
-			<string>Swipe right on feeds</string>
 			<key>Key</key>
-			<string>feed_title_swipe_right</string>
+			<string>feed_title_swipe_left</string>
+			<key>Title</key>
+			<string>Swipe left on feeds</string>
 			<key>Titles</key>
 			<array>
 				<string>Mark all stories read</string>
@@ -732,6 +630,8 @@
 				<string>Notifications</string>
 				<string>Statistics</string>
 			</array>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
 			<key>Values</key>
 			<array>
 				<string>read</string>
@@ -739,16 +639,38 @@
 				<string>notifications</string>
 				<string>statistics</string>
 			</array>
-			<key>DefaultValue</key>
-			<string>notifications</string>
 		</dict>
 		<dict>
+			<key>DefaultValue</key>
+			<string>notifications</string>
+			<key>Key</key>
+			<string>feed_title_swipe_right</string>
+			<key>Title</key>
+			<string>Swipe right on feeds</string>
+			<key>Titles</key>
+			<array>
+				<string>Mark all stories read</string>
+				<string>Train intelligence</string>
+				<string>Notifications</string>
+				<string>Statistics</string>
+			</array>
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
-			<key>Title</key>
-			<string>Long press on feeds and folders</string>
+			<key>Values</key>
+			<array>
+				<string>read</string>
+				<string>trainer</string>
+				<string>notifications</string>
+				<string>statistics</string>
+			</array>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<string>show_actions</string>
 			<key>Key</key>
 			<string>long_press_feed_title</string>
+			<key>Title</key>
+			<string>Long press on feeds and folders</string>
 			<key>Titles</key>
 			<array>
 				<string>Show actions</string>
@@ -756,6 +678,8 @@
 				<string>Mark all stories read</string>
 				<string>Do nothing</string>
 			</array>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
 			<key>Values</key>
 			<array>
 				<string>show_actions</string>
@@ -763,8 +687,6 @@
 				<string>mark_read_immediate</string>
 				<string>nothing</string>
 			</array>
-			<key>DefaultValue</key>
-			<string>show_actions</string>
 		</dict>
 		<dict>
 			<key>Title</key>
@@ -773,48 +695,22 @@
 			<string>PSGroupSpecifier</string>
 		</dict>
 		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Swipe on stories</string>
-			<key>Key</key>
-			<string>enable_story_swipes</string>
 			<key>DefaultValue</key>
 			<true/>
+			<key>Key</key>
+			<string>enable_story_swipes</string>
+			<key>Title</key>
+			<string>Swipe on stories</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
 		</dict>
 		<dict>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
-			<key>Title</key>
-			<string>Swipe left on story titles</string>
-			<key>Key</key>
-			<string>story_title_swipe_left</string>
-			<key>Titles</key>
-			<array>
-				<string>Back to feeds</string>
-				<string>Read / unread</string>
-				<string>Save / unsave</string>
-				<string>Share</string>
-				<string>Show actions</string>
-			</array>
-			<key>Values</key>
-			<array>
-				<string>back</string>
-				<string>read</string>
-				<string>save</string>
-				<string>share</string>
-				<string>menu</string>
-			</array>
 			<key>DefaultValue</key>
 			<string>read</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
-			<key>Title</key>
-			<string>Swipe right on story titles</string>
 			<key>Key</key>
-			<string>story_title_swipe_right</string>
+			<string>story_title_swipe_left</string>
+			<key>Title</key>
+			<string>Swipe left on story titles</string>
 			<key>Titles</key>
 			<array>
 				<string>Back to feeds</string>
@@ -823,6 +719,8 @@
 				<string>Share</string>
 				<string>Show actions</string>
 			</array>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
 			<key>Values</key>
 			<array>
 				<string>back</string>
@@ -831,16 +729,40 @@
 				<string>share</string>
 				<string>menu</string>
 			</array>
-			<key>DefaultValue</key>
-			<string>back</string>
 		</dict>
 		<dict>
+			<key>DefaultValue</key>
+			<string>back</string>
+			<key>Key</key>
+			<string>story_title_swipe_right</string>
+			<key>Title</key>
+			<string>Swipe right on story titles</string>
+			<key>Titles</key>
+			<array>
+				<string>Back to feeds</string>
+				<string>Read / unread</string>
+				<string>Save / unsave</string>
+				<string>Share</string>
+				<string>Show actions</string>
+			</array>
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
-			<key>Title</key>
-			<string>Long press on story titles</string>
+			<key>Values</key>
+			<array>
+				<string>back</string>
+				<string>read</string>
+				<string>save</string>
+				<string>share</string>
+				<string>menu</string>
+			</array>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<string>show_actions</string>
 			<key>Key</key>
 			<string>long_press_story_title</string>
+			<key>Title</key>
+			<string>Long press on story titles</string>
 			<key>Titles</key>
 			<array>
 				<string>Show actions</string>
@@ -851,6 +773,8 @@
 				<string>Train intelligence</string>
 				<string>Do nothing</string>
 			</array>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
 			<key>Values</key>
 			<array>
 				<string>show_actions</string>
@@ -861,8 +785,6 @@
 				<string>train_story</string>
 				<string>nothing</string>
 			</array>
-			<key>DefaultValue</key>
-			<string>show_actions</string>
 		</dict>
 		<dict>
 			<key>Title</key>
@@ -871,38 +793,12 @@
 			<string>PSGroupSpecifier</string>
 		</dict>
 		<dict>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
-			<key>Title</key>
-			<string>Double tap</string>
-			<key>Key</key>
-			<string>double_tap_story</string>
-			<key>Titles</key>
-			<array>
-				<string>Open original story</string>
-				<string>Show original text</string>
-				<string>Mark as unread</string>
-				<string>Save story</string>
-				<string>Do nothing</string>
-			</array>
-			<key>Values</key>
-			<array>
-				<string>open_original_story</string>
-				<string>show_original_text</string>
-				<string>mark_unread</string>
-				<string>save_story</string>
-				<string>nothing</string>
-			</array>
 			<key>DefaultValue</key>
 			<string>open_original_story</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
-			<key>Title</key>
-			<string>Two finger double tap</string>
 			<key>Key</key>
-			<string>two_finger_double_tap</string>
+			<string>double_tap_story</string>
+			<key>Title</key>
+			<string>Double tap</string>
 			<key>Titles</key>
 			<array>
 				<string>Open original story</string>
@@ -911,6 +807,8 @@
 				<string>Save story</string>
 				<string>Do nothing</string>
 			</array>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
 			<key>Values</key>
 			<array>
 				<string>open_original_story</string>
@@ -919,28 +817,52 @@
 				<string>save_story</string>
 				<string>nothing</string>
 			</array>
-			<key>DefaultValue</key>
-			<string>show_original_text</string>
 		</dict>
 		<dict>
+			<key>DefaultValue</key>
+			<string>show_original_text</string>
+			<key>Key</key>
+			<string>two_finger_double_tap</string>
+			<key>Title</key>
+			<string>Two finger double tap</string>
+			<key>Titles</key>
+			<array>
+				<string>Open original story</string>
+				<string>Show original text</string>
+				<string>Mark as unread</string>
+				<string>Save story</string>
+				<string>Do nothing</string>
+			</array>
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
-			<key>Title</key>
-			<string>Swipe from left edge</string>
+			<key>Values</key>
+			<array>
+				<string>open_original_story</string>
+				<string>show_original_text</string>
+				<string>mark_unread</string>
+				<string>save_story</string>
+				<string>nothing</string>
+			</array>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<string>pop_to_story_list</string>
 			<key>Key</key>
 			<string>story_detail_swipe_left_edge</string>
+			<key>Title</key>
+			<string>Swipe from left edge</string>
 			<key>Titles</key>
 			<array>
 				<string>Back to story titles</string>
 				<string>Previous story</string>
 			</array>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
 			<key>Values</key>
 			<array>
 				<string>pop_to_story_list</string>
 				<string>previous_story</string>
 			</array>
-			<key>DefaultValue</key>
-			<string>pop_to_story_list</string>
 		</dict>
 		<dict>
 			<key>Title</key>
@@ -949,18 +871,20 @@
 			<string>PSGroupSpecifier</string>
 		</dict>
 		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Scroll horizontally</string>
-			<key>Key</key>
-			<string>scroll_stories_horizontally</string>
 			<key>DefaultValue</key>
 			<true/>
+			<key>Key</key>
+			<string>scroll_stories_horizontally</string>
+			<key>Title</key>
+			<string>Scroll horizontally</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
 		</dict>
 		<dict>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
+			<key>DefaultValue</key>
+			<string>inappsafari</string>
+			<key>Key</key>
+			<string>story_browser</string>
 			<key>Title</key>
 			<string>Default browser</string>
 			<key>Titles</key>
@@ -975,8 +899,8 @@
 				<string>Edge</string>
 				<string>Brave</string>
 			</array>
-			<key>DefaultValue</key>
-			<string>inappsafari</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
 			<key>Values</key>
 			<array>
 				<string>inapp</string>
@@ -989,14 +913,14 @@
 				<string>edge</string>
 				<string>brave</string>
 			</array>
-			<key>Key</key>
-			<string>story_browser</string>
 		</dict>
 		<dict>
+			<key>DefaultValue</key>
+			<string>inline</string>
 			<key>FooterText</key>
 			<string>This setting only applies after the app is restarted.</string>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
+			<key>Key</key>
+			<string>video_playback</string>
 			<key>Title</key>
 			<string>Play videos</string>
 			<key>Titles</key>
@@ -1004,25 +928,23 @@
 				<string>Inline</string>
 				<string>Full-screen</string>
 			</array>
-			<key>DefaultValue</key>
-			<string>inline</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
 			<key>Values</key>
 			<array>
 				<string>inline</string>
 				<string>fullscreen</string>
 			</array>
-			<key>Key</key>
-			<string>video_playback</string>
 		</dict>
 		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Show autoscroll</string>
 			<key>DefaultValue</key>
 			<false/>
 			<key>Key</key>
 			<string>story_autoscroll</string>
+			<key>Title</key>
+			<string>Show autoscroll</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
 		</dict>
 		<dict>
 			<key>Title</key>
@@ -1031,8 +953,10 @@
 			<string>PSGroupSpecifier</string>
 		</dict>
 		<dict>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
+			<key>DefaultValue</key>
+			<string>off</string>
+			<key>Key</key>
+			<string>app_unread_badge</string>
 			<key>Title</key>
 			<string>Show unread count</string>
 			<key>Titles</key>
@@ -1041,40 +965,38 @@
 				<string>Unread + Focus</string>
 				<string>Focus only</string>
 			</array>
-			<key>DefaultValue</key>
-			<string>off</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
 			<key>Values</key>
 			<array>
 				<string>off</string>
 				<string>unread</string>
 				<string>focus</string>
 			</array>
-			<key>Key</key>
-			<string>app_unread_badge</string>
 		</dict>
 		<dict>
+			<key>FooterText</key>
+			<string>Leave blank to use the NewsBlur site, or enter the URL of your self-hosted NewsBlur installation, e.g. "https://www.domain.com". Takes effect next time app is opened.</string>
 			<key>Title</key>
 			<string>Custom Domain</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
-			<key>FooterText</key>
-			<string>Leave blank to use the NewsBlur site, or enter the URL of your self-hosted NewsBlur installation, e.g. "https://www.domain.com". Takes effect next time app is opened.</string>
 		</dict>
 		<dict>
-			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
-			<key>KeyboardType</key>
-			<string>URL</string>
+			<key>AutocapitalizationType</key>
+			<string>None</string>
 			<key>AutocorrectionType</key>
 			<string>No</string>
 			<key>DefaultValue</key>
 			<string></string>
-			<key>AutocapitalizationType</key>
-			<string>None</string>
-			<key>Title</key>
-			<string>URL</string>
 			<key>Key</key>
 			<string>custom_domain</string>
+			<key>KeyboardType</key>
+			<string>URL</string>
+			<key>Title</key>
+			<string>URL</string>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
 		</dict>
 		<dict>
 			<key>Title</key>
@@ -1083,20 +1005,20 @@
 			<string>PSGroupSpecifier</string>
 		</dict>
 		<dict>
-			<key>Type</key>
-			<string>IASKButtonSpecifier</string>
-			<key>Title</key>
-			<string>Import Preferences...</string>
 			<key>Key</key>
 			<string>import_prefs</string>
-		</dict>
-		<dict>
+			<key>Title</key>
+			<string>Import Preferences...</string>
 			<key>Type</key>
 			<string>IASKButtonSpecifier</string>
-			<key>Title</key>
-			<string>Export Preferences...</string>
+		</dict>
+		<dict>
 			<key>Key</key>
 			<string>export_prefs</string>
+			<key>Title</key>
+			<string>Export Preferences...</string>
+			<key>Type</key>
+			<string>IASKButtonSpecifier</string>
 		</dict>
 		<dict>
 			<key>Title</key>
@@ -1105,48 +1027,48 @@
 			<string>PSGroupSpecifier</string>
 		</dict>
 		<dict>
-			<key>Type</key>
-			<string>PSTitleValueSpecifier</string>
-			<key>Title</key>
-			<string>Version</string>
-			<key>Key</key>
-			<string>version</string>
 			<key>DefaultValue</key>
 			<string>$(CURRENT_PROJECT_VERSION)</string>
-		</dict>
-		<dict>
+			<key>Key</key>
+			<string>version</string>
+			<key>Title</key>
+			<string>Version</string>
 			<key>Type</key>
 			<string>PSTitleValueSpecifier</string>
-			<key>Title</key>
-			<string>Copyright</string>
+		</dict>
+		<dict>
 			<key>DefaultValue</key>
 			<string>Mike Waters · based on NewsBlur by Samuel Clay (MIT License)</string>
 			<key>Key</key>
 			<string>copyright</string>
+			<key>Title</key>
+			<string>Copyright</string>
+			<key>Type</key>
+			<string>PSTitleValueSpecifier</string>
 		</dict>
 		<dict>
 			<key>DefaultValue</key>
 			<string>mjwaters1985.github.io/NewsNative/privacy.html</string>
 			<key>File</key>
 			<string>https://mjwaters1985.github.io/NewsNative/privacy.html</string>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentCenter</string>
 			<key>Title</key>
 			<string>Privacy Policy</string>
 			<key>Type</key>
 			<string>IASKOpenURLSpecifier</string>
-			<key>IASKTextAlignment</key>
-			<string>IASKUITextAlignmentCenter</string>
 		</dict>
 		<dict>
 			<key>DefaultValue</key>
 			<string>mjwaters1985.github.io/NewsNative/terms.html</string>
 			<key>File</key>
 			<string>https://mjwaters1985.github.io/NewsNative/terms.html</string>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentCenter</string>
 			<key>Title</key>
 			<string>Terms of Use</string>
 			<key>Type</key>
 			<string>IASKOpenURLSpecifier</string>
-			<key>IASKTextAlignment</key>
-			<string>IASKUITextAlignmentCenter</string>
 		</dict>
 		<dict>
 			<key>Title</key>
@@ -1155,14 +1077,14 @@
 			<string>PSGroupSpecifier</string>
 		</dict>
 		<dict>
-			<key>Type</key>
-			<string>IASKButtonSpecifier</string>
 			<key>IsCritical</key>
 			<true/>
-			<key>Title</key>
-			<string>Delete Account</string>
 			<key>Key</key>
 			<string>delete_account</string>
+			<key>Title</key>
+			<string>Delete Account</string>
+			<key>Type</key>
+			<string>IASKButtonSpecifier</string>
 		</dict>
 	</array>
 	<key>StringsTable</key>

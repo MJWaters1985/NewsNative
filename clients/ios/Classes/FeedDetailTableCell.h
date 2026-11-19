@@ -39,7 +39,7 @@ typedef NS_ENUM(NSUInteger, FeedDetailTextSize)
     NSString *siteTitle;
     UIImage *siteFavicon;
     BOOL isRead;
-    BOOL isRiverOrSocial;
+    BOOL isMultiFeedView;
     BOOL hasAlpha;
 
     UIColor *feedColorBar;
@@ -71,7 +71,7 @@ typedef NS_ENUM(NSUInteger, FeedDetailTextSize)
 - (void)setRead:(BOOL)read animated:(BOOL)animated;
 @property (readwrite) BOOL isReadAvailable;
 @property (readwrite) BOOL isShort;
-@property (readwrite) BOOL isRiverOrSocial;
+@property (readwrite) BOOL isMultiFeedView;
 @property (readwrite) BOOL hasAlpha;
 
 @property (nonatomic) FeedDetailTextSize textSize;

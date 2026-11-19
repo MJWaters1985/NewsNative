@@ -308,28 +308,11 @@
                                 <menu anchor="com.apple.menu.close" id="obB-Ib-5UM">
                                     <menuOptions key="menuOptions" displayInline="YES"/>
                                     <children>
-                                        <command title="Notifications" input="N" id="2ax-3D-3zm">
-                                            <keyModifierFlags key="modifierFlags" command="YES"/>
-                                            <connections>
-                                                <action selector="showNotifications:" destination="J28-e1-gcC" id="GHY-vF-j44"/>
-                                            </connections>
-                                        </command>
-                                        <command title="Find Friends" input="F" id="0eN-vR-Gok">
-                                            <keyModifierFlags key="modifierFlags" command="YES"/>
-                                            <connections>
-                                                <action selector="showFindFriends:" destination="J28-e1-gcC" id="b0r-KD-HkV"/>
-                                            </connections>
-                                        </command>
                                     </children>
                                 </menu>
                                 <menu anchor="com.apple.menu.close" id="WdP-hc-0fU">
                                     <menuOptions key="menuOptions" displayInline="YES"/>
                                     <children>
-                                        <command title="NewsBlur Premium" id="HGH-9Q-Dzh">
-                                            <connections>
-                                                <action selector="showPremium:" destination="J28-e1-gcC" id="adm-3i-APm"/>
-                                            </connections>
-                                        </command>
                                     </children>
                                 </menu>
                                 <menu anchor="com.apple.menu.close" id="cRW-qu-7aj">
@@ -696,16 +679,6 @@
                                 <menu id="CCe-ei-YVh">
                                     <menuOptions key="menuOptions" displayInline="YES"/>
                                 </menu>
-                                <command title="Train…" id="hIh-yf-xP8">
-                                    <connections>
-                                        <action selector="openTrainSite:" destination="J28-e1-gcC" id="5Ka-Ra-khJ"/>
-                                    </connections>
-                                </command>
-                                <command title="Notifications…" id="zeT-bO-F72">
-                                    <connections>
-                                        <action selector="openNotifications:" destination="J28-e1-gcC" id="4dl-l2-1n6"/>
-                                    </connections>
-                                </command>
                                 <command title="Statistics…" id="IRg-Uz-w76">
                                     <connections>
                                         <action selector="openStatistics:" destination="J28-e1-gcC" id="4ps-fi-6FI"/>
@@ -792,16 +765,6 @@
                                         <action selector="showSendTo:" destination="J28-e1-gcC" id="XJ8-Tz-tG6"/>
                                     </connections>
                                 </command>
-                                <command title="Train This Story…" id="GJC-ae-c80">
-                                    <connections>
-                                        <action selector="showTrain:" destination="J28-e1-gcC" id="pr3-BS-f2g"/>
-                                    </connections>
-                                </command>
-                                <command title="Share This Story…" id="wmQ-3e-8h8">
-                                    <connections>
-                                        <action selector="showShare:" destination="J28-e1-gcC" id="UGy-Xo-sDK"/>
-                                    </connections>
-                                </command>
                                 <menu id="nKV-Y3-j73">
                                     <menuOptions key="menuOptions" displayInline="YES"/>
                                     <children>
@@ -846,11 +809,6 @@
                         </menu>
                         <menu isSystemItem="YES" title="Help" identifier="com.apple.menu.help" id="2fJ-ya-vwD">
                             <children>
-                                <command title="Support Forum" anchorAction="showHelp:" id="z9V-y5-juo">
-                                    <connections>
-                                        <action selector="showSupportForum:" destination="J28-e1-gcC" id="c7i-Ra-th4"/>
-                                    </connections>
-                                </command>
                                 <menu anchorAction="showHelp:" id="xDs-Be-CXW">
                                     <menuOptions key="menuOptions" displayInline="YES"/>
                                     <children>

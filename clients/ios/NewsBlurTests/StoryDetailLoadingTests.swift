@@ -321,7 +321,6 @@ import XCTest
 
         XCTAssertEqual(fixture.web.loads.count, 1)
         XCTAssertTrue(fixture.web.loads.first?.html.contains("Fixture article body") == true)
-        XCTAssertTrue(fixture.web.loads.first?.html.contains("Fixture comments") == true)
         XCTAssertEqual(fixture.web.loads.first?.baseURL?.absoluteString, "https://newsblur.com/")
     }
 
@@ -2254,7 +2253,7 @@ import XCTest
         let page = makePage(web: web, app: fixture.app)
         fixture.app.storiesCollection = collection
         page.allowsAppearanceCallbacks = false
-        page.shareHTML = "<img src='\(imageURL)' width='30' height='30'>"
+        page.headerExtraHTML = "<img src='\(imageURL)' width='30' height='30'>"
         fixture.stories[3]["story_content"] = String(repeating: "<p>Readable prepared article paragraph.</p>", count: 150)
         fixture.pages.nextPage.willMove(toParent: nil)
         fixture.pages.nextPage.view.removeFromSuperview()
@@ -2390,13 +2389,11 @@ import XCTest
         fixture.page.drawStory()
         await drainMainQueue()
         fixture.page.widthUpdates = 0
-        fixture.app.activeComment = ["comment": "Still editing"]
 
         sendReady(to: fixture.page, token: nil, mainFrame: true)
 
         XCTAssertEqual(fixture.page.widthUpdates, 0)
         XCTAssertEqual(fixture.page.classifierUpdates, 0)
-        XCTAssertEqual(fixture.app.activeComment?["comment"] as? String, "Still editing")
     }
 
     func test_regularReaderRelayoutKeepsLiveScrollPositionInsteadOfSavedTop() async throws {
@@ -3153,7 +3150,7 @@ import XCTest
         let page = makePage(web: web)
         page.allowsAppearanceCallbacks = false
         if restoresPosition { page.appDelegate.setValue(ImmediateStoryScrollQueue(), forKey: "database") }
-        page.shareHTML = "<img src='\(imageURL)' width='30' height='30'>"
+        page.headerExtraHTML = "<img src='\(imageURL)' width='30' height='30'>"
         let missingImage = includesSourcelessImage ? "<img id='missing-source' alt='Image without a source'>" : ""
         page.activeStory = story("first", body: missingImage + String(repeating: "<p>Readable article paragraph.</p>", count: 150))
         let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
@@ -3805,7 +3802,8 @@ private final class NextButtonReadingStories: StoriesCollection {
     var widthUpdates = 0
     var classifierUpdates = 0
     var finishedNavigations = 0
-    var shareHTML = "Fixture sharing"
+    /// Markup the fixture header carries below its title, such as an image whose request the test holds.
+    var headerExtraHTML = ""
     var readyObserver: (() -> Void)?
     var navigationActionObserver: ((WKNavigationAction) -> Void)?
     var allowsAppearanceCallbacks = true
@@ -3824,14 +3822,11 @@ private final class NextButtonReadingStories: StoriesCollection {
     override func viewWillDisappear(_ animated: Bool) { if allowsAppearanceCallbacks { super.viewWillDisappear(animated) } }
     override func viewDidAppear(_ animated: Bool) { if allowsAppearanceCallbacks { super.viewDidAppear(animated) } }
     override func viewDidDisappear(_ animated: Bool) { if allowsAppearanceCallbacks { super.viewDidDisappear(animated) } }
-    override func getHeader() -> String! { "<h1>Fixture header</h1>" }
-    override func getShareBar() -> String! { shareHTML }
-    override func getComments() -> String! { "Fixture comments" }
+    override func getHeader() -> String! { "<h1>Fixture header</h1>" + headerExtraHTML }
     override func changeWebViewWidth() {
         widthUpdates += 1
         if webView is RealStoryLoadWebView { super.changeWebViewWidth() }
     }
-    override func checkTryFeedStory() {}
     @objc(loadStory) func loadFixtureStory() {
         guard !holdsStoryLoading else { return }
         let selector = NSSelectorFromString("loadStory")

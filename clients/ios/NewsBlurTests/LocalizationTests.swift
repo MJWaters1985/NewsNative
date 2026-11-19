@@ -145,39 +145,6 @@ final class Test_Localization: XCTestCase {
         XCTAssertEqual(NBLocalization.plural("%@ subscribers", count: 2), "2 subscribers")
     }
 
-    func test_translatedFollowButtonStillFollowsAndUnfollows() throws {
-        let defaults = UserDefaults.standard
-        let previous = defaults.object(forKey: NBLocalization.preferenceKey)
-        defer {
-            if let previous {
-                defaults.set(previous, forKey: NBLocalization.preferenceKey)
-            } else {
-                defaults.removeObject(forKey: NBLocalization.preferenceKey)
-            }
-        }
-        // LocalizationTests.swift reproduces ProfileBadge.m comparing the French button title to English "Follow".
-        defaults.set("fr", forKey: NBLocalization.preferenceKey)
-        let badgeClass = try XCTUnwrap(NSClassFromString("ProfileBadge") as? NSObject.Type)
-        typealias Refresh = @convention(c) (AnyObject, Selector, NSDictionary, Bool, Int32) -> Void
-        let refreshSelector = NSSelectorFromString("refreshWithProfile:showStats:withWidth:")
-        for (followed, path) in [(0, "/social/follow"), (1, "/social/unfollow")] {
-            let badge = try XCTUnwrap(badgeClass.init() as? UITableViewCell)
-            let profile: NSDictionary = ["user_id": 42, "username": "localization-fixture", "followed_by_you": followed,
-                                         "photo_url": "https://localization-fixture.invalid/avatar.png"]
-            unsafeBitCast(badge.method(for: refreshSelector), to: Refresh.self)(badge, refreshSelector, profile, false, 320)
-            let button = try XCTUnwrap(badge.value(forKey: "followButton") as? UIButton)
-            // ProfileBadge.m titles the followed state with the "button state" context of "Following".
-            let expected = followed == 1 ? NBLocalization.text("Following", context: "button state") : NBLocalization.text("Follow")
-            XCTAssertEqual(button.currentTitle, expected)
-            XCTAssertNotEqual(button.currentTitle, "Follow", "The fixture must render a translated title")
-            // ProfileBadge.m reads the shared app delegate while rendering, so the recorder replaces it afterwards.
-            let app = LocalizationRecordingAppDelegate()
-            badge.setValue(app, forKey: "appDelegate")
-            badge.perform(NSSelectorFromString("doFollowButton:"), with: nil)
-            XCTAssertEqual(app.postedURLs, ["https://localization-fixture.invalid\(path)"])
-        }
-    }
-
     func test_languageChangeMirrorsViewsThatAlreadyExist() throws {
         // LocalizationTests.swift reproduces views built before an account language sync keeping the old direction.
         let defaults = UserDefaults.standard
@@ -447,30 +414,10 @@ final class Test_Localization: XCTestCase {
         XCTAssertTrue(arabic.contains("أكتوبر") && arabic.contains("2025"), "Arabic keeps Latin digits like the web: \(arabic)")
     }
 
-    func test_publicOnlyCommentsLeaveNoShareBarOrCommentList() {
-        // LocalizationTests.swift: NewsNative sets public comments aside (NewsNativeFeatures.swift), so a story whose
-        // comments all come from strangers must not advertise or list them.
-        let page = LocalizationShareBarPage()
-        page.appDelegate = NewsBlurAppDelegate()
-        page.activeStory = ["story_hash": "public-only-comments", "comment_count": 3, "share_count": 3,
-                            "comment_count_public": 3, "comment_count_friends": 0, "shared_by_friends": [],
-                            "public_comments": [["user_id": 7, "comments": "A stranger's comment"]]]
-
-        XCTAssertFalse((page.getShareBar() ?? "").contains("NB-story-shares"), "The share bar must not count public comments")
-        XCTAssertFalse((page.getComments() ?? "").contains("A stranger's comment"), "Public comments must not be listed")
-    }
-
-    func test_storyShareBarAndPluralsUseTranslatedWords() {
+    func test_folderPluralsUseTranslatedWords() {
         let restore = rememberLanguage()
         defer { restore() }
         UserDefaults.standard.set("en", forKey: NBLocalization.preferenceKey)
-        let page = LocalizationShareBarPage()
-        page.appDelegate = NewsBlurAppDelegate()
-        page.activeStory = ["story_hash": "localization-share-bar", "comment_count": 1, "share_count": 2,
-                            "comment_count_friends": 1, "shared_by_friends": [1, 2]]
-        let shareBar = page.getShareBar() ?? ""
-        XCTAssertTrue(shareBar.contains("<b>1 comment</b>"), shareBar)
-        XCTAssertTrue(shareBar.contains("<b>2 shares</b>"), shareBar)
         // LocalizationTests.swift checks plural forms that also name a folder (OnboardingViewController.swift).
         XCTAssertEqual(NBLocalization.plural("Add %1$@ feeds to “%2$@” folder", count: 1, with: "Science"),
                        "Add 1 feed to “Science” folder")
@@ -487,51 +434,6 @@ final class Test_Localization: XCTestCase {
         UserDefaults.standard.set("he", forKey: NBLocalization.preferenceKey)
         XCTAssertTrue(AddSiteView.urlPlaceholder.contains("\u{2066}https://\u{2069}"),
                       "Hebrew must not reorder the slashes of https://")
-    }
-
-    func test_profileActivityAndBadgeLeadOnTheRightInArabic() throws {
-        let restore = rememberLanguage()
-        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
-        let window = UIWindow(windowScene: scene)
-        defer {
-            window.isHidden = true
-            restore()
-            NBLocalization.configureDirection()
-        }
-        UserDefaults.standard.set("ar", forKey: NBLocalization.preferenceKey)
-        NBLocalization.configureDirection()
-        window.frame = CGRect(x: 0, y: 0, width: 320, height: 300)
-        window.rootViewController = UIViewController()
-        window.isHidden = false
-        // LocalizationTests.swift reproduces InteractionCell.m drawing the avatar on the left under a right-aligned sentence.
-        let interaction = InteractionCell(style: .default, reuseIdentifier: nil)
-        interaction.frame = CGRect(x: 0, y: 0, width: 320, height: 100)
-        window.rootViewController?.view.addSubview(interaction)
-        interaction.setNeedsLayout()
-        interaction.layoutIfNeeded()
-        XCTAssertEqual(interaction.avatarView.frame.maxX, interaction.contentView.bounds.width - CGFloat(interaction.leftMargin),
-                       accuracy: 0.5)
-        let activity = ActivityCell(style: .default, reuseIdentifier: nil)
-        activity.frame = CGRect(x: 0, y: 100, width: 320, height: 100)
-        window.rootViewController?.view.addSubview(activity)
-        activity.faviconLeftToRightFrame = CGRect(x: 20, y: 15, width: 48, height: 48)
-        activity.setNeedsLayout()
-        activity.layoutIfNeeded()
-        XCTAssertEqual(activity.faviconView.frame.maxX, activity.contentView.bounds.width - 20, accuracy: 0.5)
-
-        let badge = ProfileBadge(style: .default, reuseIdentifier: nil)
-        let profile: NSDictionary = ["user_id": 42, "username": "localization-fixture", "followed_by_you": 0,
-                                     "photo_url": "https://localization-fixture.invalid/avatar.png", "bio": NSNull(),
-                                     "location": NSNull()]
-        badge.refresh(withProfile: profile as? [AnyHashable: Any], showStats: false, withWidth: 320)
-        let follow = try XCTUnwrap(badge.followButton)
-        XCTAssertEqual(follow.frame.maxX, 310, accuracy: 0.5, "Arabic's follow button sits under the avatar on the right")
-        XCTAssertEqual(badge.username.frame.minX, 10, accuracy: 0.5)
-        XCTAssertEqual(badge.username.textAlignment, .right)
-        UserDefaults.standard.set("en", forKey: NBLocalization.preferenceKey)
-        let english = ProfileBadge(style: .default, reuseIdentifier: nil)
-        english.refresh(withProfile: profile as? [AnyHashable: Any], showStats: false, withWidth: 320)
-        XCTAssertEqual(english.followButton.frame.minX, 10, accuracy: 0.5)
     }
 
     // LocalizationTests.swift restores the account language each test changes.
@@ -597,8 +499,6 @@ final class Test_Localization: XCTestCase {
     override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 844)) }
     override func viewDidLoad() {}
     override func viewWillLayoutSubviews() {}
-    override func getShareBar() -> String! { "" }
-    override func getComments() -> String! { "" }
     @objc(getSideOptions) func fixtureSideOptions() -> String { "" }
     @objc(loadHTMLString:) func fixtureLoadHTML(_ html: String) {}
     @objc(loadStory) func fixtureLoadStory() {}
@@ -639,12 +539,6 @@ private final class LocalizationRecordingAppDelegate: NewsBlurAppDelegate {
 
 private final class LocalizationPagerApp: NewsBlurAppDelegate {
     override var feedDetailViewController: FeedDetailViewController! { nil }
-}
-
-// LocalizationTests.swift builds the real share bar markup without WebKit.
-@MainActor private final class LocalizationShareBarPage: StoryDetailViewController {
-    override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 844)) }
-    override func viewDidLoad() {}
 }
 
 extension Test_Localization {

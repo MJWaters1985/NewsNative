@@ -224,8 +224,6 @@ import WebKit
         XCTAssertEqual(pages.textViewCount, 1)
         XCTAssertEqual(page.pageDownCount, 1)
         XCTAssertEqual(page.pageUpCount, 1)
-        XCTAssertEqual(page.commentCount, 1)
-        XCTAssertEqual(page.shareCount, 1)
     }
 
     func test_mirroredStoryShortcutsLeaveSearchTypingAndHiddenReadersAlone() throws {
@@ -297,7 +295,7 @@ import WebKit
 
     private static let mirroredStoryShortcuts: [(String, UIKeyModifierFlags)] = [
         ("j", []), ("k", []), ("n", []), ("u", []), ("m", []), ("o", []), ("v", []), ("\r", .shift),
-        (" ", []), (" ", .shift), ("c", []), ("s", .shift),
+        (" ", []), (" ", .shift),
     ]
 
     func test_storyPaneArrowsCanSelectTheFirstArticleBeforeOneIsOpen() throws {
@@ -539,8 +537,6 @@ import WebKit
 @MainActor private final class KeyboardScrollPageProbe: StoryDetailViewController {
     var pageDownCount = 0
     var pageUpCount = 0
-    var commentCount = 0
-    var shareCount = 0
     var lastSender: AnyObject?
 
     override func scrollPageDown(_ sender: Any!) {
@@ -553,6 +549,4 @@ import WebKit
         lastSender = sender as AnyObject?
     }
 
-    override func scrolltoComment() { commentCount += 1 }
-    override func openShareDialog() { shareCount += 1 }
 }

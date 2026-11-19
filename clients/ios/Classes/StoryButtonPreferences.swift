@@ -1,17 +1,16 @@
 import UIKit
 
-/// StoryButtonPreferences.swift: whether the Share and Save buttons under a story are shown. The choices sync with
+/// StoryButtonPreferences.swift: whether the Save button under a story is shown. The choices sync with
 /// the server's user_profile.preferences, so they follow the account to other NewsBlur-compatible clients.
 @objcMembers final class StoryButtonPreferences: NSObject {
     /// The story buttons in reading order, with the NSUserDefaults key each uses.
     static let storyButtons: [(name: String, localKey: String)] = [
-        ("share", "show_sideoption_share"),
         ("save", "show_sideoption_save")
     ]
 
     private static var defaults: UserDefaults { .standard }
 
-    /// Whether the story button named share or save is shown (StoryDetailObjCViewController.m).
+    /// Whether the story button named save is shown (StoryDetailObjCViewController.m).
     static func showsStoryButton(_ name: String) -> Bool {
         guard let key = storyButtons.first(where: { $0.name == name })?.localKey else { return false }
         return defaults.object(forKey: key) == nil || defaults.bool(forKey: key)

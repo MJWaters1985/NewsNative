@@ -25,8 +25,7 @@
 #define kMenuOptionHeight 48
 
 - (BOOL)isGoToFeedEnabled {
-    BOOL isRiver = self.appDelegate.storiesCollection.isRiverView ||
-                   self.appDelegate.storiesCollection.isSocialRiverView;
+    BOOL isRiver = self.appDelegate.storiesCollection.isRiverView;
     NSString *feedId = [NSString stringWithFormat:@"%@", self.appDelegate.activeStory[@"story_feed_id"]];
     return isRiver && [[self.appDelegate getFeed:feedId] isKindOfClass:NSDictionary.class];
 }
@@ -40,7 +39,7 @@
     NSInteger last = UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone ? 13 : 12;
     NSMutableArray *appearance = [NSMutableArray array];
     for (NSInteger row = 7; row <= last; row++) [appearance addObject:@(row)];
-    return @[@[@1, @0], @[@2, @4], tools, appearance];
+    return @[@[@1, @0], @[@2], tools, appearance];
 }
 
 - (NSInteger)actionAtIndexPath:(NSIndexPath *)indexPath {
@@ -356,10 +355,6 @@
         cell.textLabel.text = [NBLocalization text:@"Send to..."];
         cell.imageView.image = [Utilities templateImageNamed:@"sendto" sized:20];
         cell.imageView.tintColor = UIColorFromRGB(0xBD9146);
-    } else if (adjustedRow == 4) {
-        cell.textLabel.text = [NBLocalization text:@"Share on NewsBlur…"];
-        cell.imageView.image = [Utilities templateImageNamed:@"share" sized:20];
-        cell.imageView.tintColor = UIColorFromRGB(0x94968E);
     } else if (adjustedRow == 6) {
         cell.textLabel.text = [NBLocalization text:@"Go to feed"];
         cell.imageView.image = [[UIImage systemImageNamed:@"newspaper"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
@@ -401,7 +396,7 @@
     }
     if (action >= 8) return kMenuOptionHeight;
     NSDictionary<NSNumber *, NSString *> *titles = @{@0: [NBLocalization text:@"Unsave this story"], @1: [NBLocalization text:@"Mark as unread"],
-                                                     @2: [NBLocalization text:@"Send to…"], @4: [NBLocalization text:@"Share on NewsBlur…"],
+                                                     @2: [NBLocalization text:@"Send to…"],
                                                      @6: [NBLocalization text:@"Go to feed"], @7: [NBLocalization text:@"Font…"]};
     NSString *title = titles[@(action)];
     if (!title) return kMenuOptionHeight;
@@ -423,7 +418,7 @@
         return;
     }
     if (adjustedRow != 7) {
-        [self dismissViewControllerAnimated:adjustedRow != 4 completion:nil];
+        [self dismissViewControllerAnimated:YES completion:nil];
     }
 
     if (adjustedRow == 0) {
@@ -436,8 +431,6 @@
         [self.appDelegate.storyPagesViewController refreshHeaders];
     } else if (adjustedRow == 2) {
         [self.appDelegate.storyPagesViewController openSendToDialog:self.appDelegate.storyPagesViewController.settingsPresentationBarButton];
-    } else if (adjustedRow == 4) {
-        [self.appDelegate.storyPagesViewController.currentPage openShareDialog];
     } else if (adjustedRow == 6) {
         [self goToFeed];
     } else if (adjustedRow == 7) {
@@ -449,7 +442,6 @@
     NewsBlurAppDelegate *appDelegate = self.appDelegate;
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",
                            [appDelegate.activeStory objectForKey:@"story_feed_id"]];
-    // FontSettingsViewController.m captures social source metadata before switching to a regular feed preview.
     NSDictionary *feed = [appDelegate getFeed:feedIdStr];
     NSString *targetFolder = nil;
 
@@ -472,14 +464,12 @@
         appDelegate.storyPagesViewController.currentPage.view.hidden = YES;
         // Reset river view so it loads as a single feed, not a folder
         appDelegate.storiesCollection.isRiverView = NO;
-        appDelegate.storiesCollection.isSocialRiverView = NO;
-        appDelegate.storiesCollection.isSocialView = NO;
 
         if (targetFolder) {
             [appDelegate.feedsNavigationController popToRootViewControllerAnimated:NO];
             [appDelegate loadFolder:targetFolder feedID:feedIdStr];
         } else {
-            [appDelegate loadTryFeedDetailView:feedIdStr withStory:nil isSocial:NO
+            [appDelegate loadTryFeedDetailView:feedIdStr withStory:nil
                                      withUser:feed showFindingStory:NO];
         }
     }

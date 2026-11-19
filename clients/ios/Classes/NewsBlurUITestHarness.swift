@@ -21,7 +21,6 @@ final class NewsBlurUITestHarness {
 
     private enum ReaderScenario {
         case list
-        case goodReadsList
         case techFolder
         case cultureFolder
         case swiftFeed
@@ -451,18 +450,13 @@ final class NewsBlurUITestHarness {
             return
         }
 
-        if ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-share-focus") ||
-            ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-focused-pagination") {
+        if ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-focused-pagination") {
             appDelegate.selectedIntelligence = 1
             appDelegate.feedsViewController.intelligenceControl.selectedSegmentIndex = 1
         }
         switch scenario {
         case .list:
             return
-        case .goodReadsList:
-            UserDefaults.standard.set(true, forKey: "show_good_reads")
-            appDelegate.feedsViewController.reloadFeedTitlesTable()
-            appDelegate.feedsViewController.view.layoutIfNeeded()
         case .techFolder:
             appDelegate.feedsViewController.selectFolder(CookingMarketingFixtures.enabled ? "Cooking" : "Tech")
         case .cultureFolder:
@@ -508,8 +502,6 @@ final class NewsBlurUITestHarness {
         switch screen {
         case "reader":
             return .list
-        case "reader-good-reads":
-            return .goodReadsList
         case "reader-folder-tech":
             return .techFolder
         case "reader-folder-culture":
@@ -552,18 +544,6 @@ private enum ReaderUITestFixtures {
     static let swiftWeeklyFeedId = "910004"
     static let swiftWeeklyPrimaryStoryHash = "ui-story-swift-weekly-1"
     private static let bulkReadEnabled = ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-bulk-read")
-    // NewsBlurUITestHarness.swift's natural language classifier fixtures (AIClassifiers.swift): saved prompts on Swift
-    // Weekly, matched prompts on its first story, and a usage billing account unless -newsblur-ui-test-ai-unbilled.
-    private static let aiClassifiersEnabled = ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-ai-classifiers")
-    // NewsBlurUITestHarness.swift's podcast fixture (Listen/ListenMediaPlayer.swift): Swift Weekly's first story
-    // carries an episode, and /media_player answers with that episode paused at 23:41 on another device and two
-    // items in Up Next. The audio is a silent file written at launch, so nothing reaches the network.
-    static let podcastEnabled = ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-podcast")
-    static let podcastEpisodeURL = FileManager.default.temporaryDirectory.appendingPathComponent("ui-test-episode-42.wav")
-    private static let podcastNextEpisodeURL = FileManager.default.temporaryDirectory.appendingPathComponent("ui-test-episode-41.wav")
-    private static let podcastDuration = 2820
-    private static let aiUnbilled = ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-ai-unbilled")
-    private static let aiLimitReached = ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-ai-limit-reached")
     /// Moves Swift Weekly out of Tech ▸ Swift to the top level, where the trainer has no folder scope.
     private static let swiftFeedAtTopLevel = ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-top-level-site")
     private static let cachedImagePaging = ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-cached-image-paging")
@@ -622,10 +602,6 @@ private enum ReaderUITestFixtures {
 
     @MainActor static func prepareAppState(for appDelegate: NewsBlurAppDelegate) {
         let defaults = UserDefaults.standard
-        if podcastEnabled {
-            writeSilentEpisodes()
-        }
-
         [
             "folderCollapsed:everything",
             "folderCollapsed:Tech",
@@ -635,11 +611,6 @@ private enum ReaderUITestFixtures {
 
         defaults.set("feeds", forKey: "app_opening")
         defaults.set("title", forKey: "feed_list_sort_order")
-        defaults.set(false, forKey: "show_infrequent_site_stories")
-        defaults.set(false, forKey: "show_global_shared_stories")
-        defaults.set(false, forKey: "show_widely_read_stories")
-        defaults.set(false, forKey: "show_long_reads")
-        defaults.set(false, forKey: "show_good_reads")
 
         appDelegate.pendingFolder = nil
         appDelegate.tryFeedFeedId = nil
@@ -716,10 +687,6 @@ private enum ReaderUITestFixtures {
                 "is_pro": 0,
                 "premium_expire": NSNull(),
                 "preferences": [:],
-                "is_usage_billing": aiClassifiersEnabled && !aiUnbilled,
-                "is_self_hosted_ai": false,
-                "can_use_ai_classifiers": aiClassifiersEnabled && !aiUnbilled,
-                "usage_billing_limit": aiClassifiersEnabled && !aiUnbilled ? 10.0 : NSNull(),
             ],
             "activities": [],
             "dashboard_rivers": [],
@@ -790,16 +757,7 @@ private enum ReaderUITestFixtures {
         )!
         let payload: [String: Any]
 
-        if request.httpMethod == "POST", url.path == "/social/share_story",
-           ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-share-focus") {
-            // NewsBlurUITestHarness.swift models the social endpoint's partial payload without publishing a share.
-            var sharedStory = swiftStoriesPageOne[0]
-            sharedStory.removeValue(forKey: "intelligence")
-            sharedStory["shared"] = true
-            sharedStory["shared_by_user"] = true
-            sharedStory["read_status"] = 1
-            payload = ["code": 1, "story": sharedStory, "user_profiles": []]
-        } else if request.httpMethod == "POST", mutationPaths.contains(url.path) {
+        if request.httpMethod == "POST", mutationPaths.contains(url.path) {
             if bulkReadEnabled && url.path == "/reader/mark_feed_as_read" { try markBulkRead(request) }
             payload = ["code": 1]
         } else if url.path == "/reader/feeds" {
@@ -809,10 +767,6 @@ private enum ReaderUITestFixtures {
                 Thread.sleep(forTimeInterval: min(max(delay, 0), 5))
             }
             payload = feedListResponse()
-        } else if aiClassifiersEnabled, let aiPayload = aiClassifierResponse(for: url.path) {
-            payload = aiPayload
-        } else if let mediaPayload = mediaPlayerResponse(for: url.path) {
-            payload = mediaPayload
         } else if url.path == "/reader/refresh_feeds" || url.path == "/reader/feed_unread_count" {
             payload = refreshFeedsResponse()
         } else if url.path == "/reader/logout" {
@@ -821,8 +775,6 @@ private enum ReaderUITestFixtures {
             ]
         } else if url.path == "/reader/favicons" {
             payload = faviconsResponse(for: url)
-        } else if url.path.hasPrefix("/reader/trending_stories") {
-            payload = trendingStoriesResponse(for: url)
         } else if url.path.hasPrefix("/reader/river_stories") {
             payload = riverStoriesResponse(for: url)
         } else if url.path == "/reader/refresh_feed/\(swiftFeedId)",
@@ -925,28 +877,6 @@ private enum ReaderUITestFixtures {
         ]
     }
 
-    private static func trendingStoriesResponse(for url: URL) -> [String: Any] {
-        let trendingType = URLComponents(url: url, resolvingAgainstBaseURL: false)?
-            .queryItems?
-            .first(where: { $0.name == "trending_type" })?
-            .value
-
-        return feedStoriesResponse(
-            feedID: "trending:good_reads",
-            stories: trendingType == "good_reads" ? [
-                story(
-                    hash: "ui-story-good-reads-1",
-                    feedID: techFeedId,
-                    title: "Good Reads Fixture Story",
-                    content: "<p>This deterministic story verifies the Good Reads trending river.</p>",
-                    date: "2m",
-                    timestamp: 1_700_001_250,
-                    author: "Reader Fixtures"
-                ),
-            ] : []
-        )
-    }
-
     private static func faviconsResponse(for url: URL) -> [String: Any] {
         let requestedFeedIds = URLComponents(url: url, resolvingAgainstBaseURL: false)?
             .queryItems?
@@ -961,148 +891,14 @@ private enum ReaderUITestFixtures {
     }
 
     private static func feedStoriesResponse(feedID: String?, stories: [[String: Any]]) -> [String: Any] {
-        let usesAIClassifiers = aiClassifiersEnabled && feedID == swiftFeedId
-        var stories = usesAIClassifiers ? stories.map(addingAIClassifierMatches) : stories
-        if podcastEnabled {
-            stories = stories.map(addingPodcastEpisode)
-        }
         return [
             "feed_id": feedID ?? "",
             "stories": stories,
-            "classifiers": usesAIClassifiers ? aiFeedClassifiers : [:],
+            "classifiers": [:],
             "feed_tags": [],
             "feed_authors": [],
             "user_profiles": [],
         ]
-    }
-
-    private static let aiFeedClassifiers: [String: Any] = [
-        "feeds": [:], "authors": [:], "titles": [:], "tags": [:], "texts": [:], "urls": [:],
-        "prompts": ["Swift concurrency deep dives": 1, "Sponsored posts and giveaways": -1],
-        "prompts_scope": ["Sponsored posts and giveaways": ["scope": "global", "folder_name": ""]],
-        "image_prompts": ["Charts and graphs": 1],
-        "image_prompts_scope": [:],
-    ]
-
-    /// Mono 8-bit silence at 4 kHz: 47 minutes in about 11 MB, which AVPlayer reads like any episode.
-    private static func writeSilentEpisodes() {
-        for url in [podcastEpisodeURL, podcastNextEpisodeURL] where !FileManager.default.fileExists(atPath: url.path) {
-            let sampleRate: UInt32 = 4000
-            let samples = UInt32(podcastDuration) * sampleRate
-            var header = Data("RIFF".utf8)
-            func append(_ value: UInt32) { withUnsafeBytes(of: value.littleEndian) { header.append(contentsOf: $0) } }
-            func append16(_ value: UInt16) { withUnsafeBytes(of: value.littleEndian) { header.append(contentsOf: $0) } }
-            append(36 + samples)
-            header.append(contentsOf: Array("WAVEfmt ".utf8))
-            append(16)
-            append16(1)
-            append16(1)
-            append(sampleRate)
-            append(sampleRate)
-            append16(1)
-            append16(8)
-            header.append(contentsOf: Array("data".utf8))
-            append(samples)
-            header.append(Data(repeating: 0x80, count: Int(samples)))
-            try? header.write(to: url)
-        }
-    }
-
-    /// Swift Weekly's first three stories become episodes 42 (playing), 41 (in Up Next) and 40 (neither).
-    private static func addingPodcastEpisode(_ story: [String: Any]) -> [String: Any] {
-        let episodes: [String: (title: String, url: URL)] = [
-            "ui-story-swift-1": ("Episode 42: Shipping a podcast player in a news reader", podcastEpisodeURL),
-            "ui-story-swift-2": ("Episode 41: The year in Swift concurrency", podcastNextEpisodeURL),
-            "ui-story-swift-3": ("Episode 40: Listening on the go",
-                                 FileManager.default.temporaryDirectory.appendingPathComponent("ui-test-episode-40.wav")),
-        ]
-        guard let hash = story["story_hash"] as? String, let details = episodes[hash] else { return story }
-        var episode = story
-        episode["story_title"] = details.title
-        episode["story_content"] = "<p>This week we talk about resuming episodes across devices, lock screen controls "
-            + "and why skip intervals matter more than you think.</p>"
-            + "<br><br><audio controls=\"controls\" preload=\"none\"><source src=\"\(details.url.absoluteString)\" "
-            + "type=\"audio/wav\" /></audio>"
-            + "<p>Show notes: chapters, links and a transcript are on the episode page.</p>"
-        return episode
-    }
-
-    /// apps/media_player/views.py for the podcast fixture: every answer carries the same state.
-    static func mediaPlayerResponse(for path: String) -> [String: Any]? {
-        guard podcastEnabled, path.hasPrefix("/media_player/") else { return nil }
-        return ["playback_state": [
-            "current_story_hash": "ui-story-swift-1",
-            "current_media_url": podcastEpisodeURL.absoluteString,
-            "current_media_type": "audio",
-            "current_media_title": "Episode 42: Shipping a podcast player in a news reader",
-            "current_feed_id": Int(swiftFeedId) ?? 0,
-            "current_position": 1421,
-            "current_duration": podcastDuration,
-            "current_playback_rate": 1,
-            "is_playing": false,
-            "skip_back_seconds": 15,
-            "skip_forward_seconds": 30,
-            "auto_play_next": true,
-            "remember_position": true,
-            "resume_on_load": true,
-            "queue": [
-                ["story_hash": "ui-story-swift-2", "media_url": podcastNextEpisodeURL.absoluteString, "media_type": "audio",
-                 "media_title": "Episode 41: The year in Swift concurrency", "feed_id": Int(swiftFeedId) ?? 0,
-                 "image_url": "", "duration": podcastDuration],
-                ["story_hash": "ui-story-swift-3", "media_url": "/listen/story/ui-story-swift-3", "media_type": "listen",
-                 "media_title": "Swift Fixture Story Three", "feed_id": Int(swiftFeedId) ?? 0, "image_url": ""],
-            ],
-            "history": [],
-        ] as [String: Any]]
-    }
-
-    private static func addingAIClassifierMatches(_ story: [String: Any]) -> [String: Any] {
-        guard story["story_hash"] as? String == "ui-story-swift-1" else { return story }
-        var matched = story
-        matched["prompt_classifiers"] = [
-            ["prompt": "Swift concurrency deep dives", "score": 1, "include_images": false],
-            ["prompt": "Charts and graphs", "score": 1, "include_images": true],
-        ]
-        var intelligence = story["intelligence"] as? [String: Any] ?? [:]
-        intelligence["prompt"] = 1
-        intelligence["author"] = -1
-        matched["intelligence"] = intelligence
-        matched["image_urls"] = ["Lyric", "Shiloh"].compactMap { Bundle.main.url(forResource: $0, withExtension: "jpg")?.absoluteString }
-        return matched
-    }
-
-    private static func aiClassifierResponse(for path: String) -> [String: Any]? {
-        switch path {
-        case "/classifier/ai_classifier_usage":
-            if aiUnbilled { return ["code": 0, "can_use_ai": false] }
-            return ["code": 0, "can_use_ai": true, "avg_cost_per_text": 0.00042, "avg_cost_per_image": 0.0021,
-                    "is_limit_reached": aiLimitReached, "current_cycle_spend": aiLimitReached ? 10.0 : 3.42,
-                    "usage_billing_limit": 10.0]
-        case "/profile/usage_billing_history":
-            if aiUnbilled { return ["invoices": [], "upcoming_invoice": NSNull()] }
-            return [
-                "current_cycle_spend": aiLimitReached ? 10.0 : 8.42, "usage_billing_limit": 10.0, "is_limit_reached": aiLimitReached,
-                "cycle_start": "2026-10-01", "cycle_end": "2026-10-31",
-                "upcoming_invoice": [
-                    "date": "2026-11-01", "amount": 8.42, "status": "upcoming",
-                    "line_items": [
-                        ["description": "Natural language text classifier", "quantity": 14_820, "amount": 6.23],
-                        ["description": "Natural language image classifier", "quantity": 1_043, "amount": 2.19],
-                    ],
-                ],
-                "invoices": [
-                    ["date": "2026-10-01", "amount": 5.17, "amount_paid": 5.17, "status": "paid",
-                     "hosted_invoice_url": "https://ui-test.newsblur.example/invoice/1",
-                     "line_items": [["description": "Natural language text classifier", "quantity": 12_310, "amount": 5.17]]],
-                ],
-            ]
-        case "/classifier/save", "/profile/save_usage_billing_limit":
-            return ["code": 1, "limit": 10.0]
-        case "/classifier/test_prompt":
-            return ["code": 0, "classification": 1, "image_results": [1, 0]]
-        default:
-            return nil
-        }
     }
 
     private static func pageNumber(from url: URL) -> Int {
@@ -1196,9 +992,6 @@ private enum ReaderUITestFixtures {
             ],
         ]
 
-        if ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-share-focus") {
-            story["intelligence"] = ["feed": 1, "title": 0, "author": 0, "tags": 0]
-        }
         if let score {
             story["score"] = score
         }

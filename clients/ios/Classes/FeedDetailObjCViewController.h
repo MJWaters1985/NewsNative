@@ -109,7 +109,6 @@
 - (void)fetchRiver;
 - (void)fetchRiverPage:(int)page withCallback:(void(^)(void))callback;
 - (void)testForTryFeed;
-- (void)flashInfrequentStories;
 - (void)gotoFolder:(NSString *)folder feedID:(NSString *)feedID;
 
 //- (CGFloat)heightForRowAtIndexPath:(NSIndexPath *)indexPath;
@@ -130,7 +129,6 @@
 
 - (UIFontDescriptor *)fontDescriptorUsingPreferredSize:(NSString *)textStyle;
 - (void)checkScroll;
-- (void)setUserAvatarLayout:(UIInterfaceOrientation)orientation;
 
 - (void)fadeSelectedCell;
 - (void)fadeSelectedCell:(BOOL)deselect;
@@ -143,11 +141,8 @@
 - (void)deleteFolder;
 - (IBAction)muteSite;
 - (IBAction)unmuteSite;
-- (IBAction)openNotifications:(id)sender;
-- (void)openNotificationsWithFeed:(NSString *)feedId;
 - (IBAction)openStatistics:(id)sender;
 - (IBAction)openRenameSite;
-- (void)showUserProfile;
 - (void)changeActiveFeedDetailRow;
 - (IBAction)instafetchFeed;
 - (void)finishRefresh;

@@ -215,10 +215,6 @@ static const CGFloat kFolderTitleHeight = 36.0;
         if (isDashboard) {
             [sections addObject:[FeedChooserItem makeFolderWithIdentifier:@"dash:folders" title:[NBLocalization text:@"Folders"]]];
             [sections addObject:[FeedChooserItem makeFolderWithIdentifier:@"dash:feeds" title:[NBLocalization text:@"Sites"]]];
-            // FeedChooserViewController.m offers shared stories only with social reading (NewsNativeFeatures.swift).
-            if (NewsNativeFeatures.socialFeatures) {
-                [sections addObject:[FeedChooserItem makeFolderWithIdentifier:@"dash:river_blurblogs" title:[NBLocalization text:@"All Shared Stories"]]];
-            }
             [sections addObject:[FeedChooserItem makeFolderWithIdentifier:@"dash:saved_searches" title:[NBLocalization text:@"Saved Searches"]]];
             [sections addObject:[FeedChooserItem makeFolderWithIdentifier:@"dash:saved_stories" title:[NBLocalization text:@"Saved Stories"]]];
         } else {
@@ -236,7 +232,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
     }
     
     NSMutableDictionary *allFoldersDict = [self.dictFolders mutableCopy];
-    NSArray *specialFolders = @[@"river_blurblogs", @"trending:well_read", @"trending:long_reads", @"trending:good_reads", @"saved_searches", @"saved_stories"];
+    NSArray *specialFolders = @[@"saved_searches", @"saved_stories"];
     
     [allFoldersDict removeObjectsForKeys:specialFolders];
     
@@ -244,10 +240,6 @@ static const CGFloat kFolderTitleHeight = 36.0;
     
     if (isDashboard) {
         for (NSString *specialFolder in specialFolders) {
-            // FeedChooserViewController.m offers only the special folders NewsNative keeps (NewsNativeFeatures.swift).
-            if ([specialFolder isEqualToString:@"river_blurblogs"] && !NewsNativeFeatures.socialFeatures) continue;
-            if ([NewsNativeFeatures.specialFeedFolders containsObject:specialFolder] &&
-                !NewsNativeFeatures.showsSpecialFeedSections) continue;
             [folderArray addObject:specialFolder];
         }
     }
@@ -275,13 +267,8 @@ static const CGFloat kFolderTitleHeight = 36.0;
                 info = self.inactiveFeeds[feedIdStr];
             }
             
-            BOOL isSocialFeed = [appDelegate isSocialFeed:feedIdStr];
             BOOL isSavedFeed = [appDelegate isSavedFeed:feedIdStr];
-            BOOL wantFeed = (!isSocialFeed && !isSavedFeed) || isDashboard;
-            
-            if (wantFeed && isSocialFeed) {
-                info = [appDelegate.dictSocialFeeds objectForKey:feedIdStr];
-            }
+            BOOL wantFeed = !isSavedFeed || isDashboard;
             
             if (wantFeed && isSavedFeed) {
                 info = [appDelegate.dictSavedStoryTags objectForKey:feedIdStr];
@@ -293,9 +280,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
             
             if (wantFeed) {
                 if (self.flat && isDashboard) {
-                    if (isSocialFeed) {
-                        section = flatSectionsDict[@"dash:river_blurblogs"];
-                    } else if (isSavedFeed) {
+                    if (isSavedFeed) {
                         section = flatSectionsDict[@"dash:saved_stories"];
                     } else {
                         section = flatSectionsDict[@"dash:feeds"];
@@ -327,12 +312,6 @@ static const CGFloat kFolderTitleHeight = 36.0;
     if (self.operation == FeedChooserOperationDashboardSites) {
         if ([folderName isEqualToString:@" "]) {
             identifier = @"river:everything";
-        } else if ([folderName isEqualToString:@"river_blurblogs"]) {
-            identifier = @"river:blurblogs";
-        } else if ([folderName isEqualToString:@"river_global"]) {
-            identifier = @"river:global";
-        } else if ([folderName hasPrefix:@"trending:"]) {
-            // Already correct.
         } else if ([folderName isEqualToString:@"saved_searches"] || [folderName isEqualToString:@"saved_stories"]) {
             // Already correct.
         } else {

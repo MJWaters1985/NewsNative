@@ -61,7 +61,7 @@
         return [NSString stringWithFormat:[NBLocalization text:@"\"%1$@\" in %2$@"], self.search, title];
     }
     
-    if ([title isEqualToString:@" "] || [title isEqualToString:@"dashboard"] || [title isEqualToString:@"everything"] || [title isEqualToString:@"infrequent"]) {
+    if ([title isEqualToString:@" "] || [title isEqualToString:@"dashboard"] || [title isEqualToString:@"everything"]) {
         return @"";
     } else {
         return title;
@@ -82,9 +82,8 @@
             }
         } else {
             NSString *identifier = self.identifierString;
-            BOOL isSocial = [self.appDelegate isSocialFeed:identifier];
             BOOL isSaved = [self.appDelegate isSavedFeed:identifier];
-            self.icon = [self.appDelegate getFavicon:identifier isSocial:isSocial isSaved:isSaved];
+            self.icon = [self.appDelegate getFavicon:identifier isSaved:isSaved];
         }
     }
 

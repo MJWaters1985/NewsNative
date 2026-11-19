@@ -156,28 +156,6 @@ import UIKit
         XCTAssertEqual(destination.popoverPresentationController?.sourceRect, anchor.bounds)
     }
 
-    func test_findFriendsPresentsTheFreshControllerInsteadOfPreviousDialog() throws {
-        let app = NewsBlurAppDelegate()
-        let split = MenuPresentationSplitController()
-        app.splitViewController = split
-        let controllerType = try XCTUnwrap(NSClassFromString("FriendsListViewController") as? UIViewController.Type)
-        let previous = controllerType.init(nibName: nil, bundle: nil)
-        app.setValue(previous, forKey: "friendsListViewController")
-        defer {
-            app.splitViewController = nil
-            app.modalNavigationController = nil
-            app.setValue(nil, forKey: "friendsListViewController")
-        }
-
-        app.showFindFriends()
-
-        let fresh = try XCTUnwrap(app.value(forKey: "friendsListViewController") as? UIViewController)
-        let navigation = try XCTUnwrap(split.requestedPresentation as? UINavigationController)
-        XCTAssertFalse(fresh === previous)
-        XCTAssertTrue(navigation.topViewController === fresh,
-                      "MenuPreferenceSelectionTests.swift must show the same Find Friends controller that receives refreshed suggestions")
-    }
-
     func test_popoverWithoutPreviousMenuPresentsImmediatelyAndKeepsButtonAnchor() {
         let app = NewsBlurAppDelegate()
         let navigation = MenuReplacementNavigationController(rootViewController: UIViewController())
@@ -206,74 +184,6 @@ import UIKit
 
         XCTAssertEqual(current.dismissalCount, 0)
         XCTAssertNil(navigation.requestedPresentation)
-    }
-
-    func test_storyShareCleanupLeavesUnrelatedTrainerAndSettingsDialogsOpen() {
-        for style in [UIModalPresentationStyle.popover, .pageSheet] {
-            let app = NewsBlurAppDelegate()
-            let navigation = MenuReplacementNavigationController(rootViewController: UIViewController())
-            let dialog = MenuDismissalController()
-            dialog.modalPresentationStyle = style
-            navigation.currentPresentation = dialog
-            app.feedsNavigationController = navigation
-
-            app.hideShareView(false)
-
-            XCTAssertEqual(navigation.dismissalCount, 0,
-                           "Story preparation must not dismiss the navigation controller's unrelated dialog")
-            XCTAssertEqual(dialog.dismissalCount, 0)
-            app.feedsNavigationController = nil
-        }
-    }
-
-    func test_storyShareCleanupDismissesActualSharePopoverAndSheet() {
-        for sheet in [false, true] {
-            let app = NewsBlurAppDelegate()
-            let navigation = MenuReplacementNavigationController(rootViewController: UIViewController())
-            let share = MenuShareDismissalController()
-            app.setValue(share, forKey: "shareViewController")
-            app.feedsNavigationController = navigation
-            let shareNavigation = MenuReplacementNavigationController(rootViewController: share)
-            if sheet {
-                shareNavigation.modalPresentationStyle = .pageSheet
-                shareNavigation.testPresenter = navigation
-                navigation.currentPresentation = shareNavigation
-                app.shareNavigationController = shareNavigation
-            } else {
-                share.modalPresentationStyle = .popover
-                share.testPresenter = navigation
-                navigation.currentPresentation = share
-            }
-
-            app.hideShareView(false)
-
-            XCTAssertEqual(sheet ? shareNavigation.dismissalCount : share.dismissalCount, 1)
-            app.feedsNavigationController = nil
-            app.shareNavigationController = nil
-            app.setValue(nil, forKey: "shareViewController")
-        }
-    }
-
-    func test_storyShareCleanupKeepsSafariGuardAndCanResetCommentWithoutDismissingOtherDialog() {
-        let app = MenuShareCleanupApp()
-        let navigation = MenuReplacementNavigationController(rootViewController: UIViewController())
-        let share = MenuShareDismissalController()
-        let field = UITextView()
-        field.text = "Unsubmitted comment"
-        share.commentField = field
-        share.currentType = "share"
-        app.setValue(share, forKey: "shareViewController")
-        app.feedsNavigationController = navigation
-        navigation.currentPresentation = MenuDismissalController()
-        app.showsSafari = true
-
-        app.hideShareView(true)
-
-        XCTAssertEqual(field.text, "")
-        XCTAssertNil(share.currentType)
-        XCTAssertEqual(navigation.dismissalCount, 0)
-        app.feedsNavigationController = nil
-        app.setValue(nil, forKey: "shareViewController")
     }
 
     #if targetEnvironment(macCatalyst)
@@ -375,24 +285,6 @@ import UIKit
         requestedPresentation = viewControllerToPresent
         completion?()
     }
-}
-
-@MainActor private final class MenuShareDismissalController: UIViewController {
-    // MenuPreferenceSelectionTests.swift supplies the composer fields used by hideShareView without posting or loading account data.
-    @objc var commentField: UITextView?
-    @objc var currentType: String?
-    weak var testPresenter: UIViewController?
-    var dismissalCount = 0
-    override var presentingViewController: UIViewController? { testPresenter }
-    override func dismiss(animated: Bool, completion: (() -> Void)? = nil) {
-        dismissalCount += 1
-        completion?()
-    }
-}
-
-@MainActor private final class MenuShareCleanupApp: NewsBlurAppDelegate {
-    var showsSafari = false
-    override var showingSafariViewController: Bool { showsSafari }
 }
 
 @MainActor private final class MenuDismissalController: UIViewController {

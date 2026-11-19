@@ -9,11 +9,8 @@
 #import "StoryPagesObjCViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "FontSettingsViewController.h"
-#import "UserProfileViewController.h"
-#import "ShareViewController.h"
 #import "Utilities.h"
 #import "NSString+HTML.h"
-#import "DataUtilities.h"
 #import "SBJson4.h"
 #import "UIBarButtonItem+Image.h"
 #import "THCircularProgressView.h"
@@ -521,8 +518,6 @@
     [self addKeyCommandWithInput:@"s" modifierFlags:0 action:@selector(toggleStorySaved:) discoverabilityTitle:@"Save/Unsave Story" wantPriority:YES];
     [self addKeyCommandWithInput:@"o" modifierFlags:0 action:@selector(showOriginalSubview:) discoverabilityTitle:@"Open in Browser"];
     [self addKeyCommandWithInput:@"v" modifierFlags:0 action:@selector(showOriginalSubview:) discoverabilityTitle:@"Open in Browser"];
-    [self addKeyCommandWithInput:@"s" modifierFlags:UIKeyModifierShift action:@selector(openShareDialog) discoverabilityTitle:@"Share This Story"];
-    [self addKeyCommandWithInput:@"c" modifierFlags:0 action:@selector(scrolltoComment) discoverabilityTitle:@"Scroll to Comments"];
     [self addKeyCommandWithInput:@"a" modifierFlags:UIKeyModifierShift action:@selector(doMarkAllRead:) discoverabilityTitle:@"Mark All as Read"];
     [self addKeyCommandWithInput:UIKeyInputDownArrow modifierFlags:UIKeyModifierShift action:@selector(nextFolder:) discoverabilityTitle:@"Next Folder" wantPriority:YES];
     [self addKeyCommandWithInput:UIKeyInputUpArrow modifierFlags:UIKeyModifierShift action:@selector(previousFolder:) discoverabilityTitle:@"Previous Folder" wantPriority:YES];
@@ -570,32 +565,14 @@
     }
     
     if (self.isPhoneOrCompact) {
-        if (!appDelegate.storiesCollection.isSocialView) {
+        {
             UIImage *titleImage;
-            if (appDelegate.storiesCollection.isSocialRiverView &&
-                [appDelegate.storiesCollection.activeFolder isEqualToString:@"river_global"]) {
-                titleImage = [UIImage imageNamed:@"global-shares"];
-            } else if (appDelegate.storiesCollection.isSocialRiverView &&
-                       [appDelegate.storiesCollection.activeFolder isEqualToString:@"river_blurblogs"]) {
-                titleImage = [UIImage imageNamed:@"all-shares"];
-            } else if (appDelegate.storiesCollection.isRiverView &&
+            if (appDelegate.storiesCollection.isRiverView &&
                        [appDelegate.storiesCollection.activeFolder isEqualToString:@"everything"]) {
                 titleImage = [UIImage imageNamed:@"all-stories"];
             } else if (appDelegate.storiesCollection.isRiverView &&
                        [appDelegate.storiesCollection.activeFolder isEqualToString:@"dashboard"]) {
                 titleImage = [UIImage imageNamed:@"saved-stories"];
-            } else if (appDelegate.storiesCollection.isRiverView &&
-                       [appDelegate.storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
-                titleImage = [UIImage imageNamed:@"ak-icon-infrequent.png"];
-            } else if (appDelegate.storiesCollection.isRiverView &&
-                       [appDelegate.storiesCollection.activeFolder isEqualToString:@"trending:well_read"]) {
-                titleImage = [UIImage imageNamed:@"trending-well-read"];
-            } else if (appDelegate.storiesCollection.isRiverView &&
-                       [appDelegate.storiesCollection.activeFolder isEqualToString:@"trending:long_reads"]) {
-                titleImage = [UIImage imageNamed:@"trending-long-reads"];
-            } else if (appDelegate.storiesCollection.isRiverView &&
-                       [appDelegate.storiesCollection.activeFolder isEqualToString:@"trending:good_reads"]) {
-                titleImage = [UIImage systemImageNamed:@"star.fill"];
             } else if (appDelegate.storiesCollection.isSavedView &&
                        appDelegate.storiesCollection.activeSavedStoryTag) {
                 titleImage = [UIImage imageNamed:@"tag.png"];
@@ -645,28 +622,6 @@
                 appDelegate.detailViewController.navigationItem.titleView = titleImageViewWrapper;
             }
             titleImageView.hidden = NO;
-        } else {
-            NSString *feedIdStr = [NSString stringWithFormat:@"%@",
-                                   [appDelegate.storiesCollection.activeFeed objectForKey:@"id"]];
-            UIImage *titleImage = nil;
-            // Check for custom feed icon
-            NSDictionary *customIcon = appDelegate.dictFeedIcons[feedIdStr];
-            if (customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) {
-                titleImage = [CustomIconRenderer renderIcon:customIcon size:CGSizeMake(28, 28)];
-            }
-            if (!titleImage) {
-                titleImage = [appDelegate getFavicon:feedIdStr];
-            }
-            titleImage = [Utilities roundCorneredImage:titleImage radius:6];
-            
-            UIImageView *titleImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
-            UIImageView *titleImageViewWrapper = [[UIImageView alloc] init];
-            titleImageView.frame = CGRectMake(0.0, 0.0, 28.0, 28.0);
-            titleImageView.contentMode = UIViewContentModeScaleAspectFit;
-            [titleImageView setImage:titleImage];
-            [titleImageViewWrapper addSubview:titleImageView];
-            [titleImageViewWrapper setFrame:titleImageView.frame];
-            appDelegate.detailViewController.navigationItem.titleView = titleImageViewWrapper;
         }
     }
     
@@ -1429,16 +1384,8 @@
     UIImage *titleImage = nil;
     NSString *titleText = nil;
 
-    if (!appDelegate.storiesCollection.isSocialView) {
-        if (appDelegate.storiesCollection.isSocialRiverView &&
-            [appDelegate.storiesCollection.activeFolder isEqualToString:@"river_global"]) {
-            titleImage = [UIImage imageNamed:@"global-shares"];
-            titleText = [NBLocalization text:@"Global Shared Stories"];
-        } else if (appDelegate.storiesCollection.isSocialRiverView &&
-                   [appDelegate.storiesCollection.activeFolder isEqualToString:@"river_blurblogs"]) {
-            titleImage = [UIImage imageNamed:@"all-shares"];
-            titleText = [NBLocalization text:@"All Shared Stories"];
-        } else if (appDelegate.storiesCollection.isRiverView &&
+    {
+        if (appDelegate.storiesCollection.isRiverView &&
                    [appDelegate.storiesCollection.activeFolder isEqualToString:@"everything"]) {
             titleImage = [UIImage imageNamed:@"all-stories"];
             titleText = [NBLocalization text:@"All Site Stories"];
@@ -1446,22 +1393,6 @@
                    [appDelegate.storiesCollection.activeFolder isEqualToString:@"dashboard"]) {
             titleImage = [UIImage imageNamed:@"saved-stories"];
             titleText = [NBLocalization text:@"Dashboard"];
-        } else if (appDelegate.storiesCollection.isRiverView &&
-                   [appDelegate.storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
-            titleImage = [UIImage imageNamed:@"ak-icon-infrequent.png"];
-            titleText = [NBLocalization text:@"Infrequent Stories"];
-        } else if (appDelegate.storiesCollection.isRiverView &&
-                   [appDelegate.storiesCollection.activeFolder isEqualToString:@"trending:well_read"]) {
-            titleImage = [UIImage imageNamed:@"trending-well-read"];
-            titleText = [NBLocalization text:@"Widely Read Stories"];
-        } else if (appDelegate.storiesCollection.isRiverView &&
-                   [appDelegate.storiesCollection.activeFolder isEqualToString:@"trending:long_reads"]) {
-            titleImage = [UIImage imageNamed:@"trending-long-reads"];
-            titleText = [NBLocalization text:@"Long Reads"];
-        } else if (appDelegate.storiesCollection.isRiverView &&
-                   [appDelegate.storiesCollection.activeFolder isEqualToString:@"trending:good_reads"]) {
-            titleImage = [UIImage systemImageNamed:@"star.fill"];
-            titleText = [NBLocalization text:@"Good Reads"];
         } else if (appDelegate.storiesCollection.isSavedView &&
                    appDelegate.storiesCollection.activeSavedStoryTag) {
             titleImage = [UIImage imageNamed:@"tag.png"];
@@ -1501,18 +1432,6 @@
             }
             titleText = [feed objectForKey:@"feed_title"];
         }
-    } else {
-        NSString *feedIdStr = [NSString stringWithFormat:@"%@",
-                               [appDelegate.storiesCollection.activeFeed objectForKey:@"id"]];
-        NSDictionary *customIcon = appDelegate.dictFeedIcons[feedIdStr];
-        if (customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) {
-            titleImage = [CustomIconRenderer renderIcon:customIcon size:CGSizeMake(22, 22)];
-        }
-        if (!titleImage) {
-            titleImage = [appDelegate getFavicon:feedIdStr];
-            titleImage = [Utilities roundCorneredImage:titleImage radius:6];
-        }
-        titleText = [appDelegate.storiesCollection.activeFeed objectForKey:@"feed_title"];
     }
 
     [self.storyToolbar updateTitleWithImage:titleImage text:titleText];
@@ -3631,14 +3550,6 @@
     [self.currentPage scrollPageUp:sender];
 }
 
-- (void)scrolltoComment {
-    [self.currentPage scrolltoComment];
-}
-
-- (void)openShareDialog {
-    [self.currentPage openShareDialog];
-}
-
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
     if (action == @selector(toggleStorySaved:)) {
         return currentPage.pageIndex >= 0 && [self readerKeyboardContextAvailable];
@@ -3648,9 +3559,7 @@
         action == @selector(scrollPageUp:) ||
         action == @selector(toggleStoryUnread:) ||
         action == @selector(toggleStorySaved:) ||
-        action == @selector(showOriginalSubview:) ||
-        action == @selector(openShareDialog) ||
-        action == @selector(scrolltoComment)) {
+        action == @selector(showOriginalSubview:)) {
         return (currentPage.pageIndex >= 0);
     }
     return [super canPerformAction:action withSender:sender];

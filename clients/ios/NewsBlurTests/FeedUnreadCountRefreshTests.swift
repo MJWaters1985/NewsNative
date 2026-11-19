@@ -275,7 +275,7 @@ import UIKit
         let fixture = try makeFixture()
         defer { fixture.controller.reloadWorkItem?.cancel() }
         let retained: [AnyHashable: Any] = ["story_hash": "retained-1", "story_feed_id": 1,
-                                         "read_status": 1, "intelligence": ["feed": 0], "shared_by_friends": [3]]
+                                         "read_status": 1, "intelligence": ["feed": 0]]
         let browsed: [AnyHashable: Any] = ["story_hash": "browsed-2", "story_feed_id": 2,
                                         "read_status": 0, "intelligence": ["feed": 0]]
         let stories = makeCollection(fixture: fixture, story: browsed)
@@ -291,7 +291,6 @@ import UIKit
 
         XCTAssertEqual(fixture.app.activeStory["read_status"] as? Int, 0)
         XCTAssertEqual((fixture.app.dictUnreadCounts["1"] as? [String: Int])?["nt"], 11)
-        XCTAssertEqual((fixture.app.dictUnreadCounts["social:3"] as? [String: Int])?["nt"], 6)
         XCTAssertNil(fixture.app.recentlyReadStories["retained-1"])
         XCTAssertEqual(try cachedReadStatus(retained, fixture: fixture), 0)
         XCTAssertTrue(page.isRecentlyUnread)
@@ -305,7 +304,6 @@ import UIKit
 
         XCTAssertEqual(fixture.app.activeStory["read_status"] as? Int, 1)
         XCTAssertEqual((fixture.app.dictUnreadCounts["1"] as? [String: Int])?["nt"], 10)
-        XCTAssertEqual((fixture.app.dictUnreadCounts["social:3"] as? [String: Int])?["nt"], 5)
         XCTAssertEqual((fixture.app.dictUnreadCounts["2"] as? [String: Int])?["nt"], 1)
         XCTAssertEqual(try cachedReadStatus(retained, fixture: fixture), 1)
         XCTAssertFalse(page.isRecentlyUnread)
@@ -396,7 +394,7 @@ import UIKit
         let initialReads = fixture.app.iconReads
         fixture.app.dictUnreadCounts["1"] = ["nt": 4, "ps": 2, "ng": 1]
         fixture.app.dictUnreadCounts["2"] = ["nt": 0, "ps": 0, "ng": 0]
-        fixture.app.dictUnreadCounts["social:3"] = ["nt": 3, "ps": 1, "ng": 0]
+        fixture.app.dictUnreadCounts["3"] = ["nt": 3, "ps": 1, "ng": 0]
         fixture.controller.currentRowAtIndexPath = nil
 
         fixture.controller.refreshFeedCounts()
@@ -573,16 +571,16 @@ import UIKit
         app.selectedIntelligence = savedMode ? 2 : 0
         app.dictFoldersArray = ["dashboard", "daily_briefing", "Feeds", "Duplicate"]
         app.dictFolders = ["dashboard": [], "daily_briefing": [],
-                           "Feeds": [1, "2", "social:3", "1?query", 4, "saved:tag"], "Duplicate": ["1"]]
+                           "Feeds": [1, "2", "3", "1?query", 4, "saved:tag"], "Duplicate": ["1"]]
         app.dictSubfolders = [:]
         app.dictFeeds = ["1": ["id": 1, "feed_title": "First", "active": 1],
                          "2": ["id": "2", "feed_title": "Second", "active": 1],
+                         "3": ["id": 3, "feed_title": "Third", "active": 1],
                          "4": ["id": 4, "feed_title": "Inactive", "active": 1]]
-        app.dictSocialFeeds = ["social:3": ["id": "social:3", "feed_title": "Friend", "active": 1]]
         app.dictSavedStoryTags = ["saved:tag": ["id": "tag", "feed_title": "Saved tag"]]
         app.dictSavedStoryFeedCounts = savedMode ? ["1": 8] : [:]
         app.dictUnreadCounts = ["1": ["nt": 10, "ps": 3, "ng": 2], "2": ["nt": 1, "ps": 0, "ng": 0],
-                               "social:3": ["nt": 5, "ps": 2, "ng": 0], "4": ["nt": 5], "saved:tag": ["ps": 8]]
+                               "3": ["nt": 5, "ps": 2, "ng": 0], "4": ["nt": 5], "saved:tag": ["ps": 8]]
         app.dictInactiveFeeds = ["4": true]
         app.collapsedFolders = [:]
         app.folderCountCache = ["Feeds": ["nt": 100]]
@@ -592,7 +590,7 @@ import UIKit
         let controller = CountFeedsController()
         controller.appDelegate = app
         controller.viewShowingAllFeeds = true
-        controller.searchFeedIds = ["1", "2", "social:3", "1?query", "4"]
+        controller.searchFeedIds = ["1", "2", "3", "1?query", "4"]
         controller.setValue(NSMutableDictionary(), forKey: "rowHeights")
         controller.setValue(NSMutableDictionary(), forKey: "folderTitleViews")
         let pages = CountPagesController()

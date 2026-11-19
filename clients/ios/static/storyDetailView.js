@@ -91,14 +91,6 @@ document.addEventListener('click', function(event) {
     }
 }, true);
 
-$('a.NB-show-profile').live('click', function () {
-    var offset = $('img', this).offset();
-    console.log(offset);
-    var url = $(this).attr('href') + "/" + offset.left + "/" + (offset.top - window.pageYOffset) + "/" + offset.width + "/" + offset.height;
-    window.location = url;
-    return false;
-});
-
 $('.NB-read-button a').live('click', function () {
     var offset = $(this).offset();
     console.log(offset);
@@ -118,13 +110,6 @@ $('.NB-user-tag').live('click', function () {
 $('.NB-save-button').live('click', function () {
     var offset = $('a', this).offset();
     console.log(['Offset', offset]);
-    var url = $('a', this).attr('href') + "/" + offset.left + "/" + (offset.top - window.pageYOffset) + "/" + offset.width + "/" + offset.height;
-    window.location = url;
-    return false;
-});
-
-$('.NB-share-share-button').live('click', function () {
-    var offset = $('a', this).offset();
     var url = $('a', this).attr('href') + "/" + offset.left + "/" + (offset.top - window.pageYOffset) + "/" + offset.width + "/" + offset.height;
     window.location = url;
     return false;
@@ -162,46 +147,6 @@ function setImage(img) {
     }
 }
 
-function slideToComment(commentId, highlight) {
-    setTimeout(function(){
-        var commentString = 'NB-user-comment-' + commentId;
-        var shareString = 'NB-user-share-bar-' + commentId;
-        //Get comment
-        var $comment = $('#' + commentString);
-        if ($comment.length) {
-            $.scroll($comment.offset().top - 32, 1000, 'ease-in-out');
-        } else {
-            var $shareBar = $('#' + shareString);
-            if ($shareBar.length) {
-                $.scroll($shareBar.offset().top - 32, 1000, 'ease-in-out');
-            } else {
-                var $shareButton =$("#NB-share-button-id");
-                $.scroll($shareButton.offset().top - 32, 1000, 'ease-in-out');
-            }
-        }
-
-        if (highlight) {
-            if ($comment.length) {
-                setTimeout(function(){
-                           $comment.addClass('NB-highlighted');
-                           setTimeout(function(){
-                                      $comment.removeClass('NB-highlighted');
-                                      }, 2000);
-                           }, 1000);
-            } else if ($shareBar.length) {
-
-                setTimeout(function(){
-                    $(".NB-story-comments-shares-teaser").addClass('NB-highlighted');
-                    setTimeout(function(){
-                        $(".NB-story-comments-shares-teaser").removeClass('NB-highlighted');
-                    }, 2000);
-                }, 1000);
-            }
-        }
-    }, 500);
-    
-}
-          
 function findPos(obj) {
     var curtop = 0; 
     if (obj.offsetParent) {
@@ -269,10 +214,6 @@ onTouchEnd: function(e) {
 };
 
 function attachFastClick() {
-    var avatars = document.getElementsByClassName("NB-show-profile");
-    Array.prototype.slice.call(avatars, 0).forEach(function(avatar) {
-                                                   new NoClickDelay(avatar);
-                                                   });
     var userTags = document.getElementsByClassName("NB-user-tag");
     Array.prototype.slice.call(userTags, 0).forEach(function(tag) {
                                                 new NoClickDelay(tag);
@@ -429,13 +370,12 @@ function newsblurAnimateStoryEntrance(reduceMotion) {
             attributes: true, attributeFilter: ['class', 'style'] });
     }
     var elements = document.querySelectorAll('.NB-story-title, .NB-story-date, #NB-story-author, #NB-story, ' +
-        '.NB-share-button, .NB-story-shares, .NB-story-comment, .NB-story-comment-reply, ' +
-        '.NB-story-comments-friends-header, .NB-story-comments-public-header');
+        '.NB-share-button');
     var positions = new Map();
     var pending = Array.prototype.filter.call(elements, function(element) {
-        // storyDetailView.js preserves identity when native refreshSideOptions/refreshComments replaces innerHTML.
+        // storyDetailView.js preserves identity when native refreshSideOptions replaces innerHTML.
         var classes = (element.className || '').split(/\s+/);
-        var action = classes.find(function(name) { return /^NB-(share-share|save)-button$/.test(name); });
+        var action = classes.find(function(name) { return /^NB-save-button$/.test(name); });
         var scope = [];
         for (var parent = element.parentElement; parent; parent = parent.parentElement) {
             if (parent.id && scope[scope.length - 1] !== parent.id) scope.push(parent.id);
@@ -457,7 +397,7 @@ function newsblurAnimateStoryEntrance(reduceMotion) {
     });
     var groups = new Map();
     pending.forEach(function(element) {
-        // storyDetailView.js lets a newly inserted comment carry its replies, avoiding nested double motion.
+        // storyDetailView.js lets a newly inserted element carry its children, avoiding nested double motion.
         for (var parent = element.parentElement; parent; parent = parent.parentElement) {
             if (pending.indexOf(parent) !== -1) {
                 newsblurMotionRecords.get(element).presented = true;

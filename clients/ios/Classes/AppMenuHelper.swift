@@ -92,14 +92,6 @@ class AppMenuHelper: NSObject {
             ]),
             
             UIMenu(title: "", options: .displayInline, children: [
-                UIKeyCommand(title: NBLocalization.text("Find Friends"),
-                             image: UIImage(systemName: "person.2"),
-                             action: #selector(BaseViewController.showFindFriends(_:)),
-                             input: "f",
-                             modifierFlags: [.command, .shift])
-            ]),
-            
-            UIMenu(title: "", options: .displayInline, children: [
                 UIKeyCommand(title: NBLocalization.text("Log Out"),
                              image: UIImage(systemName: "rectangle.portrait.and.arrow.right"),
                              action: #selector(BaseViewController.showLogout(_:)),
@@ -530,10 +522,6 @@ class AppMenuHelper: NSObject {
                 UICommand(title: NBLocalization.text("Send To…"),
                           image: UIImage(systemName: "paperplane"),
                           action: #selector(BaseViewController.showSendTo(_:))),
-                UICommand(title: NBLocalization.text("Share This Story…"),
-                          image: UIImage(systemName: "square.and.arrow.up"),
-                          action: #selector(BaseViewController.showShare(_:))),
-                // AppMenuHelper.swift: Listen and training are set aside in NewsNativeFeatures.swift.
             ]),
             UIMenu(title: "", options: .displayInline, children: [
                 UIKeyCommand(title: NBLocalization.text("Next Unread Story"),

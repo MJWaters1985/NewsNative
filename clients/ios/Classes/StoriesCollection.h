@@ -13,7 +13,6 @@
     NSString * activeFolder;
     NSArray * activeFolderFeeds;
     NSArray * activeFeedStories;
-    NSArray * activeFeedUserProfiles;
     NSMutableArray * activeFeedStoryLocations;
     NSMutableArray * activeFeedStoryLocationIds;
     NSMutableDictionary * activeClassifiers;
@@ -25,8 +24,6 @@
     int feedPage;
 
     BOOL isRiverView;
-    BOOL isSocialView;
-    BOOL isSocialRiverView;
     BOOL inSearch;
     NSString *searchQuery;
 }
@@ -37,7 +34,6 @@
 @property (readwrite) NSString * activeFolder;
 @property (readwrite) NSArray * activeFolderFeeds;
 @property (readwrite) NSArray * activeFeedStories;
-@property (readwrite) NSArray * activeFeedUserProfiles;
 @property (readwrite) NSMutableArray * activeFeedStoryLocations;
 @property (readwrite) NSMutableArray * activeFeedStoryLocationIds;
 @property (strong, readwrite) NSMutableDictionary * activeClassifiers;
@@ -50,8 +46,6 @@
 @property (nonatomic, readwrite) int feedPage;
 
 @property (nonatomic, readwrite) BOOL isRiverView;
-@property (nonatomic, readwrite) BOOL isSocialView;
-@property (nonatomic, readwrite) BOOL isSocialRiverView;
 @property (nonatomic, readwrite) BOOL isSavedView;
 @property (nonatomic, readwrite) BOOL isReadView;
 @property (nonatomic, readwrite) BOOL isWidgetView;
@@ -60,9 +54,7 @@
 @property (nonatomic, readonly) BOOL isDashboard;
 @property (nonatomic, readonly) BOOL isDashboardOrFromDashboardStory;
 @property (nonatomic, readonly) BOOL isEverything;
-@property (nonatomic, readonly) BOOL isInfrequent;
-@property (nonatomic, readonly) BOOL isTrending;
-@property (nonatomic, readonly) BOOL isRiverOrSocial;
+@property (nonatomic, readonly) BOOL isMultiFeedView;
 @property (nonatomic, readonly) BOOL isCustomFolder;
 @property (nonatomic, readonly) BOOL isCustomFolderOrFeed;
 @property (nonatomic) NSString *searchQuery;
@@ -97,9 +89,7 @@
 - (NSInteger)locationOfStoryId:(id)storyId;
 
 - (void)setStories:(NSArray *)activeFeedStoriesValue;
-- (void)setFeedUserProfiles:(NSArray *)activeFeedUserProfilesValue;
 - (void)addStories:(NSArray *)stories;
-- (void)addFeedUserProfiles:(NSArray *)activeFeedUserProfilesValue;
 - (void)pushReadStory:(id)storyId;
 - (id)popReadStory;
 

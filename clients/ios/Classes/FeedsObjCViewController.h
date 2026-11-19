@@ -20,8 +20,7 @@
 static enum {
     NewsBlurTopSectionDashboard = 0,
     NewsBlurTopSectionDiscoverSites = 1,
-    NewsBlurTopSectionInfrequentSiteStories = 2,
-    NewsBlurTopSectionAllStories = 3
+    NewsBlurTopSectionAllStories = 2
 } NewsBlurTopSection;
 
 @interface FeedsObjCViewController : BaseViewController
@@ -66,7 +65,6 @@ UIGestureRecognizerDelegate, UITextFieldDelegate> {
 @property (nonatomic) IBOutlet UIBarButtonItem * homeButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * addBarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * settingsBarButton;
-@property (nonatomic) UIButton *activityButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * activitiesButton;
 #if TARGET_OS_MACCATALYST
 @property (nonatomic) IBOutlet UIBarButtonItem * spacerBarButton;
@@ -147,13 +145,10 @@ UIGestureRecognizerDelegate, UITextFieldDelegate> {
 - (void)showExplainerOnEmptyFeedlist;
 + (int)computeMaxScoreForFeed:(NSDictionary *)feed;
 - (void)loadFavicons;
-- (void)loadAvatars;
 - (void)refreshFeedList;
 - (void)refreshFeedList:(id)feedId;
 - (void)loadOfflineFeeds:(BOOL)failed;
-- (void)showUserProfile;
 - (IBAction)showSettingsPopover:(id)sender;
-- (IBAction)showInteractionsPopover:(id)sender;
 - (void)fadeSelectedCell;
 - (void)fadeFeed:(NSString *)feedId;
 - (IBAction)tapAddSite:(id)sender;

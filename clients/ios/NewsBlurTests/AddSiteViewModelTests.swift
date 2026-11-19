@@ -290,13 +290,9 @@ final class Test_DiscoverPanePresentation: XCTestCase {
         app.storiesCollection.activeFolder = "dashboard"
         let dashboardTitle = try XCTUnwrap((app.makeFeedTitle(nil) as? UILabel)?.text)
 
-        // AddSiteViewModelTests.swift models successive folder, social, and feed modules sharing the active collection.
-        app.storiesCollection.activeFolder = "infrequent"
+        // AddSiteViewModelTests.swift models successive folder and feed modules sharing the active collection.
+        app.storiesCollection.activeFolder = "Tech"
         XCTAssertEqual((app.makeFeedTitle(nil) as? UILabel)?.text, dashboardTitle)
-        app.storiesCollection.isSocialRiverView = true
-        app.storiesCollection.activeFolder = "river_global"
-        XCTAssertEqual((app.makeFeedTitle(nil) as? UILabel)?.text, dashboardTitle)
-        app.storiesCollection.isSocialRiverView = false
         app.storiesCollection.isRiverView = false
         app.storiesCollection.activeFolder = nil
         let feed: [AnyHashable: Any] = ["id": 42, "feed_title": "Subscribed site"]

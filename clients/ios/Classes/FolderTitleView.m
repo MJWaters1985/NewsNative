@@ -179,24 +179,12 @@ static NSString *NBAccessibilitySlug(NSString *value) {
         folderTitle = [NBLocalization text:@"NewsNative Dashboard"];
     } else if (section == NewsBlurTopSectionDiscoverSites) {
         folderTitle = [NBLocalization text:@"Add + Discover Sites"];
-    } else if (section == NewsBlurTopSectionInfrequentSiteStories) {
-        folderTitle = [NBLocalization text:@"Infrequent Site Stories"];
     } else if (section == NewsBlurTopSectionAllStories) {
         folderTitle = [NBLocalization text:@"All Site Stories"];
     } else if ([folderName isEqual:@"widget_stories"]) {
         folderTitle = [NBLocalization text:@"Widget Site Stories"];
     } else if ([folderName isEqual:@"read_stories"]) {
         folderTitle = [NBLocalization text:@"Read Stories"];
-    } else if ([folderName isEqual:@"river_global"]) {
-        folderTitle = [NBLocalization text:@"Global Shared Stories"];
-    } else if ([folderName isEqual:@"trending:well_read"]) {
-        folderTitle = [NBLocalization text:@"Widely Read Stories"];
-    } else if ([folderName isEqual:@"trending:long_reads"]) {
-        folderTitle = [NBLocalization text:@"Long Reads"];
-    } else if ([folderName isEqual:@"trending:good_reads"]) {
-        folderTitle = [NBLocalization text:@"Good Reads"];
-    } else if ([folderName isEqual:@"river_blurblogs"]) {
-        folderTitle = [NBLocalization text:@"All Shared Stories"];
     } else if ([folderName isEqual:@"saved_stories"]) {
         folderTitle = [NBLocalization text:@"Saved Stories"];
     } else if ([folderName isEqual:@"saved_searches"]) {
@@ -295,7 +283,7 @@ static NSString *NBAccessibilitySlug(NSString *value) {
             [disclosureButton addTarget:appDelegate.feedsViewController action:@selector(didToggleAllFolders:) forControlEvents:UIControlEventTouchUpInside];
 
         // Add collapse button to regular folders
-        } else if (section != NewsBlurTopSectionDashboard && section != NewsBlurTopSectionDiscoverSites && section != NewsBlurTopSectionInfrequentSiteStories && ![folderName isEqual:@"read_stories"] && ![folderName isEqual:@"interactions"] && ![folderName isEqual:@"river_global"] && ![folderName hasPrefix:@"trending:"] && ![folderName isEqual:@"widget_stories"] && ![folderName isEqual:@"try_feed"]) {
+        } else if (section != NewsBlurTopSectionDashboard && section != NewsBlurTopSectionDiscoverSites && ![folderName isEqual:@"read_stories"] && ![folderName isEqual:@"widget_stories"] && ![folderName isEqual:@"try_feed"]) {
             if (!isFolderCollapsed) {
                 [disclosureButton setImage:expandedImage forState:UIControlStateNormal];
             }
@@ -304,7 +292,7 @@ static NSString *NBAccessibilitySlug(NSString *value) {
             [disclosureButton addTarget:appDelegate.feedsViewController action:@selector(didCollapseFolder:) forControlEvents:UIControlEventTouchUpInside];
 
         } else {
-            // Dashboard/Infrequent/other special sections don't get a button
+            // Dashboard and other special sections don't get a button
             [disclosureButton setUserInteractionEnabled:NO];
         }
         [customView addSubview:disclosureButton];
@@ -333,20 +321,6 @@ static NSString *NBAccessibilitySlug(NSString *value) {
             folderImageViewX = 7;
         }
         allowLongPress = NO;
-    } else if (section == NewsBlurTopSectionInfrequentSiteStories) {
-        folderImage = [UIImage imageNamed:@"ak-icon-infrequent.png"];
-        if (!appDelegate.isPhone) {
-            folderImageViewX = 10;
-        } else {
-            folderImageViewX = 7;
-        }
-        allowLongPress = YES;
-        if (!appDelegate.isPhone) {
-            folderImageViewX = 10;
-        } else {
-            folderImageViewX = 7;
-        }
-        allowLongPress = NO;
     } else if (section == NewsBlurTopSectionAllStories) {
         folderImage = [UIImage imageNamed:@"all-stories"];
         if (!appDelegate.isPhone) {
@@ -355,41 +329,6 @@ static NSString *NBAccessibilitySlug(NSString *value) {
             folderImageViewX = 7;
         }
         allowLongPress = NO;
-    } else if ([folderName isEqual:@"river_global"]) {
-        folderImage = [UIImage imageNamed:@"global-shares"];
-        if (!appDelegate.isPhone) {
-            folderImageViewX = 10;
-        } else {
-            folderImageViewX = 8;
-        }
-    } else if ([folderName isEqual:@"trending:well_read"]) {
-        folderImage = [UIImage imageNamed:@"trending-well-read"];
-        if (!appDelegate.isPhone) {
-            folderImageViewX = 10;
-        } else {
-            folderImageViewX = 8;
-        }
-    } else if ([folderName isEqual:@"trending:long_reads"]) {
-        folderImage = [UIImage imageNamed:@"trending-long-reads"];
-        if (!appDelegate.isPhone) {
-            folderImageViewX = 10;
-        } else {
-            folderImageViewX = 8;
-        }
-    } else if ([folderName isEqual:@"trending:good_reads"]) {
-        folderImage = [UIImage systemImageNamed:@"star.fill"];
-        if (!appDelegate.isPhone) {
-            folderImageViewX = 10;
-        } else {
-            folderImageViewX = 8;
-        }
-    } else if ([folderName isEqual:@"river_blurblogs"]) {
-        folderImage = [UIImage imageNamed:@"all-shares"];
-        if (!appDelegate.isPhone) {
-            folderImageViewX = 10;
-        } else {
-            folderImageViewX = 8;
-        }
     } else if ([folderName isEqual:@"saved_searches"]) {
         folderImage = [UIImage imageNamed:@"search"];
         if (!appDelegate.isPhone) {
@@ -501,7 +440,7 @@ static NSString *NBAccessibilitySlug(NSString *value) {
 
 - (void)handleLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
     if (gestureRecognizer.state != UIGestureRecognizerStateBegan) return;
-    if (section < NewsBlurTopSectionInfrequentSiteStories) return;
+    if (section < NewsBlurTopSectionAllStories) return;
     
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     NSString *longPressTitle = [preferences stringForKey:@"long_press_feed_title"];

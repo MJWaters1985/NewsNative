@@ -8,7 +8,6 @@
 
 #import "NewsBlurAppDelegate.h"
 #import "FeedDetailTableCell.h"
-#import "ActivitiesViewController.h"
 #import "ABTableViewCell.h"
 #import "UIView+TKCategory.h"
 #import "UIImageView+AFNetworking.h"
@@ -64,7 +63,7 @@ static UIFont *indicatorFont = nil;
 @synthesize isShared;
 @synthesize isSaved;
 @synthesize textSize;
-@synthesize isRiverOrSocial;
+@synthesize isMultiFeedView;
 @synthesize feedColorBar;
 @synthesize feedColorBarTopBorder;
 @synthesize hasAlpha;
@@ -324,7 +323,7 @@ static UIFont *indicatorFont = nil;
         initWithTitle:cell.storyTitle ?: @"" preview:cell.storyContent ?: @""
         contentWidth:contentRect.size.width boundsHeight:bounds.size.height
         fontPointSize:fontDescriptor.pointSize textSize:cell.textSize shortTitles:cell.isShort
-        river:cell.isRiverOrSocial comfortMargin:comfortMargin riverPadding:riverPadding
+        river:cell.isMultiFeedView comfortMargin:comfortMargin riverPadding:riverPadding
         hasImage:hasCachedImage paragraphStyle:paragraphStyle];
     if ([self.cachedRegularLayoutKey isEqual:request]) return;
     self.cachedRegularLayoutKey = request;
@@ -356,7 +355,7 @@ static UIFont *indicatorFont = nil;
     CGFloat riverPadding = -10;
     CGFloat riverPreview = 4;
     
-    if (cell.isRiverOrSocial) {
+    if (cell.isMultiFeedView) {
         riverPadding = 20;
         riverPreview = 6;
     }
@@ -496,7 +495,7 @@ static UIFont *indicatorFont = nil;
     NSMutableParagraphStyle *contentParagraphStyle = [paragraphStyle mutableCopy];
     contentParagraphStyle.alignment = self.nb_contentTextAlignment;
     
-    if (cell.isRiverOrSocial) {
+    if (cell.isMultiFeedView) {
         if (cell.isRead) {
             font = [UIFont fontWithName:@"WhitneySSm-Book" size:fontDescriptor.pointSize];
             textColor = UIColorFromLightSepiaMediumDarkRGB(0x808080, 0x808080, 0xB0B0B0, 0x707070);
@@ -556,9 +555,9 @@ static UIFont *indicatorFont = nil;
         storyTitleY = 14 + riverPadding - (theSize.height/font.pointSize*2);
     }
     if (cell.storyContent && cell.storyContent.length > 0) {
-        CGFloat topEdge = cell.isRiverOrSocial ? riverPadding : 0;
+        CGFloat topEdge = cell.isMultiFeedView ? riverPadding : 0;
         storyTitleY = (int)(topEdge + contentGap);
-    } else if (!cell.storyContent && cell.isRiverOrSocial) {
+    } else if (!cell.storyContent && cell.isMultiFeedView) {
         CGFloat dateY = r.size.height - 18 - comfortMargin;
         CGFloat centeredY = riverPadding + (dateY - riverPadding - theSize.height) / 2;
         storyTitleY = (int)MAX(centeredY, riverPadding);

@@ -188,11 +188,6 @@ class PreferencesViewModel: ObservableObject {
             hidden.insert("story_font_size")
         }
 
-        // Hide infrequent stories per month when infrequent site stories is disabled
-        if !defaults.bool(forKey: "show_infrequent_site_stories") {
-            hidden.insert("infrequent_stories_per_month")
-        }
-
         if !GesturePreferences.feedsEnabled {
             hidden.formUnion(["feed_title_swipe_left", "feed_title_swipe_right"])
         }
@@ -608,12 +603,6 @@ class PreferencesViewModel: ObservableObject {
                 iconColor: .orange,
                 footerText: NBLocalization.text("Choose the buttons shown below each story. Your choices sync to your other devices."),
                 items: [
-                    PreferenceItem(
-                        title: NBLocalization.text("Show Share"),
-                        icon: "square.and.arrow.up",
-                        iconColor: .blue,
-                        type: .toggle(key: "show_sideoption_share", defaultValue: true)
-                    ),
                     PreferenceItem(
                         title: NBLocalization.text("Show Save"),
                         icon: "bookmark",

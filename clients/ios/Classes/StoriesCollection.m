@@ -37,15 +37,12 @@
 @synthesize activeFeedStories;
 @synthesize activeFeedStoryLocations;
 @synthesize activeFeedStoryLocationIds;
-@synthesize activeFeedUserProfiles;
 @synthesize storyCount;
 @synthesize storyLocationsCount;
 @synthesize visibleUnreadCount;
 @synthesize feedPage;
 
 @synthesize isRiverView;
-@synthesize isSocialView;
-@synthesize isSocialRiverView;
 @synthesize isSavedView;
 @synthesize isReadView;
 @synthesize inSearch;
@@ -66,7 +63,6 @@
     self.notificationStoryHash = nil;
     self.notificationStory = nil;
     [self setStories:nil];
-    [self setFeedUserProfiles:nil];
 
     self.feedPage = 1;
     self.readFilterOverride = nil;
@@ -77,8 +73,6 @@
     self.activeClassifiers = [NSMutableDictionary dictionary];
     
     self.isRiverView = NO;
-    self.isSocialView = NO;
-    self.isSocialRiverView = NO;
     self.isSavedView = NO;
     self.isReadView = NO;
     self.isWidgetView = NO;
@@ -87,7 +81,6 @@
 - (void)transferStoriesFromCollection:(StoriesCollection *)fromCollection {
     self.feedPage = fromCollection.feedPage;
     [self setStories:fromCollection.activeFeedStories];
-    [self setFeedUserProfiles:fromCollection.activeFeedUserProfiles];
     self.activeFolderFeeds = fromCollection.activeFolderFeeds;
     self.activeClassifiers = fromCollection.activeClassifiers;
     self.inSearch = fromCollection.inSearch;
@@ -107,26 +100,15 @@
     return [activeFolder isEqualToString:@"everything"];
 }
 
-- (BOOL)isInfrequent {
-    return [activeFolder isEqualToString:@"infrequent"];
-}
-
-- (BOOL)isTrending {
-    return [activeFolder hasPrefix:@"trending:"];
-}
-
-- (BOOL)isRiverOrSocial {
-    return self.isRiverView || self.isSavedView || self.isReadView || self.isWidgetView || self.isSocialView || self.isSocialRiverView;
+- (BOOL)isMultiFeedView {
+    return self.isRiverView || self.isSavedView || self.isReadView || self.isWidgetView;
 }
 
 - (BOOL)isCustomFolder {
     return self.isRiverView &&
     !self.isEverything &&
-    !self.isInfrequent &&
-    !self.isTrending &&
     !self.isSavedView &&
     !self.isReadView &&
-    !self.isSocialView &&
     !self.isWidgetView;
 }
 
@@ -301,7 +283,7 @@
     
     if (readFilterPref) {
         return readFilterPref;
-    } else if (self.activeFolder && (self.isRiverView || self.isSocialRiverView)) {
+    } else if (self.activeFolder && (self.isRiverView)) {
         if (!self.isDashboardOrFromDashboardStory && readFilterFolderPrefDefault) {
             return readFilterFolderPrefDefault;
         } else {
@@ -379,22 +361,10 @@
 
 - (NSString *)activeTitle {
     if (isRiverView) {
-        if ([activeFolder isEqualToString:@"river_blurblogs"]) {
-            return @"All Shared Stories";
-        } else if ([activeFolder isEqualToString:@"river_global"]) {
-            return @"Global Shared Stories";
-        } else if ([activeFolder isEqualToString:@"everything"]) {
+        if ([activeFolder isEqualToString:@"everything"]) {
             return @"All Site Stories";
         } else if ([activeFolder isEqualToString:@"dashboard"]) {
             return @"NewsNative Dashboard";
-        } else if ([activeFolder isEqualToString:@"infrequent"]) {
-            return @"Infrequent Site Stories";
-        } else if ([activeFolder isEqualToString:@"trending:well_read"]) {
-            return @"Widely Read Stories";
-        } else if ([activeFolder isEqualToString:@"trending:long_reads"]) {
-            return @"Long Reads";
-        } else if ([activeFolder isEqualToString:@"trending:good_reads"]) {
-            return @"Good Reads";
         } else if (isSavedView && activeSavedStoryTag) {
             return activeSavedStoryTag;
         } else if ([activeFolder isEqualToString:@"widget_stories"]) {
@@ -470,13 +440,6 @@
     self.storyLocationsCount = (int)[self.activeFeedStoryLocations count];
 }
 
-- (void)setFeedUserProfiles:(NSArray *)activeFeedUserProfilesValue{
-    self.activeFeedUserProfiles = activeFeedUserProfilesValue;
-}
-
-- (void)addFeedUserProfiles:(NSArray *)activeFeedUserProfilesValue {
-    self.activeFeedUserProfiles = [self.activeFeedUserProfiles arrayByAddingObjectsFromArray:activeFeedUserProfilesValue];
-}
 
 - (void)pushReadStory:(id)storyId {
     if (![[appDelegate.readStories lastObject] isEqual:storyId]) {
@@ -640,21 +603,6 @@
     // StoriesCollection.m keeps the retained reader's story available while Duo browses another source.
     NSDictionary *story = [self activeFeedStoryWithHash:storyId] ?: fallbackStory;
     [self markStoryRead:story feed:feed];
-    
-    NSArray *otherFriendShares = [story objectForKey:@"shared_by_friends"];
-    if ([otherFriendShares count]) {
-        NSLog(@"Shared by friends: %@", otherFriendShares);
-    }
-    
-    // decrement all other friend feeds if they have the same story
-    if (![feedIdStr hasPrefix:@"social:"]) {
-        for (int i = 0; i < otherFriendShares.count; i++) {
-            feedIdStr = [NSString stringWithFormat:@"social:%@",
-                         [otherFriendShares objectAtIndex:i]];
-            NSDictionary *feed = [appDelegate getFeed:feedIdStr];
-            [self markStoryRead:story feed:feed];
-        }
-    }
 }
 
 - (void)markStoryRead:(NSDictionary *)story feed:(NSDictionary *)feed {
@@ -766,21 +714,6 @@
     NSDictionary *feed = [appDelegate getFeed:feedIdStr];
     NSDictionary *story = [self activeFeedStoryWithHash:storyId] ?: fallbackStory;
     [self markStoryUnread:story feed:feed];
-    
-    NSArray *otherFriendShares = [story objectForKey:@"shared_by_friends"];
-    if ([otherFriendShares count]) {
-        NSLog(@"Shared by friends: %@", otherFriendShares);
-    }
-    
-    // decrement all other friend feeds if they have the same story
-    if (![feedIdStr hasPrefix:@"social:"]) {
-        for (int i = 0; i < otherFriendShares.count; i++) {
-            feedIdStr = [NSString stringWithFormat:@"social:%@",
-                         [otherFriendShares objectAtIndex:i]];
-            NSDictionary *feed = [appDelegate getFeed:feedIdStr];
-            [self markStoryUnread:story feed:feed];
-        }
-    }
 }
 
 - (void)markStoryUnread:(NSDictionary *)story feed:(NSDictionary *)feed {

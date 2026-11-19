@@ -21,7 +21,7 @@ typealias AnyDictionary = [AnyHashable : Any]
     
     var dictionary = AnyDictionary()
     
-    var isRiverOrSocial = false
+    var isMultiFeedView = false
     
     var colorBarLeft: UIColor?
     var colorBarRight: UIColor?
@@ -191,7 +191,7 @@ typealias AnyDictionary = [AnyHashable : Any]
         colorBarLeft = color(for: "favicon_fade", from: dictionary, default: "707070")
         colorBarRight = color(for: "favicon_color", from: dictionary, default: "505050")
         
-        isRiverOrSocial = storiesCollection.isRiverOrSocial
+        isMultiFeedView = storiesCollection.isMultiFeedView
     }
 
     private func trainings(for key: String) -> [Training] {

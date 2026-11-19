@@ -10,8 +10,7 @@ import Foundation
         (UserDefaults.standard.string(forKey: "long_press_story_title") ?? "show_actions") == "show_actions"
     }
 
-    // GesturePreferences.swift: NewsNative has no push notifications, so feeds offer no Notifications swipe.
-    // GesturePreferences.swift: training is set aside too (NewsNativeFeatures.swift), so feeds swipe to read or statistics.
+    // GesturePreferences.swift: NewsNative has no notifications or training, so feeds swipe to read or statistics.
     static let feedActions = ["read", "statistics"]
     static let feedActionTitles = ["Mark all stories read", "Statistics"]
 

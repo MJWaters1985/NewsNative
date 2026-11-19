@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import UserNotifications
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var appDelegate: NewsBlurAppDelegate = .shared
@@ -40,7 +39,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             NBLocalization.applyDirection(to: windowScene)
         }
         if appDelegate.window != nil {
-            handleNotificationResponse(connectionOptions.notificationResponse)
             connectionOptions.urlContexts.forEach { appDelegate.open($0.url) }
             DispatchQueue.main.async {
                 self.window?.isHidden = true
@@ -90,15 +88,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         MacReaderChrome.updateTheme()
 #endif
         connectionOptions.urlContexts.forEach { appDelegate.open($0.url) }
-        handleNotificationResponse(connectionOptions.notificationResponse)
-#if targetEnvironment(macCatalyst)
-        // SceneDelegate.swift replays a response received while Command-W left the process without a reader window.
-        // A connection response already navigates through the same handler, so it must not be replayed twice.
-        if connectionOptions.notificationResponse == nil,
-           appDelegate.pendingNotificationStory != nil {
-            appDelegate.backgroundLoadNotificationStory()
-        }
-#endif
 
         if #available(iOS 16.0, *) {
             Task { @MainActor in
@@ -115,15 +104,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 #endif
     }
 
-    private func handleNotificationResponse(_ response: UNNotificationResponse?) {
-        guard let response else { return }
-
-        // SceneDelegate.swift receives notification launches that do not reach the legacy app launch options.
-        appDelegate.processNotification(response.notification.request.content.userInfo,
-                                        action: response.actionIdentifier,
-                                        withCompletionHandler: nil)
-    }
-    
 #if targetEnvironment(macCatalyst)
     private func isMainWindowScene(_ scene: UIScene) -> Bool {
         guard let window else { return false }
