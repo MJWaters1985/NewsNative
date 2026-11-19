@@ -59,7 +59,7 @@ static UIFont *indicatorFont = nil;
     UIColor *textColor;
     UIFont *font;
     
-    font = [UIFont fontWithName:@"WhitneySSm-Medium" size:15];
+    font = [UIFont systemFontOfSize:15 weight:UIFontWeightMedium];
     textColor = UIColorFromRGB(0x606060);
     
     if (highlighted) {
@@ -88,7 +88,7 @@ static UIFont *indicatorFont = nil;
     // site subscribers
     
     textColor = UIColorFromRGB(0x262c6c);
-    font = [UIFont fontWithName:@"WhitneySSm-Medium" size:11];
+    font = [UIFont systemFontOfSize:11 weight:UIFontWeightMedium];
     
     if (highlighted) {
         textColor = UIColorFromRGB(0x686868);

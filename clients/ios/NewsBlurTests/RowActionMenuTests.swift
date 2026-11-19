@@ -13,9 +13,9 @@ import UIKit
         app.storiesCollection = StoriesCollection()
         app.activeStory = ["story_feed_id": 42, "read_status": 1, "starred": false]
         controller.setValue(app, forKey: "appDelegate")
-        let style = UserDefaults.standard.string(forKey: "fontStyle") ?? "GothamNarrow-Book"
-        controller.setValue([["style": style, "name": NSAttributedString(string: "Gotham Narrow",
-            attributes: [.font: UIFont(name: "GothamNarrow-Book", size: 16)!])]], forKey: "fonts")
+        let style = UserDefaults.standard.string(forKey: "fontStyle") ?? "NB-avenirnextcondensed"
+        controller.setValue([["style": style, "name": NSAttributedString(string: "Avenir Next Condensed",
+            attributes: [.font: UIFont(name: "AvenirNextCondensed-Regular", size: 16)!])]], forKey: "fonts")
         let source = try XCTUnwrap(controller as? UITableViewDataSource)
         let table = StoryOptionsReuseTable(frame: CGRect(x: 0, y: 0, width: 300, height: 700), style: .plain)
         let expectedSize = UIFontMetrics(forTextStyle: .body).scaledValue(for: 16)
@@ -26,14 +26,14 @@ import UIKit
             let preview = source.tableView(table, cellForRowAt: IndexPath(row: 0, section: 3))
             XCTAssertEqual(preview.textLabel!.font.pointSize, expectedSize, accuracy: 0.01,
                            "The font preview must scale with the action labels")
-            XCTAssertEqual(preview.textLabel!.font.fontName, "GothamNarrow-Book",
+            XCTAssertEqual(preview.textLabel!.font.fontName, "AvenirNextCondensed-Regular",
                            "The font preview must retain the selected typeface")
             for section in 0..<3 {
                 for row in 0..<source.tableView(table, numberOfRowsInSection: section) {
                     let cell = source.tableView(table, cellForRowAt: IndexPath(row: row, section: section))
                     XCTAssertEqual(cell.textLabel!.font.pointSize, expectedSize, accuracy: 0.01,
                                    "\(cell.textLabel!.text ?? "") must retain the menu's Dynamic Type size")
-                    XCTAssertEqual(cell.textLabel!.font.fontName, "WhitneySSm-Medium",
+                    XCTAssertEqual(cell.textLabel!.font.fontName, UIFont.systemFont(ofSize: 16, weight: .medium).fontName,
                                    "The font preview must not change the font of reused action rows")
                 }
             }

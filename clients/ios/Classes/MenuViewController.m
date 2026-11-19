@@ -331,7 +331,7 @@ NSString * const MenuHandler = @"handler";
 #if !TARGET_OS_MACCATALYST
     segmentedControl.backgroundColor = UIColorFromRGB(0xeeeeee);
 #endif
-    [segmentedControl setTitleTextAttributes:@{NSFontAttributeName : [UIFont fontWithName:@"WhitneySSm-Medium" size:12.0]} forState:UIControlStateNormal];
+    [segmentedControl setTitleTextAttributes:@{NSFontAttributeName : [UIFont systemFontOfSize:12.0 weight:UIFontWeightMedium]} forState:UIControlStateNormal];
     [segmentedControl addTarget:self action:@selector(segmentedValueChanged:) forControlEvents:UIControlEventValueChanged];
     
     [[ThemeManager themeManager] updateSegmentedControl:segmentedControl];

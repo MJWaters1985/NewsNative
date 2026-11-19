@@ -238,10 +238,10 @@ static NSString *const kWaveShaderSource =
     logoImageView.layer.shadowOpacity = 0.4;
     [contentView addSubview:logoImageView];
 
-    // === "NewsBlur" in GothamNarrow ===
+    // === "NewsNative" in Avenir Next Condensed ===
     UILabel *welcomeLabel = [[UILabel alloc] init];
     welcomeLabel.text = @"NewsNative";
-    welcomeLabel.font = [UIFont fontWithName:@"GothamNarrow-Medium" size:38] ?: [UIFont systemFontOfSize:38 weight:UIFontWeightBold];
+    welcomeLabel.font = [UIFont fontWithName:@"AvenirNextCondensed-Medium" size:38] ?: [UIFont systemFontOfSize:38 weight:UIFontWeightBold];
     welcomeLabel.textColor = [UIColor whiteColor];
     welcomeLabel.textAlignment = NSTextAlignmentCenter;
     welcomeLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -251,10 +251,10 @@ static NSString *const kWaveShaderSource =
     welcomeLabel.layer.shadowOpacity = 0.5;
     [contentView addSubview:welcomeLabel];
 
-    // === Tagline in ChronicleSSm italic ===
+    // === Tagline in New York italic ===
     UILabel *taglineLabel = [[UILabel alloc] init];
     taglineLabel.text = [NBLocalization text:@"A personal news reader bringing\npeople together to talk about the world."];
-    taglineLabel.font = [UIFont fontWithName:@"ChronicleSSm-BookItalic" size:16] ?: [UIFont italicSystemFontOfSize:16];
+    taglineLabel.font = [UIFont fontWithDescriptor:[[[UIFont systemFontOfSize:16].fontDescriptor fontDescriptorWithDesign:UIFontDescriptorSystemDesignSerif] fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitItalic] size:16];
     taglineLabel.textColor = UIColorFromFixedRGB(NB_LOGIN_GOLD_TAGLINE);
     taglineLabel.textAlignment = NSTextAlignmentCenter;
     taglineLabel.numberOfLines = 0;
@@ -285,11 +285,11 @@ static NSString *const kWaveShaderSource =
     self.loginControl.selectedSegmentTintColor = [UIColor colorWithWhite:1.0 alpha:0.2];
     NSDictionary *normalAttrs = @{
         NSForegroundColorAttributeName: [UIColor colorWithWhite:1.0 alpha:0.5],
-        NSFontAttributeName: [UIFont fontWithName:@"WhitneySSm-Book" size:14] ?: [UIFont systemFontOfSize:14]
+        NSFontAttributeName: [UIFont systemFontOfSize:14 weight:UIFontWeightRegular]
     };
     NSDictionary *selectedAttrs = @{
         NSForegroundColorAttributeName: [UIColor whiteColor],
-        NSFontAttributeName: [UIFont fontWithName:@"WhitneySSm-Medium" size:14] ?: [UIFont systemFontOfSize:14 weight:UIFontWeightSemibold]
+        NSFontAttributeName: [UIFont systemFontOfSize:14 weight:UIFontWeightMedium]
     };
     [self.loginControl setTitleTextAttributes:normalAttrs forState:UIControlStateNormal];
     [self.loginControl setTitleTextAttributes:selectedAttrs forState:UIControlStateSelected];
@@ -318,7 +318,7 @@ static NSString *const kWaveShaderSource =
     // === Submit button (flat gold) ===
     UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [submitButton setTitle:[NBLocalization text:@"Log In"] forState:UIControlStateNormal];
-    submitButton.titleLabel.font = [UIFont fontWithName:@"GothamNarrow-Medium" size:17] ?: [UIFont systemFontOfSize:17 weight:UIFontWeightSemibold];
+    submitButton.titleLabel.font = [UIFont fontWithName:@"AvenirNextCondensed-DemiBold" size:17] ?: [UIFont systemFontOfSize:17 weight:UIFontWeightSemibold];
     [submitButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     submitButton.backgroundColor = UIColorFromFixedRGB(NB_LOGIN_GOLD_BUTTON);
     submitButton.layer.cornerRadius = 12;
@@ -330,7 +330,7 @@ static NSString *const kWaveShaderSource =
     // === Error label ===
     self.errorLabel = [[UILabel alloc] init];
     self.errorLabel.textColor = [UIColor colorWithRed:1.0 green:0.4 blue:0.4 alpha:1.0];
-    self.errorLabel.font = [UIFont fontWithName:@"WhitneySSm-Book" size:14] ?: [UIFont systemFontOfSize:14];
+    self.errorLabel.font = [UIFont systemFontOfSize:14 weight:UIFontWeightRegular];
     self.errorLabel.textAlignment = NSTextAlignmentCenter;
     self.errorLabel.numberOfLines = 0;
     self.errorLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -340,7 +340,7 @@ static NSString *const kWaveShaderSource =
     // === Forgot password button ===
     self.forgotPasswordButton = [UIButton buttonWithType:UIButtonTypeSystem];
     [self.forgotPasswordButton setTitle:[NBLocalization text:@"Forgot Password?"] forState:UIControlStateNormal];
-    self.forgotPasswordButton.titleLabel.font = [UIFont fontWithName:@"WhitneySSm-Book" size:14] ?: [UIFont systemFontOfSize:14];
+    self.forgotPasswordButton.titleLabel.font = [UIFont systemFontOfSize:14 weight:UIFontWeightRegular];
     [self.forgotPasswordButton setTitleColor:UIColorFromFixedRGB(NB_LOGIN_GOLD_TAGLINE) forState:UIControlStateNormal];
     self.forgotPasswordButton.translatesAutoresizingMaskIntoConstraints = NO;
     [self.forgotPasswordButton addTarget:self action:@selector(forgotPassword:) forControlEvents:UIControlEventTouchUpInside];
@@ -468,14 +468,14 @@ static NSString *const kWaveShaderSource =
         initWithString:placeholder
         attributes:@{
             NSForegroundColorAttributeName: [UIColor colorWithWhite:1.0 alpha:0.35],
-            NSFontAttributeName: [UIFont fontWithName:@"WhitneySSm-Book" size:16] ?: [UIFont systemFontOfSize:16]
+            NSFontAttributeName: [UIFont systemFontOfSize:16 weight:UIFontWeightRegular]
         }];
     textField.borderStyle = UITextBorderStyleNone;
     textField.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.1];
     textField.layer.cornerRadius = 12;
     textField.layer.borderWidth = 0.5;
     textField.layer.borderColor = [UIColor colorWithWhite:1.0 alpha:0.15].CGColor;
-    textField.font = [UIFont fontWithName:@"WhitneySSm-Book" size:16] ?: [UIFont systemFontOfSize:16];
+    textField.font = [UIFont systemFontOfSize:16 weight:UIFontWeightRegular];
     textField.textColor = [UIColor whiteColor];
     textField.tintColor = UIColorFromFixedRGB(NB_LOGIN_GOLD_TAGLINE);
     textField.keyboardAppearance = UIKeyboardAppearanceDark;
@@ -744,7 +744,7 @@ static NSString *const kWaveShaderSource =
 
     NSDictionary *placeholderAttrs = @{
         NSForegroundColorAttributeName: [UIColor colorWithWhite:1.0 alpha:0.35],
-        NSFontAttributeName: [UIFont fontWithName:@"WhitneySSm-Book" size:16] ?: [UIFont systemFontOfSize:16]
+        NSFontAttributeName: [UIFont systemFontOfSize:16 weight:UIFontWeightRegular]
     };
 
     [UIView animateWithDuration:0.35 delay:0 usingSpringWithDamping:0.85 initialSpringVelocity:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{

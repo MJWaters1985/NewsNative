@@ -35,6 +35,19 @@ class AppDelegateHelper: NSObject {
         if release < 154 {
             upgradeFeedScrollSettings()
         }
+        upgradeStoryFontStyle()
+    }
+
+    /// AppDelegateHelper.swift moves a story font chosen from NewsBlur's bundled fonts to the system font that replaced
+    /// it: Gotham Narrow to Avenir Next Condensed, Chronicle to New York and Whitney to San Francisco.
+    func upgradeStoryFontStyle(defaults: UserDefaults = .standard) {
+        let replacements = [
+            "GothamNarrow-Book": "NB-avenirnextcondensed",
+            "ChronicleSSm-Book": "NB-newyork",
+            "WhitneySSm-Book": "NB-sanfrancisco",
+        ]
+        guard let saved = defaults.string(forKey: "fontStyle"), let replacement = replacements[saved] else { return }
+        defaults.set(replacement, forKey: "fontStyle")
     }
 
     /// Migrates the legacy boolean `default_scroll_read_filter` preference

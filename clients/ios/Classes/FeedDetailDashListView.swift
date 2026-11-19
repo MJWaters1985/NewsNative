@@ -61,7 +61,7 @@ struct DashListHeaderView: View {
                     .padding(.trailing, 10)
             }
         }
-        .font(.custom("WhitneySSm-Medium", size: 14, relativeTo: .body))
+        .font(Font.nbSystem(size: 14, weight: .medium, relativeTo: .body))
         .foregroundColor(Color.themed([0x686868, 0xA0A0A0]))
         .frame(height: 50)
         .clipShape(RoundedRectangle(cornerRadius: 10))
@@ -184,7 +184,7 @@ struct DashListActionMenu: View {
             }
         }
         .buttonStyle(.borderless)
-        .font(.custom("WhitneySSm-Medium", size: 14, relativeTo: .body))
+        .font(Font.nbSystem(size: 14, weight: .medium, relativeTo: .body))
     }
     
     var isSingle: Bool {
@@ -242,7 +242,7 @@ struct DashListStoriesView: View {
                     Spacer()
                     Text(NBLocalization.text("No Stories"))
                         .foregroundColor(.secondary)
-                        .font(.custom("WhitneySSm-Medium", size: 24, relativeTo: .body))
+                        .font(Font.nbSystem(size: 24, weight: .medium, relativeTo: .body))
                         .frame(minHeight: 300)
                     Spacer()
                 } else {
@@ -256,12 +256,12 @@ struct DashListStoriesView: View {
                 Spacer()
                 Text(NBLocalization.text("Loading…"))
                     .foregroundColor(.secondary)
-                    .font(.custom("WhitneySSm-Medium", size: 24, relativeTo: .body))
+                    .font(Font.nbSystem(size: 24, weight: .medium, relativeTo: .body))
                     .frame(minHeight: 300)
                 Spacer()
             }
         }
-        .font(.custom("WhitneySSm-Medium", size: 14, relativeTo: .body))
+        .font(Font.nbSystem(size: 14, weight: .medium, relativeTo: .body))
         .clipShape(RoundedRectangle(cornerRadius: 10))
         .onTapGesture {
 //            interaction.hid(story: story)

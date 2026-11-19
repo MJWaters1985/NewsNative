@@ -58,14 +58,14 @@ struct WidgetStoryView: View {
                                 }
                                 
                                 Text(feed.title)
-                                    .font(.custom("WhitneySSm-Medium", size: 10))
+                                    .font(.system(size: 10, weight: .medium))
                                     .foregroundColor(.gray)
                                     .lineLimit(1)
                                 
                                 Spacer()
                                 
                                 Text(story.date)
-                                    .font(.custom("WhitneySSm-Medium", size: 10))
+                                    .font(.system(size: 10, weight: .medium))
                                     .foregroundColor(.gray)
                                     .lineLimit(1)
                                     .frame(alignment: .trailing)
@@ -74,7 +74,7 @@ struct WidgetStoryView: View {
                         }
                         
                         Text(cache.cleaned(story.title))
-                            .font(.custom("WhitneySSm-Medium", size: isCompact ? 11 : 12))
+                            .font(.system(size: isCompact ? 11 : 12, weight: .medium))
                             .lineLimit(2)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding([.top], -6)

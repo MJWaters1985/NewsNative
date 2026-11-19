@@ -39,7 +39,7 @@ class StoryToolbar: UIView {
     private let rightStack = UIStackView()
 
     private var buttonFont: UIFont {
-        UIFont(name: "WhitneySSm-Medium", size: 15) ?? .systemFont(ofSize: 15, weight: .medium)
+        UIFont.systemFont(ofSize: 15, weight: .medium)
     }
 
     // MARK: - Setup

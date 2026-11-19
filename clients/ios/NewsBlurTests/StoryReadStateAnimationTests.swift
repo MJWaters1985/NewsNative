@@ -77,7 +77,7 @@ import SwiftUI
                     cell.canvas.draw(cell.canvas.bounds)
                     // StoryReadStateAnimationTests.swift compares actual byline glyphs with the same regular face as the preview.
                     (text as NSString).draw(in: CGRect(x: selected ? 36 : 34, y: 152, width: 336, height: 15),
-                        withAttributes: [.font: UIFont(name: "WhitneySSm-Book", size: 11)!,
+                        withAttributes: [.font: UIFont.systemFont(ofSize: 11, weight: .regular),
                                          .foregroundColor: color, .paragraphStyle: paragraph])
                 }
                 let crop = CGRect(x: 32 * 3, y: 150 * 3, width: 300 * 3, height: 20 * 3)

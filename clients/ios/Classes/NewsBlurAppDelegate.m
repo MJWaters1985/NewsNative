@@ -3928,7 +3928,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         titleLabel.textAlignment = NSTextAlignmentLeft;
         titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
         titleLabel.numberOfLines = 1;
-        titleLabel.font = [UIFont fontWithName:@"WhitneySSm-Medium" size:13.0];
+        titleLabel.font = [UIFont systemFontOfSize:13.0 weight:UIFontWeightMedium];
         titleLabel.shadowOffset = CGSizeMake(0, 1);
         if ([[feed objectForKey:@"favicon_text_color"] class] != [NSNull class]) {
             BOOL lightText = [[feed objectForKey:@"favicon_text_color"]
@@ -4007,7 +4007,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     }
     titleLabel.backgroundColor = [UIColor clearColor];
     titleLabel.textAlignment = NSTextAlignmentLeft;
-    titleLabel.font = [UIFont fontWithName:@"WhitneySSm-Medium" size:16.0];
+    titleLabel.font = [UIFont systemFontOfSize:16.0 weight:UIFontWeightMedium];
     titleLabel.textColor = UIColorFromRGB(0x4D4C4A);
     titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     titleLabel.numberOfLines = 1;

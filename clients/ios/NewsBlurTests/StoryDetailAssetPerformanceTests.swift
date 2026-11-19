@@ -61,12 +61,6 @@ import XCTest
             let html = draw(page)
             XCTAssertTrue(html.contains("<style>\(expectedCSS)</style><style id=\"NB-theme-style\">\(themeCSS)</style>"), theme)
             XCTAssertTrue(html.contains(scripts.map { "<script>\($0)</script>" }.joined()), theme)
-
-            for font in ["ChronicleSSm-Book", "GothamNarrow-Book", "WhitneySSm-Book-Bas"] {
-                let path = try XCTUnwrap(Bundle.main.path(forResource: font, ofType: "otf"))
-                let data = try Data(contentsOf: URL(fileURLWithPath: path))
-                XCTAssertTrue(html.contains("data:font/otf;base64," + data.base64EncodedString()), "\(theme): \(font)")
-            }
         }
     }
 

@@ -9,10 +9,8 @@
 /* Begin PBXBuildFile section */
 		010EDEFA1B2386B7003B79DE /* OnePasswordExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 010EDEF81B2386B7003B79DE /* OnePasswordExtension.m */; };
 		010EDEFC1B238722003B79DE /* 1Password.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 010EDEFB1B238722003B79DE /* 1Password.xcassets */; };
-		048FD42520F0B0F1B288BD85 /* WhitneySSm-Bold-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3DFF1BFBBAC600ADC01A /* WhitneySSm-Bold-Bas.otf */; };
 		06CB30FD8F4CA002CBB1CBFF /* CustomIconRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6133546989FF9DBBA772F71 /* CustomIconRenderer.swift */; };
 		07B1415392C062FCBFD79577 /* NewsBlurSocketClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B435C6C1F2F7C7B905BC328 /* NewsBlurSocketClient.swift */; };
-		0847BD1B7E062D26904F8A1A /* WhitneySSm-Bold-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3DFF1BFBBAC600ADC01A /* WhitneySSm-Bold-Bas.otf */; };
 		117B8C9D0E1F2A3B4C5D6E7F /* AddSiteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB2C3D4E5F6A7B8C9D0E1F2A /* AddSiteView.swift */; };
 		1704EEE4254CB1AB008A3906 /* logo_emboss.png in Resources */ = {isa = PBXBuildFile; fileRef = 1704EEE3254CB1AB008A3906 /* logo_emboss.png */; };
 		170E3CCD24F8A3A2009CE819 /* FeedsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 170E3CCC24F8A3A2009CE819 /* FeedsViewController.swift */; };
@@ -74,22 +72,10 @@
 		175065911C5730FB00072BF5 /* barbutton_selection_off@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1750658E1C5730FB00072BF5 /* barbutton_selection_off@3x.png */; };
 		175696A61C596ABC004C128D /* menu_icn_all.png in Resources */ = {isa = PBXBuildFile; fileRef = 175696A41C596ABC004C128D /* menu_icn_all.png */; };
 		175696A71C596ABC004C128D /* menu_icn_all@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 175696A51C596ABC004C128D /* menu_icn_all@2x.png */; };
-		175790632930605500490924 /* ChronicleSSm-Book.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3DEF1BFBBAC600ADC01A /* ChronicleSSm-Book.otf */; };
-		175790642930605500490924 /* WhitneySSm-Book-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3E011BFBBAC600ADC01A /* WhitneySSm-Book-Bas.otf */; };
-		175790652930605500490924 /* ChronicleSSm-BookItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3DF01BFBBAC600ADC01A /* ChronicleSSm-BookItalic.otf */; };
-		175790662930605500490924 /* WhitneySSm-Medium-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3E051BFBBAC600ADC01A /* WhitneySSm-Medium-Bas.otf */; };
 		175790672930605500490924 /* icons8-stack-of-paper-100.png in Resources */ = {isa = PBXBuildFile; fileRef = 17E2AEBA286556CB000FAB5B /* icons8-stack-of-paper-100.png */; };
-		175790682930605500490924 /* WhitneySSm-MediumItalic-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3E061BFBBAC600ADC01A /* WhitneySSm-MediumItalic-Bas.otf */; };
-		175790692930605500490924 /* WhitneySSm-BookItalic-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3E021BFBBAC600ADC01A /* WhitneySSm-BookItalic-Bas.otf */; };
 		1757906A2930605500490924 /* barbutton_sort_desc@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17BE5A711C5DDA8C0075F92C /* barbutton_sort_desc@3x.png */; };
-		1757906B2930605500490924 /* ChronicleSSm-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3DF31BFBBAC600ADC01A /* ChronicleSSm-Medium.otf */; };
-		1757906C2930605500490924 /* GothamNarrow-MediumItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3DFC1BFBBAC600ADC01A /* GothamNarrow-MediumItalic.otf */; };
 		1757906D2930605500490924 /* content_preview_small.png in Resources */ = {isa = PBXBuildFile; fileRef = 1749516C260ED63F003E900B /* content_preview_small.png */; };
-		1757906E2930605500490924 /* ChronicleSSm-MediumItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3DF41BFBBAC600ADC01A /* ChronicleSSm-MediumItalic.otf */; };
-		1757906F2930605500490924 /* GothamNarrow-Book.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3DF71BFBBAC600ADC01A /* GothamNarrow-Book.otf */; };
 		175790702930605500490924 /* autoscroll_off@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17AACFDE22279A3B00DE6EA4 /* autoscroll_off@2x.png */; };
-		175790712930605500490924 /* GothamNarrow-BookItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3DF81BFBBAC600ADC01A /* GothamNarrow-BookItalic.otf */; };
-		175790722930605500490924 /* GothamNarrow-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3DFB1BFBBAC600ADC01A /* GothamNarrow-Medium.otf */; };
 		175790732930605500490924 /* accessory_disclosure.png in Resources */ = {isa = PBXBuildFile; fileRef = 17876BA21C99137B0055DD15 /* accessory_disclosure.png */; };
 		175790742930605500490924 /* fitvid.js in Resources */ = {isa = PBXBuildFile; fileRef = FF265F10187B6B230080C332 /* fitvid.js */; };
 		175790752930605500490924 /* storyDetailView.js in Resources */ = {isa = PBXBuildFile; fileRef = FF67D3BE168A708D0057A7DA /* storyDetailView.js */; };
@@ -642,9 +628,7 @@
 		17654E3A2B02C08700F61B2B /* WidgetStoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1791C21426C4C7BC00D815AA /* WidgetStoryView.swift */; };
 		17654E3C2B02C08700F61B2B /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 173CB31026BCE94700BA872A /* SwiftUI.framework */; };
 		17654E3D2B02C08700F61B2B /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 173CB30E26BCE94700BA872A /* WidgetKit.framework */; };
-		17654E3F2B02C08700F61B2B /* WhitneySSm-Medium-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3E051BFBBAC600ADC01A /* WhitneySSm-Medium-Bas.otf */; };
 		17654E402B02C08700F61B2B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 173CB31526BCE94A00BA872A /* Assets.xcassets */; };
-		17654E412B02C08700F61B2B /* WhitneySSm-Book-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3E011BFBBAC600ADC01A /* WhitneySSm-Book-Bas.otf */; };
 		17654E472B02C0A700F61B2B /* NewsBlur Alpha Widget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 17654E452B02C08700F61B2B /* NewsBlur Alpha Widget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		176A5C7A24F8BD1B009E8DF9 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 176A5C7924F8BD1B009E8DF9 /* DetailViewController.swift */; };
 		176AC9EC2C797AA1007B8CB1 /* PreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 176AC9EB2C797AA1007B8CB1 /* PreviewViewController.swift */; };
@@ -719,8 +703,6 @@
 		17BD3BA52271102500F615EC /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17BD3BA42271102500F615EC /* Intents.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		17BD3BA72271122800F615EC /* CoreSpotlight.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17BD3BA62271122800F615EC /* CoreSpotlight.framework */; };
 		17BD3BA92271125400F615EC /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17BD3BA82271125400F615EC /* CoreServices.framework */; };
-		17BE1A5527A243CF003F528E /* WhitneySSm-Medium-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3E051BFBBAC600ADC01A /* WhitneySSm-Medium-Bas.otf */; };
-		17BE1A5627A243CF003F528E /* WhitneySSm-Book-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3E011BFBBAC600ADC01A /* WhitneySSm-Book-Bas.otf */; };
 		17BE5A721C5DDA8C0075F92C /* barbutton_sort_asc.png in Resources */ = {isa = PBXBuildFile; fileRef = 17BE5A6C1C5DDA8C0075F92C /* barbutton_sort_asc.png */; };
 		17BE5A731C5DDA8C0075F92C /* barbutton_sort_asc@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17BE5A6D1C5DDA8C0075F92C /* barbutton_sort_asc@2x.png */; };
 		17BE5A741C5DDA8C0075F92C /* barbutton_sort_asc@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17BE5A6E1C5DDA8C0075F92C /* barbutton_sort_asc@3x.png */; };
@@ -824,7 +806,6 @@
 		339D0E1F2A3B4C5D6E7F8091 /* AddSiteSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC3D4E5F6A7B8C9D0E1F2A3B /* AddSiteSheetViewController.swift */; };
 		3494D69E479E45D434522C7F /* DiscoverSearchBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6163A68EAB80BF81F0CAB50B /* DiscoverSearchBarView.swift */; };
 		3760BBBD8A783C01111C6CCF /* Icons in Resources */ = {isa = PBXBuildFile; fileRef = 590BE55851A65E0B7E5FE56D /* Icons */; };
-		42F2D056842954E165AF11D4 /* WhitneySSm-Light-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3E031BFBBAC600ADC01A /* WhitneySSm-Light-Bas.otf */; };
 		43081E2215AFE84200B24D7A /* ShareViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43081E2115AFE84200B24D7A /* ShareViewController.xib */; };
 		430C4BC015D7208600B9F63B /* facebook.png in Resources */ = {isa = PBXBuildFile; fileRef = 430C4BBF15D7208600B9F63B /* facebook.png */; };
 		430C4BC215D7214E00B9F63B /* twitter.png in Resources */ = {isa = PBXBuildFile; fileRef = 430C4BC115D7214E00B9F63B /* twitter.png */; };
@@ -921,7 +902,6 @@
 		6272E9F4868AFC518EC2DDDE /* StoryListReloadTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 567499FE02F2A645A8DF21B8 /* StoryListReloadTests.swift */; };
 		655E2C7DEB50BAE6F36CB575 /* ReadTimeTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE21BE0E29B19B59DCEB5BF /* ReadTimeTracker.swift */; };
 		6631DC7FB6C4419FA083E197 /* DiscoverTabBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1B2C2C14F4EEB6CA7AE7BB8 /* DiscoverTabBarView.swift */; };
-		6C436EAD88A4329C4C43FB23 /* WhitneySSm-Semibold-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3E071BFBBAC600ADC01A /* WhitneySSm-Semibold-Bas.otf */; };
 		6D2B9D69B8AACCDBAFA36756 /* DiscoverSearchBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6163A68EAB80BF81F0CAB50B /* DiscoverSearchBarView.swift */; };
 		72AC992B011F4490943B6F20 /* AuthenticationResetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72AC992B011F4490943B6F21 /* AuthenticationResetTests.swift */; };
 		78095E3F128EF35400230C8E /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 78095E3E128EF35400230C8E /* CFNetwork.framework */; };
@@ -935,7 +915,6 @@
 		84347F899F899B127AE9B9F5 /* YouTubeTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FD14E5A058E2E3FF750AB32 /* YouTubeTabView.swift */; };
 		8B019815443085DA6B12A587 /* SearchTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A48E4C9BFDC206CDC7D730 /* SearchTabView.swift */; };
 		90AD4DF955C751880C7FB5E6 /* DiscoverColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = B813CFEF5CE77C347F6563F7 /* DiscoverColors.swift */; };
-		92C064451744C0BBB0A61C76 /* WhitneySSm-Light-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3E031BFBBAC600ADC01A /* WhitneySSm-Light-Bas.otf */; };
 		9377F5CC7BB5AE45FEF140E0 /* GoogleNewsTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E20E1B12514A31D7DAFE3C /* GoogleNewsTabView.swift */; };
 		95D27D08DCDA57CA45C41955 /* SyncNotifierView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BA641879DDE49DEE45A226C /* SyncNotifierView.swift */; };
 		95F81ABB6CC5BE523C066BCF /* DiscoverSitesModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571D0FB40A999A1B191F9E50 /* DiscoverSitesModels.swift */; };
@@ -964,11 +943,13 @@
 		C0FFEE290000000000000000 /* ThemeObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0FFEE290000000000000002 /* ThemeObserver.swift */; };
 		C0FFEE280000000000000000 /* ClassifierRegexMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0FFEE280000000000000002 /* ClassifierRegexMatcher.swift */; };
 		C0FFEE260000000000000006 /* FeedRailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0FFEE260000000000000008 /* FeedRailView.swift */; };
+		5F5E0A1B2C3D4E5F60710000 /* SystemFonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F5E0A1B2C3D4E5F60710002 /* SystemFonts.swift */; };
 		A91320260000000000000004 /* GesturePreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = A91320260000000000000005 /* GesturePreferences.swift */; };
 		C0FFEE270000000000000001 /* StoryButtonPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0FFEE270000000000000002 /* StoryButtonPreferences.swift */; };
 		C0FFEE290000000000000001 /* ThemeObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0FFEE290000000000000002 /* ThemeObserver.swift */; };
 		C0FFEE280000000000000001 /* ClassifierRegexMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0FFEE280000000000000002 /* ClassifierRegexMatcher.swift */; };
 		C0FFEE260000000000000007 /* FeedRailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0FFEE260000000000000008 /* FeedRailView.swift */; };
+		5F5E0A1B2C3D4E5F60710001 /* SystemFonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F5E0A1B2C3D4E5F60710002 /* SystemFonts.swift */; };
 		A91320260000000000000011 /* StoryPreloadFailureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A91320260000000000000012 /* StoryPreloadFailureTests.swift */; };
 		A92200000000000000000002 /* FeedSubscriptionRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9220000000000000000000C /* FeedSubscriptionRequest.swift */; };
 		A92200000000000000000003 /* Subscribe Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A9220000000000000000000F /* Subscribe Extension.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -1006,7 +987,6 @@
 		C1A3E5F7092B4D6F8192A001 /* StoryFaviconPrefetchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A3E5F7092B4D6F8192A002 /* StoryFaviconPrefetchTests.swift */; };
 		C3F84A22FB4F2912353AFEAD /* DiscoverSitesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84675224A994E760637202A4 /* DiscoverSitesViewModel.swift */; };
 		CA1384000000000000000001 /* OfflineCacheCleanupTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA1384000000000000000002 /* OfflineCacheCleanupTests.swift */; };
-		CA8D6B709B589FA0FBBE99EC /* WhitneySSm-Semibold-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3E071BFBBAC600ADC01A /* WhitneySSm-Semibold-Bas.otf */; };
 		CF19E983C62DAD18E38E1C52 /* DiscoverSitesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 748CE3F5BD105C626024FEB4 /* DiscoverSitesViewController.swift */; };
 		D1E2F3A40516273849A00011 /* AddSiteUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E2F3A40516273849A00002 /* AddSiteUITests.swift */; };
 		D1E2F3A40516273849A00012 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B1C2D3E4F5061728394A0007 /* XCTest.framework */; };
@@ -1177,18 +1157,6 @@
 		FF322235185BC1AA004078AA /* logo_58.png in Resources */ = {isa = PBXBuildFile; fileRef = FF322234185BC1AA004078AA /* logo_58.png */; };
 		FF322237185BC1CE004078AA /* logo_80.png in Resources */ = {isa = PBXBuildFile; fileRef = FF322236185BC1CE004078AA /* logo_80.png */; };
 		FF3964BC192BED0A004BEE1A /* tag.png in Resources */ = {isa = PBXBuildFile; fileRef = FF3964BB192BED0A004BEE1A /* tag.png */; };
-		FF3A3E091BFBBB5100ADC01A /* ChronicleSSm-Book.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3DEF1BFBBAC600ADC01A /* ChronicleSSm-Book.otf */; };
-		FF3A3E0A1BFBBB5400ADC01A /* ChronicleSSm-BookItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3DF01BFBBAC600ADC01A /* ChronicleSSm-BookItalic.otf */; };
-		FF3A3E0B1BFBBB5900ADC01A /* ChronicleSSm-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3DF31BFBBAC600ADC01A /* ChronicleSSm-Medium.otf */; };
-		FF3A3E0C1BFBBB5B00ADC01A /* ChronicleSSm-MediumItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3DF41BFBBAC600ADC01A /* ChronicleSSm-MediumItalic.otf */; };
-		FF3A3E0D1BFBBB5E00ADC01A /* GothamNarrow-Book.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3DF71BFBBAC600ADC01A /* GothamNarrow-Book.otf */; };
-		FF3A3E0E1BFBBB6100ADC01A /* GothamNarrow-BookItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3DF81BFBBAC600ADC01A /* GothamNarrow-BookItalic.otf */; };
-		FF3A3E0F1BFBBB6400ADC01A /* GothamNarrow-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3DFB1BFBBAC600ADC01A /* GothamNarrow-Medium.otf */; };
-		FF3A3E101BFBBB6600ADC01A /* GothamNarrow-MediumItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3DFC1BFBBAC600ADC01A /* GothamNarrow-MediumItalic.otf */; };
-		FF3A3E111BFBBB6B00ADC01A /* WhitneySSm-Book-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3E011BFBBAC600ADC01A /* WhitneySSm-Book-Bas.otf */; };
-		FF3A3E121BFBBB6D00ADC01A /* WhitneySSm-BookItalic-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3E021BFBBAC600ADC01A /* WhitneySSm-BookItalic-Bas.otf */; };
-		FF3A3E131BFBBB6F00ADC01A /* WhitneySSm-Medium-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3E051BFBBAC600ADC01A /* WhitneySSm-Medium-Bas.otf */; };
-		FF3A3E141BFBBB7100ADC01A /* WhitneySSm-MediumItalic-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3E061BFBBAC600ADC01A /* WhitneySSm-MediumItalic-Bas.otf */; };
 		FF3A3E171BFC3F1300ADC01A /* NSNull+JSON.m in Sources */ = {isa = PBXBuildFile; fileRef = FF3A3E161BFC3F1300ADC01A /* NSNull+JSON.m */; };
 		FF3FA88D1BB2677C001F7C32 /* NBCopyLinkActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = FF3FA88C1BB2677C001F7C32 /* NBCopyLinkActivity.m */; };
 		FF3FA8951BB26B6A001F7C32 /* copy_link@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF3FA8941BB26B6A001F7C32 /* copy_link@2x.png */; };
@@ -1940,6 +1908,7 @@
 		C0FFEE290000000000000002 /* ThemeObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeObserver.swift; sourceTree = "<group>"; };
 		C0FFEE280000000000000002 /* ClassifierRegexMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassifierRegexMatcher.swift; sourceTree = "<group>"; };
 		C0FFEE260000000000000008 /* FeedRailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedRailView.swift; sourceTree = "<group>"; };
+		5F5E0A1B2C3D4E5F60710002 /* SystemFonts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemFonts.swift; sourceTree = "<group>"; };
 		A91320260000000000000012 /* StoryPreloadFailureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryPreloadFailureTests.swift; sourceTree = "<group>"; };
 		A9220000000000000000000C /* FeedSubscriptionRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedSubscriptionRequest.swift; sourceTree = "<group>"; };
 		A9220000000000000000000D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -2107,34 +2076,6 @@
 		FF322234185BC1AA004078AA /* logo_58.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo_58.png; sourceTree = "<group>"; };
 		FF322236185BC1CE004078AA /* logo_80.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo_80.png; sourceTree = "<group>"; };
 		FF3964BB192BED0A004BEE1A /* tag.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tag.png; sourceTree = "<group>"; };
-		FF3A3DED1BFBBAC600ADC01A /* ChronicleSSm-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ChronicleSSm-Bold.otf"; sourceTree = "<group>"; };
-		FF3A3DEE1BFBBAC600ADC01A /* ChronicleSSm-BoldItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ChronicleSSm-BoldItalic.otf"; sourceTree = "<group>"; };
-		FF3A3DEF1BFBBAC600ADC01A /* ChronicleSSm-Book.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ChronicleSSm-Book.otf"; sourceTree = "<group>"; };
-		FF3A3DF01BFBBAC600ADC01A /* ChronicleSSm-BookItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ChronicleSSm-BookItalic.otf"; sourceTree = "<group>"; };
-		FF3A3DF11BFBBAC600ADC01A /* ChronicleSSm-Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ChronicleSSm-Light.otf"; sourceTree = "<group>"; };
-		FF3A3DF21BFBBAC600ADC01A /* ChronicleSSm-LightItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ChronicleSSm-LightItalic.otf"; sourceTree = "<group>"; };
-		FF3A3DF31BFBBAC600ADC01A /* ChronicleSSm-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ChronicleSSm-Medium.otf"; sourceTree = "<group>"; };
-		FF3A3DF41BFBBAC600ADC01A /* ChronicleSSm-MediumItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ChronicleSSm-MediumItalic.otf"; sourceTree = "<group>"; };
-		FF3A3DF51BFBBAC600ADC01A /* GothamNarrow-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GothamNarrow-Bold.otf"; sourceTree = "<group>"; };
-		FF3A3DF61BFBBAC600ADC01A /* GothamNarrow-BoldItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GothamNarrow-BoldItalic.otf"; sourceTree = "<group>"; };
-		FF3A3DF71BFBBAC600ADC01A /* GothamNarrow-Book.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GothamNarrow-Book.otf"; sourceTree = "<group>"; };
-		FF3A3DF81BFBBAC600ADC01A /* GothamNarrow-BookItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GothamNarrow-BookItalic.otf"; sourceTree = "<group>"; };
-		FF3A3DF91BFBBAC600ADC01A /* GothamNarrow-Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GothamNarrow-Light.otf"; sourceTree = "<group>"; };
-		FF3A3DFA1BFBBAC600ADC01A /* GothamNarrow-LightItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GothamNarrow-LightItalic.otf"; sourceTree = "<group>"; };
-		FF3A3DFB1BFBBAC600ADC01A /* GothamNarrow-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GothamNarrow-Medium.otf"; sourceTree = "<group>"; };
-		FF3A3DFC1BFBBAC600ADC01A /* GothamNarrow-MediumItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GothamNarrow-MediumItalic.otf"; sourceTree = "<group>"; };
-		FF3A3DFD1BFBBAC600ADC01A /* WhitneySSm-Black-Bas.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "WhitneySSm-Black-Bas.otf"; sourceTree = "<group>"; };
-		FF3A3DFE1BFBBAC600ADC01A /* WhitneySSm-BlackItalic-Bas.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "WhitneySSm-BlackItalic-Bas.otf"; sourceTree = "<group>"; };
-		FF3A3DFF1BFBBAC600ADC01A /* WhitneySSm-Bold-Bas.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "WhitneySSm-Bold-Bas.otf"; sourceTree = "<group>"; };
-		FF3A3E001BFBBAC600ADC01A /* WhitneySSm-BoldItalic-Bas.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "WhitneySSm-BoldItalic-Bas.otf"; sourceTree = "<group>"; };
-		FF3A3E011BFBBAC600ADC01A /* WhitneySSm-Book-Bas.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "WhitneySSm-Book-Bas.otf"; sourceTree = "<group>"; };
-		FF3A3E021BFBBAC600ADC01A /* WhitneySSm-BookItalic-Bas.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "WhitneySSm-BookItalic-Bas.otf"; sourceTree = "<group>"; };
-		FF3A3E031BFBBAC600ADC01A /* WhitneySSm-Light-Bas.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "WhitneySSm-Light-Bas.otf"; sourceTree = "<group>"; };
-		FF3A3E041BFBBAC600ADC01A /* WhitneySSm-LightItalic-Bas.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "WhitneySSm-LightItalic-Bas.otf"; sourceTree = "<group>"; };
-		FF3A3E051BFBBAC600ADC01A /* WhitneySSm-Medium-Bas.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "WhitneySSm-Medium-Bas.otf"; sourceTree = "<group>"; };
-		FF3A3E061BFBBAC600ADC01A /* WhitneySSm-MediumItalic-Bas.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "WhitneySSm-MediumItalic-Bas.otf"; sourceTree = "<group>"; };
-		FF3A3E071BFBBAC600ADC01A /* WhitneySSm-Semibold-Bas.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "WhitneySSm-Semibold-Bas.otf"; sourceTree = "<group>"; };
-		FF3A3E081BFBBAC600ADC01A /* WhitneySSm-SemiboldItalic-Bas.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "WhitneySSm-SemiboldItalic-Bas.otf"; sourceTree = "<group>"; };
 		FF3A3E151BFC3F1300ADC01A /* NSNull+JSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSNull+JSON.h"; path = "Other Sources/NSNull+JSON.h"; sourceTree = "<group>"; };
 		FF3A3E161BFC3F1300ADC01A /* NSNull+JSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSNull+JSON.m"; path = "Other Sources/NSNull+JSON.m"; sourceTree = "<group>"; };
 		FF3FA88B1BB2677C001F7C32 /* NBCopyLinkActivity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBCopyLinkActivity.h; sourceTree = "<group>"; };
@@ -2748,41 +2689,6 @@
 			path = "Share Extension";
 			sourceTree = "<group>";
 		};
-		1753696F1BE535CF00904D00 /* fonts */ = {
-			isa = PBXGroup;
-			children = (
-				FF3A3DED1BFBBAC600ADC01A /* ChronicleSSm-Bold.otf */,
-				FF3A3DEE1BFBBAC600ADC01A /* ChronicleSSm-BoldItalic.otf */,
-				FF3A3DEF1BFBBAC600ADC01A /* ChronicleSSm-Book.otf */,
-				FF3A3DF01BFBBAC600ADC01A /* ChronicleSSm-BookItalic.otf */,
-				FF3A3DF11BFBBAC600ADC01A /* ChronicleSSm-Light.otf */,
-				FF3A3DF21BFBBAC600ADC01A /* ChronicleSSm-LightItalic.otf */,
-				FF3A3DF31BFBBAC600ADC01A /* ChronicleSSm-Medium.otf */,
-				FF3A3DF41BFBBAC600ADC01A /* ChronicleSSm-MediumItalic.otf */,
-				FF3A3DF51BFBBAC600ADC01A /* GothamNarrow-Bold.otf */,
-				FF3A3DF61BFBBAC600ADC01A /* GothamNarrow-BoldItalic.otf */,
-				FF3A3DF71BFBBAC600ADC01A /* GothamNarrow-Book.otf */,
-				FF3A3DF81BFBBAC600ADC01A /* GothamNarrow-BookItalic.otf */,
-				FF3A3DF91BFBBAC600ADC01A /* GothamNarrow-Light.otf */,
-				FF3A3DFA1BFBBAC600ADC01A /* GothamNarrow-LightItalic.otf */,
-				FF3A3DFB1BFBBAC600ADC01A /* GothamNarrow-Medium.otf */,
-				FF3A3DFC1BFBBAC600ADC01A /* GothamNarrow-MediumItalic.otf */,
-				FF3A3DFD1BFBBAC600ADC01A /* WhitneySSm-Black-Bas.otf */,
-				FF3A3DFE1BFBBAC600ADC01A /* WhitneySSm-BlackItalic-Bas.otf */,
-				FF3A3DFF1BFBBAC600ADC01A /* WhitneySSm-Bold-Bas.otf */,
-				FF3A3E001BFBBAC600ADC01A /* WhitneySSm-BoldItalic-Bas.otf */,
-				FF3A3E011BFBBAC600ADC01A /* WhitneySSm-Book-Bas.otf */,
-				FF3A3E021BFBBAC600ADC01A /* WhitneySSm-BookItalic-Bas.otf */,
-				FF3A3E031BFBBAC600ADC01A /* WhitneySSm-Light-Bas.otf */,
-				FF3A3E041BFBBAC600ADC01A /* WhitneySSm-LightItalic-Bas.otf */,
-				FF3A3E051BFBBAC600ADC01A /* WhitneySSm-Medium-Bas.otf */,
-				FF3A3E061BFBBAC600ADC01A /* WhitneySSm-MediumItalic-Bas.otf */,
-				FF3A3E071BFBBAC600ADC01A /* WhitneySSm-Semibold-Bas.otf */,
-				FF3A3E081BFBBAC600ADC01A /* WhitneySSm-SemiboldItalic-Bas.otf */,
-			);
-			path = fonts;
-			sourceTree = "<group>";
-		};
 		17D669B62CE444260093C995 /* TestFlight */ = {
 			isa = PBXGroup;
 			children = (
@@ -2947,7 +2853,6 @@
 				430C4BBE15D7208000B9F63B /* FTUX */,
 				431B857815A132C500DCE497 /* js */,
 				431B857715A132BE00DCE497 /* css */,
-				1753696F1BE535CF00904D00 /* fonts */,
 				431B857615A132B600DCE497 /* Images */,
 				FFF1E4C717750BDD00BF59D3 /* Settings.bundle */,
 				17EE11C72B27FA0C00E7C0CC /* Settings.bundle */,
@@ -3492,6 +3397,7 @@
 				C0FFEE290000000000000002 /* ThemeObserver.swift */,
 				C0FFEE280000000000000002 /* ClassifierRegexMatcher.swift */,
 				C0FFEE260000000000000008 /* FeedRailView.swift */,
+				5F5E0A1B2C3D4E5F60710002 /* SystemFonts.swift */,
 				17BC56AF2BBF6C2200A30C41 /* StorySettings.swift */,
 				171B3E1D2D94C8080056DA9A /* Request.swift */,
 			);
@@ -4301,9 +4207,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F69E0E3ECAB22178CDF6F9A8 /* Localizable.strings */,
-				17BE1A5527A243CF003F528E /* WhitneySSm-Medium-Bas.otf in Resources */,
 				173CB31626BCE94A00BA872A /* Assets.xcassets in Resources */,
-				17BE1A5627A243CF003F528E /* WhitneySSm-Book-Bas.otf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4322,28 +4226,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				175790632930605500490924 /* ChronicleSSm-Book.otf in Resources */,
 				1757920D2930605500490924 /* Settings.bundle in Resources */,
-				175790642930605500490924 /* WhitneySSm-Book-Bas.otf in Resources */,
-				175790652930605500490924 /* ChronicleSSm-BookItalic.otf in Resources */,
-				175790662930605500490924 /* WhitneySSm-Medium-Bas.otf in Resources */,
 				17A0518E2C095E78000994E9 /* AuxInterface.storyboard in Resources */,
 				175790672930605500490924 /* icons8-stack-of-paper-100.png in Resources */,
 				17EE11C92B27FA0C00E7C0CC /* Settings.bundle in Resources */,
-				175790682930605500490924 /* WhitneySSm-MediumItalic-Bas.otf in Resources */,
-				175790692930605500490924 /* WhitneySSm-BookItalic-Bas.otf in Resources */,
-				048FD42520F0B0F1B288BD85 /* WhitneySSm-Bold-Bas.otf in Resources */,
-				42F2D056842954E165AF11D4 /* WhitneySSm-Light-Bas.otf in Resources */,
-				CA8D6B709B589FA0FBBE99EC /* WhitneySSm-Semibold-Bas.otf in Resources */,
 				1757906A2930605500490924 /* barbutton_sort_desc@3x.png in Resources */,
-				1757906B2930605500490924 /* ChronicleSSm-Medium.otf in Resources */,
-				1757906C2930605500490924 /* GothamNarrow-MediumItalic.otf in Resources */,
 				1757906D2930605500490924 /* content_preview_small.png in Resources */,
-				1757906E2930605500490924 /* ChronicleSSm-MediumItalic.otf in Resources */,
-				1757906F2930605500490924 /* GothamNarrow-Book.otf in Resources */,
 				175790702930605500490924 /* autoscroll_off@2x.png in Resources */,
-				175790712930605500490924 /* GothamNarrow-BookItalic.otf in Resources */,
-				175790722930605500490924 /* GothamNarrow-Medium.otf in Resources */,
 				175790732930605500490924 /* accessory_disclosure.png in Resources */,
 				175790742930605500490924 /* fitvid.js in Resources */,
 				17A5CA2DABABABABAB000001 /* mark.js in Resources */,
@@ -4756,9 +4645,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F04D4420E59FD0EDDF247B39 /* Localizable.strings */,
-				17654E3F2B02C08700F61B2B /* WhitneySSm-Medium-Bas.otf in Resources */,
 				17654E402B02C08700F61B2B /* Assets.xcassets in Resources */,
-				17654E412B02C08700F61B2B /* WhitneySSm-Book-Bas.otf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4766,25 +4653,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FF3A3E091BFBBB5100ADC01A /* ChronicleSSm-Book.otf in Resources */,
-				FF3A3E111BFBBB6B00ADC01A /* WhitneySSm-Book-Bas.otf in Resources */,
-				FF3A3E0A1BFBBB5400ADC01A /* ChronicleSSm-BookItalic.otf in Resources */,
-				FF3A3E131BFBBB6F00ADC01A /* WhitneySSm-Medium-Bas.otf in Resources */,
 				17E2AECC286556CC000FAB5B /* icons8-stack-of-paper-100.png in Resources */,
-				FF3A3E141BFBBB7100ADC01A /* WhitneySSm-MediumItalic-Bas.otf in Resources */,
-				FF3A3E121BFBBB6D00ADC01A /* WhitneySSm-BookItalic-Bas.otf in Resources */,
-				0847BD1B7E062D26904F8A1A /* WhitneySSm-Bold-Bas.otf in Resources */,
-				92C064451744C0BBB0A61C76 /* WhitneySSm-Light-Bas.otf in Resources */,
-				6C436EAD88A4329C4C43FB23 /* WhitneySSm-Semibold-Bas.otf in Resources */,
 				17BE5A771C5DDA8C0075F92C /* barbutton_sort_desc@3x.png in Resources */,
-				FF3A3E0B1BFBBB5900ADC01A /* ChronicleSSm-Medium.otf in Resources */,
-				FF3A3E101BFBBB6600ADC01A /* GothamNarrow-MediumItalic.otf in Resources */,
 				1749516F260ED640003E900B /* content_preview_small.png in Resources */,
-				FF3A3E0C1BFBBB5B00ADC01A /* ChronicleSSm-MediumItalic.otf in Resources */,
-				FF3A3E0D1BFBBB5E00ADC01A /* GothamNarrow-Book.otf in Resources */,
 				17AACFE822279A3C00DE6EA4 /* autoscroll_off@2x.png in Resources */,
-				FF3A3E0E1BFBBB6100ADC01A /* GothamNarrow-BookItalic.otf in Resources */,
-				FF3A3E0F1BFBBB6400ADC01A /* GothamNarrow-Medium.otf in Resources */,
 				17876BA41C99137B0055DD15 /* accessory_disclosure.png in Resources */,
 				FF265F12187B6D4F0080C332 /* fitvid.js in Resources */,
 				17A5CA2DABABABABAB000002 /* mark.js in Resources */,
@@ -5430,6 +5302,7 @@
 				C0FFEE290000000000000001 /* ThemeObserver.swift in Sources */,
 				C0FFEE280000000000000001 /* ClassifierRegexMatcher.swift in Sources */,
 				C0FFEE260000000000000007 /* FeedRailView.swift in Sources */,
+				5F5E0A1B2C3D4E5F60710001 /* SystemFonts.swift in Sources */,
 				175792B42930605500490924 /* NBLoadingCell.m in Sources */,
 				175792B62930605500490924 /* StoriesCollection.m in Sources */,
 				17A0518B2C095B20000994E9 /* AuxSceneDelegate.swift in Sources */,
@@ -5656,6 +5529,7 @@
 				C0FFEE290000000000000000 /* ThemeObserver.swift in Sources */,
 				C0FFEE280000000000000000 /* ClassifierRegexMatcher.swift in Sources */,
 				C0FFEE260000000000000006 /* FeedRailView.swift in Sources */,
+				5F5E0A1B2C3D4E5F60710000 /* SystemFonts.swift in Sources */,
 				PREF5V1EW5W1FT000000001 /* PreferencesView.swift in Sources */,
 				B12AE3800164B6D90CAB9988 /* NBLocalization.swift in Sources */,
 				KBSH0RTC5W1FT000000000 /* KeyboardShortcutsView.swift in Sources */,
@@ -5988,7 +5862,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -6041,7 +5915,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -6090,7 +5964,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Share Extension/Share Extension.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -6146,7 +6020,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Share Extension/Share Extension.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -6186,7 +6060,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -6250,7 +6124,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -6322,7 +6196,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -6375,7 +6249,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -6413,7 +6287,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = YES;
@@ -6466,7 +6340,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = YES;
@@ -6529,7 +6403,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = QFXTY46FMX;
 				ENABLE_APP_SANDBOX = YES;
@@ -6589,7 +6463,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = QFXTY46FMX;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -6648,7 +6522,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = QFXTY46FMX;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -6705,7 +6579,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = QFXTY46FMX;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;

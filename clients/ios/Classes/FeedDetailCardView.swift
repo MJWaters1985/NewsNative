@@ -306,7 +306,7 @@ struct CardView: View {
                 }
 
                 Text(title)
-                    .font(Font.custom("WhitneySSm-Medium", size: 11, relativeTo: .caption2))
+                    .font(Font.nbSystem(size: 11, weight: .medium, relativeTo: .caption2))
                     .lineLimit(2)
                     .multilineTextAlignment(.center)
             }
@@ -507,7 +507,7 @@ struct CardContentView: View {
                         .padding(.leading, cache.settings.spacing == .compact ? 20 : 24)
                     
                     Text(feed.name)
-                        .font(font(named: "WhitneySSm-Medium", size: 12))
+                        .font(font(size: 12, weight: .medium))
                         .lineLimit(1)
                         .foregroundColor(feedColor)
                 }
@@ -542,7 +542,7 @@ struct CardContentView: View {
                         }
                         
                         Text(story.title)
-                            .font(font(named: "WhitneySSm-Medium", size: 16).bold())
+                            .font(font(size: 16, weight: .medium).bold())
                             .foregroundColor(titleColor)
                             .lineLimit(titleLimit)
                             .truncationMode(.tail)
@@ -551,7 +551,7 @@ struct CardContentView: View {
                             Spacer()
                             
                             Text(story.dateAndAuthor)
-                                .font(font(named: "WhitneySSm-Medium", size: 12))
+                                .font(font(size: 12, weight: .medium))
                                 .foregroundColor(dateAndAuthorColor)
                                 .padding([.top, .leading, .trailing], 5)
                         }
@@ -560,7 +560,7 @@ struct CardContentView: View {
                     
                     if cache.isGrid || cache.settings.content != .title {
                         Text(content)
-                            .font(font(named: "WhitneySSm-Book", size: 14))
+                            .font(font(size: 14, weight: .regular))
                             .foregroundColor(contentColor)
                             .lineLimit(contentLimit)
                             .truncationMode(.tail)
@@ -572,7 +572,7 @@ struct CardContentView: View {
                         Spacer()
                         
                         Text(story.dateAndAuthor)
-                            .font(font(named: "WhitneySSm-Medium", size: 12))
+                            .font(font(size: 12, weight: .medium))
                             .foregroundColor(dateAndAuthorColor)
                             .padding(.top, 5)
                     }
@@ -596,8 +596,8 @@ struct CardContentView: View {
         }
     }
     
-    func font(named: String, size: CGFloat) -> Font {
-        return Font.custom(named, size: size + cache.settings.fontSize.offset, relativeTo: .caption)
+    func font(size: CGFloat, weight: Font.Weight) -> Font {
+        return Font.nbSystem(size: size + cache.settings.fontSize.offset, weight: weight, relativeTo: .caption)
     }
     
     var titleLimit: Int {

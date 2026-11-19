@@ -38,7 +38,7 @@ class SyncNotifierView: UIView {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont(name: "WhitneySSm-Book", size: 13) ?? .systemFont(ofSize: 13)
+        label.font = UIFont.systemFont(ofSize: 13, weight: .regular)
         label.textColor = .white
         label.layer.shadowColor = UIColor.black.cgColor
         label.layer.shadowOffset = CGSize(width: 0, height: -0.5)
@@ -110,7 +110,7 @@ class SyncNotifierView: UIView {
     // FeedsObjCViewController.m uses the navigation title's actual available space on iPad.
     weak var accountNameLabel: UILabel? {
         didSet {
-            titleLabel.font = UIFont(name: "WhitneySSm-Book", size: accountNameLabel == nil ? 13 : 11)
+            titleLabel.font = UIFont.systemFont(ofSize: accountNameLabel == nil ? 13 : 11, weight: .regular)
             activityIndicator.transform = accountNameLabel == nil ? .identity : CGAffineTransform(scaleX: 0.75, y: 0.75)
             layer.cornerRadius = pillHeight / 2
             updateFrameInSuperview()

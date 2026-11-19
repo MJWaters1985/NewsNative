@@ -15,8 +15,8 @@
     if ((self = [super initWithStyle:style reuseIdentifier:reuseIdentifier])) {
         // Initialization code
         self.tintColor = UIColorFromRGB(0x707070);
-        self.textLabel.font = [UIFont fontWithName:@"WhitneySSm-Medium" size:15.0];
-        self.detailTextLabel.font = [UIFont fontWithName:@"WhitneySSm-Book" size:14.0];
+        self.textLabel.font = [UIFont systemFontOfSize:15.0 weight:UIFontWeightMedium];
+        self.detailTextLabel.font = [UIFont systemFontOfSize:14.0 weight:UIFontWeightRegular];
         [self setSeparatorInset:UIEdgeInsetsMake(0, 38, 0, 0)];
         UIView *background = [[UIView alloc] init];
         [background setBackgroundColor:UIColorFromRGB(0xFFFFFF)];

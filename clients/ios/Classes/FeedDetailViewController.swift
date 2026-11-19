@@ -54,7 +54,7 @@ import QuartzCore
         capsuleView.addSubview(targetIconView)
 
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        titleLabel.font = UIFont(name: "WhitneySSm-Medium", size: 16.5) ?? .systemFont(ofSize: 16.5, weight: .semibold)
+        titleLabel.font = UIFont.systemFont(ofSize: 16.5, weight: .medium)
         titleLabel.numberOfLines = 1
         titleLabel.lineBreakMode = .byTruncatingTail
         capsuleView.addSubview(titleLabel)

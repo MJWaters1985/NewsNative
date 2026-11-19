@@ -497,11 +497,11 @@ static UIFont *indicatorFont = nil;
     
     if (cell.isMultiFeedView) {
         if (cell.isRead) {
-            font = [UIFont fontWithName:@"WhitneySSm-Book" size:fontDescriptor.pointSize];
+            font = [UIFont systemFontOfSize:fontDescriptor.pointSize weight:UIFontWeightRegular];
             textColor = UIColorFromLightSepiaMediumDarkRGB(0x808080, 0x808080, 0xB0B0B0, 0x707070);
         } else {
             UIFontDescriptor *boldFontDescriptor = [fontDescriptor fontDescriptorWithSymbolicTraits: UIFontDescriptorTraitBold];
-            font = [UIFont fontWithName:@"WhitneySSm-Medium" size:boldFontDescriptor.pointSize];
+            font = [UIFont systemFontOfSize:boldFontDescriptor.pointSize weight:UIFontWeightMedium];
             textColor = UIColorFromLightSepiaMediumDarkRGB(0x606060, 0x606060, 0xD0D0D0, 0x909090);
         }
         if (isHighlighted) {
@@ -527,7 +527,7 @@ static UIFont *indicatorFont = nil;
     
     // story title
     UIFontDescriptor *boldFontDescriptor = [fontDescriptor fontDescriptorWithSymbolicTraits: UIFontDescriptorTraitBold];
-    font = [UIFont fontWithName:@"WhitneySSm-Medium" size:boldFontDescriptor.pointSize + 1];
+    font = [UIFont systemFontOfSize:boldFontDescriptor.pointSize + 1 weight:UIFontWeightMedium];
     if (cell.isRead) {
         textColor = UIColorFromLightSepiaMediumDarkRGB(0x585858, 0x585858, 0x989898, 0x888888);
     } else {
@@ -588,10 +588,10 @@ static UIFont *indicatorFont = nil;
     
     if (cell.isRead) {
         textColor = UIColorFromLightSepiaMediumDarkRGB(0xB8B8B8, 0xB8B8B8, 0xA0A0A0, 0x707070);
-        font = [UIFont fontWithName:@"WhitneySSm-Book" size:fontDescriptor.pointSize - 1];
+        font = [UIFont systemFontOfSize:fontDescriptor.pointSize - 1 weight:UIFontWeightRegular];
     } else {
         textColor = UIColorFromLightSepiaMediumDarkRGB(0x404040, 0x404040, 0xC0C0C0, 0xB0B0B0);
-        font = [UIFont fontWithName:@"WhitneySSm-Book" size:fontDescriptor.pointSize - 1];
+        font = [UIFont systemFontOfSize:fontDescriptor.pointSize - 1 weight:UIFontWeightRegular];
     }
     if (isHighlighted) {
         if (cell.isRead) {
@@ -628,9 +628,9 @@ static UIFont *indicatorFont = nil;
     int storyAuthorDateY = r.size.height - 18 - comfortMargin;
     
 #if TARGET_OS_MACCATALYST
-    font = [UIFont fontWithName:@"WhitneySSm-Book" size:11];
+    font = [UIFont systemFontOfSize:11 weight:UIFontWeightRegular];
 #else
-    font = [UIFont fontWithName:@"WhitneySSm-Medium" size:11];
+    font = [UIFont systemFontOfSize:11 weight:UIFontWeightMedium];
 #endif
     // Story author and date
     NSString *date = cell.storyDate ?: [Utilities formatShortDateFromTimestamp:cell.storyTimestamp];

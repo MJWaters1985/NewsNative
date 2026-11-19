@@ -26,7 +26,7 @@ struct FeedDetailDashboardView: View {
                 VStack(alignment: .center) {
                     Text(NBLocalization.text("No Story Lists"))
                         .foregroundColor(.secondary)
-                        .font(.custom("WhitneySSm-Medium", size: 24, relativeTo: .body))
+                        .font(Font.nbSystem(size: 24, weight: .medium, relativeTo: .body))
                         .frame(minHeight: 300)
                     
                     Button {

@@ -299,7 +299,7 @@ import ObjectiveC.runtime
         let block: @convention(block) (FeedDetailTableCellView, CGRect, CGRect, UIFontDescriptor,
                                       NSMutableParagraphStyle, CGFloat, CGFloat, Bool) -> Void = { view, bounds, rect, descriptor, style, margin, river, _ in
             let cell = view.cell!
-            let titleFont = UIFont(name: "WhitneySSm-Medium", size: descriptor.pointSize + 1)!
+            let titleFont = UIFont.systemFont(ofSize: descriptor.pointSize + 1, weight: .medium)
             var titleRows: CGFloat = cell.isShort ? 1.5 : 4
             if !cell.isShort && cell.textSize.rawValue >= 2 {
                 titleRows = min((bounds.height - 24) / titleFont.pointSize - 2, 4)
@@ -311,7 +311,7 @@ import ObjectiveC.runtime
             var contentSize = CGSize.zero
             var gap: CGFloat = 0
             if let content = cell.storyContent, !content.isEmpty {
-                let font = UIFont(name: "WhitneySSm-Book", size: descriptor.pointSize - 1)!
+                let font = UIFont.systemFont(ofSize: descriptor.pointSize - 1, weight: .regular)
                 var rows: CGFloat = cell.isShort ? 1.5 : 3
                 if !cell.isShort && cell.textSize.rawValue >= 2 {
                     rows = max(3, (bounds.height - 30 - margin - (14 + river + titleSize.height)) / font.pointSize)

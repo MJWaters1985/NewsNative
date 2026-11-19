@@ -847,6 +847,21 @@ final class AppDelegateHelperTests: XCTestCase {
         XCTAssertNil(userValue("default_mark_read_filter"))
     }
 
+    func test_upgradeStoryFontStyle_movesBundledFontsToTheirSystemReplacements() {
+        // AppDelegateHelperTests.swift: a saved Gotham Narrow, Chronicle or Whitney story font would otherwise name a
+        // font the app no longer bundles, and the reader would fall back to the browser's default face.
+        let suite = "AppDelegateHelperTests.storyFont." + UUID().uuidString
+        let fontDefaults = UserDefaults(suiteName: suite)!
+        defer { fontDefaults.removePersistentDomain(forName: suite) }
+        let expected = ["GothamNarrow-Book": "NB-avenirnextcondensed", "ChronicleSSm-Book": "NB-newyork",
+                        "WhitneySSm-Book": "NB-sanfrancisco", "NB-georgia": "NB-georgia"]
+        for (saved, replacement) in expected {
+            fontDefaults.set(saved, forKey: "fontStyle")
+            AppDelegateHelper.shared.upgradeStoryFontStyle(defaults: fontDefaults)
+            XCTAssertEqual(fontDefaults.string(forKey: "fontStyle"), replacement, saved)
+        }
+    }
+
     func test_applyReleaseUpgrade_readsPreviousReleaseBeforeOverwriting() {
         // Simulate a device that last ran an old build (release 120) and is
         // now launching build 328. The migration must see 120 and run.

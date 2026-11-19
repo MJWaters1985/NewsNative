@@ -46,20 +46,11 @@
 .NB-helvetica {
     font-family: "Helvetica";
 }
-
-@font-face {
-    font-family: "ChronicleSSm-Book";
-    src: url("ChronicleSSm-Book.otf");
+.NB-avenirnextcondensed {
+    font-family: "Avenir Next Condensed";
 }
-
-@font-face {
-    font-family: "GothamNarrow-Book";
-    src: url("GothamNarrow-Book.otf");
-}
-
-@font-face {
-    font-family: "WhitneySSm-Book";
-    src: url("WhitneySSm-Book-Bas.otf");
+.NB-newyork {
+    font-family: ui-serif, "New York", serif;
 }
 
 /* Line spacing */

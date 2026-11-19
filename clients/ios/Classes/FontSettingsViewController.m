@@ -96,15 +96,14 @@
     // Leave commented out for future use:
 //    [self debugOutputFontNames];
     
-    // Available fonts, in alphabetic order.  Remember to add bundled font filenames to the Info.plist.
+    // Available fonts, in alphabetic order. All are system fonts; storyDetailView.css names each style class.
     [self addBuiltInFontWithName:@"Avenir-Medium" styleClass:@"NB-avenir" displayName:nil];
-    [self addBundledFontWithName:@"ChronicleSSm-Book" styleClass:@"ChronicleSSm-Book" displayName:@"Chronicle"];
+    [self addBuiltInFontWithName:@"AvenirNextCondensed-Regular" styleClass:@"NB-avenirnextcondensed" displayName:@"Avenir Next Condensed"];
     [self addBuiltInFontWithName:@"Georgia" styleClass:@"NB-georgia" displayName:nil];
-    [self addBundledFontWithName:@"GothamNarrow-Book" styleClass:@"GothamNarrow-Book" displayName:nil];
     [self addBuiltInFontWithName:@"Helvetica" styleClass:@"NB-helvetica" displayName:nil];
+    [self addBuiltInFontWithName:@"NewYork" styleClass:@"NB-newyork" displayName:@"New York"];
     [self addBuiltInFontWithName:@"Palatino-Roman" styleClass:@"NB-palatino" displayName:nil];
-    [self addBundledFontWithName:@"SanFrancisco" styleClass:@"NB-sanfrancisco" displayName:@"San Francisco"];
-    [self addBundledFontWithName:@"WhitneySSm-Book" styleClass:@"WhitneySSm-Book" displayName:@"Whitney"];
+    [self addBuiltInFontWithName:@"SanFrancisco" styleClass:@"NB-sanfrancisco" displayName:@"San Francisco"];
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
@@ -196,6 +195,9 @@
     UIFont *font = [UIFont fontWithName:fontName size:16.0];
     if ([fontName isEqualToString:@"SanFrancisco"]) {
         font = [UIFont systemFontOfSize:16.0 weight:UIFontWeightRegular];
+    } else if ([fontName isEqualToString:@"NewYork"]) {
+        UIFontDescriptor *serif = [[UIFont systemFontOfSize:16.0].fontDescriptor fontDescriptorWithDesign:UIFontDescriptorSystemDesignSerif];
+        font = serif ? [UIFont fontWithDescriptor:serif size:16.0] : nil;
     }
     
     if (font) {
@@ -206,10 +208,6 @@
                                                                     attributes:@{NSFontAttributeName : font}];
         [self.fonts addObject:@{@"name" : attrb, @"style" : styleClass}];
     }
-}
-
-- (void)addBundledFontWithName:(NSString *)fontName styleClass:(NSString *)styleClass displayName:(NSString *)displayName {
-    [self addBuiltInFontWithName:fontName styleClass:styleClass displayName:displayName];
 }
 
 - (IBAction)changeFontSize:(id)sender {
@@ -366,7 +364,7 @@
     } else if (adjustedRow == 7) {
         NSString *fontStyle = [[NSUserDefaults standardUserDefaults] stringForKey:@"fontStyle"];
         if (!fontStyle) {
-            fontStyle = @"GothamNarrow-Book";
+            fontStyle = @"NB-avenirnextcondensed";
         }
         NSUInteger idx = [self.fonts indexOfObjectPassingTest:^BOOL(NSDictionary *obj, NSUInteger idx, BOOL * _Nonnull stop) {
             return [obj[@"style"] isEqualToString:fontStyle];
@@ -524,7 +522,7 @@
 #if !TARGET_OS_MACCATALYST
     self.fontSizeSegment.backgroundColor = UIColorFromRGB(0xeeeeee);
 #endif
-    [self.fontSizeSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"WhitneySSm-Medium" size:12.0f]} forState:UIControlStateNormal];
+    [self.fontSizeSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:12.0f weight:UIFontWeightMedium]} forState:UIControlStateNormal];
     [self.fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:0];
     [self.fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:1];
     [self.fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:2];
@@ -577,7 +575,7 @@
 #if !TARGET_OS_MACCATALYST
     self.fullscreenSegment.backgroundColor = UIColorFromRGB(0xeeeeee);
 #endif
-    [self.fullscreenSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"WhitneySSm-Medium" size:12.0f]} forState:UIControlStateNormal];
+    [self.fullscreenSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:12.0f weight:UIFontWeightMedium]} forState:UIControlStateNormal];
     [self.fullscreenSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:0];
     [self.fullscreenSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:1];
     
@@ -602,7 +600,7 @@
 #if !TARGET_OS_MACCATALYST
     self.autoscrollSegment.backgroundColor = UIColorFromRGB(0xeeeeee);
 #endif
-    [self.autoscrollSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"WhitneySSm-Medium" size:12.0f]} forState:UIControlStateNormal];
+    [self.autoscrollSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:12.0f weight:UIFontWeightMedium]} forState:UIControlStateNormal];
     [self.autoscrollSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:0];
     [self.autoscrollSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:1];
     

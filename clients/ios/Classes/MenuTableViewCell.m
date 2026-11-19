@@ -12,7 +12,7 @@
 
 + (UIFont *)menuFont {
     return [[UIFontMetrics metricsForTextStyle:UIFontTextStyleBody] scaledFontForFont:
-            [UIFont fontWithName:@"WhitneySSm-Medium" size:16] ?: [UIFont systemFontOfSize:16]];
+            [UIFont systemFontOfSize:16 weight:UIFontWeightMedium]];
 }
 
 + (UIColor *)menuBackgroundColor {

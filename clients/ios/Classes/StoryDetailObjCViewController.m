@@ -606,7 +606,7 @@
     
     fontStyleClass = [userPreferences stringForKey:@"fontStyle"];
     if (!fontStyleClass) {
-        fontStyleClass = @"GothamNarrow-Book";
+        fontStyleClass = @"NB-avenirnextcondensed";
     }
     
     fontSizeClass = [fontSizeClass stringByAppendingString:[userPreferences stringForKey:@"story_font_size"]];
@@ -1183,26 +1183,12 @@
 }
 
 - (NSString *)fontWarmupHTML {
-    static NSString *html;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        NSBundle *bundle = NSBundle.mainBundle;
-        NSString *css = [StoryDetailAssetCache.shared embeddedMainCSSWithLoader:^NSString *(NSString *source) {
-            return [self embedResourcesInCSS:source bundle:bundle];
-        }];
-        NSRegularExpression *fontFaces = [NSRegularExpression regularExpressionWithPattern:@"@font-face\\s*\\{[^}]+\\}" options:0 error:nil];
-        NSMutableString *fonts = [NSMutableString string];
-        for (NSTextCheckingResult *match in [fontFaces matchesInString:css ?: @"" options:0 range:NSMakeRange(0, css.length)]) {
-            [fonts appendString:[css substringWithRange:match.range]];
-        }
-        // StoryDetailObjCViewController.m warms the exact local font bytes without requesting an article or its images.
-        html = [NSString stringWithFormat:@"<!DOCTYPE html><html><head><style>%@</style></head><body>"
-                "<span style=\"font-family:ChronicleSSm-Book;font-size:1px\">Aa0</span>"
-                "<span style=\"font-family:GothamNarrow-Book;font-size:1px\">Aa0</span>"
-                "<span style=\"font-family:WhitneySSm-Book;font-size:1px\">Aa0</span>"
-                "</body></html>", fonts];
-    });
-    return html;
+    // StoryDetailObjCViewController.m warms the system story fonts (storyDetailView.css) without requesting an article or its images.
+    return @"<!DOCTYPE html><html><head></head><body>"
+            "<span style=\"font-family:ui-serif,'New York',serif;font-size:1px\">Aa0</span>"
+            "<span style=\"font-family:'Avenir Next Condensed';font-size:1px\">Aa0</span>"
+            "<span style=\"font-family:-apple-system;font-size:1px\">Aa0</span>"
+            "</body></html>";
 }
 
 - (NSInteger)storyContentWidth {

@@ -57,7 +57,7 @@ static UIFont *indicatorFont = nil;
     UIColor *textColor;
     UIFont *font;
     
-    font = [UIFont fontWithName:@"WhitneySSm-Medium" size:12];
+    font = [UIFont systemFontOfSize:12 weight:UIFontWeightMedium];
     textColor = UIColorFromRGB(0x606060);
 
     NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];

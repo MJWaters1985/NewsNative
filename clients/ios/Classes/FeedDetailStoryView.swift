@@ -59,7 +59,7 @@ struct StoryHeaderView: View {
                     .padding()
             }
         }
-        .font(.custom("WhitneySSm-Medium", size: 14, relativeTo: .body))
+        .font(Font.nbSystem(size: 14, weight: .medium, relativeTo: .body))
         .foregroundColor(Color.themed([0x686868, 0xA0A0A0]))
         .frame(height: 50)
         .clipShape(RoundedRectangle(cornerRadius: 10))

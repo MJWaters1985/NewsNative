@@ -21,7 +21,7 @@ import XCTest
         let persisted = UserDefaults.standard.persistentDomain(forName: bundleID) ?? [:]
         for key in preferenceKeys {
             preferences[key] = persisted[key]
-            UserDefaults.standard.set(key == "fontStyle" ? "GothamNarrow-Book" : "medium", forKey: key)
+            UserDefaults.standard.set(key == "fontStyle" ? "NB-avenirnextcondensed" : "medium", forKey: key)
         }
     }
 
@@ -145,15 +145,14 @@ import XCTest
         fixtureWindows.removeAllObjects()
     }
 
-    func test_bootstrapPreparesBundledFontsWithoutStoryOrRemoteResources() throws {
+    func test_bootstrapPreparesStoryFontsWithoutStoryOrRemoteResources() throws {
         let fixture = makeFixture()
         fixture.page.perform(NSSelectorFromString("clearWebView"))
         let html = try XCTUnwrap(fixture.web.loads.last?.html)
 
-        for family in ["ChronicleSSm-Book", "GothamNarrow-Book", "WhitneySSm-Book"] {
-            XCTAssertTrue(html.contains(family))
+        for family in ["New York", "Avenir Next Condensed", "-apple-system"] {
+            XCTAssertTrue(html.contains(family), family)
         }
-        XCTAssertTrue(html.contains("data:font/otf;base64,"))
         XCTAssertFalse(html.contains("Fixture article"))
         XCTAssertFalse(html.contains("<img"))
         XCTAssertFalse(html.contains("https://"))
@@ -187,7 +186,8 @@ import XCTest
         await drainMainQueue()
 
         XCTAssertEqual(fixture.web.loads.count, 1)
-        XCTAssertTrue(fixture.web.loads.first?.html.contains("data:font/otf;base64,") == true)
+        XCTAssertTrue(fixture.web.loads.first?.html.contains("Avenir Next Condensed") == true,
+                      "The replacement process warms the story fonts first")
         XCTAssertFalse(fixture.web.loads.first?.html.contains("Fixture article") == true)
         fixture.page.webView(fixture.web, didFinish: try XCTUnwrap(fixture.web.loads.first?.navigation))
         await drainMainQueue()

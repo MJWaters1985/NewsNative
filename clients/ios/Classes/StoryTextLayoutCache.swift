@@ -38,8 +38,8 @@ import UIKit
         self.preview = preview.copy() as! NSString
         self.contentWidth = contentWidth
         self.boundsHeight = boundsHeight
-        titleFont = UIFont(name: "WhitneySSm-Medium", size: fontPointSize + 1)!
-        previewFont = UIFont(name: "WhitneySSm-Book", size: fontPointSize - 1)!
+        titleFont = UIFont.systemFont(ofSize: fontPointSize + 1, weight: .medium)
+        previewFont = UIFont.systemFont(ofSize: fontPointSize - 1, weight: .regular)
         self.textSize = textSize
         self.shortTitles = shortTitles
         self.river = river

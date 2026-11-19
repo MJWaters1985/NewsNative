@@ -265,7 +265,7 @@ static NSDictionary *NBUserProfilePreferencesDictionary(NSDictionary *userProfil
     self.feedTitlesTable.tableHeaderView = searchContainerView;
     self.feedTitlesTable.accessibilityIdentifier = @"feeds-list";
     
-    userLabelFont = [UIFont fontWithName:@"WhitneySSm-Medium" size:15.0];
+    userLabelFont = [UIFont systemFontOfSize:15.0 weight:UIFontWeightMedium];
     
     imageCache = [[NSCache alloc] init];
     [imageCache setDelegate:self];
@@ -2805,7 +2805,7 @@ static NSDictionary *NBUserProfilePreferencesDictionary(NSDictionary *userProfil
     }
     
     UIFontDescriptor *fontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
-    UIFont *font = [UIFont fontWithName:@"WhitneySSm-Medium" size:fontDescriptor.pointSize];
+    UIFont *font = [UIFont systemFontOfSize:fontDescriptor.pointSize weight:UIFontWeightMedium];
     NSString *spacing = [[NSUserDefaults standardUserDefaults] objectForKey:@"feed_list_spacing"];
     NSInteger offset = [spacing isEqualToString:@"compact"] ? 6 : 0;
     
@@ -2939,7 +2939,7 @@ static NSDictionary *NBUserProfilePreferencesDictionary(NSDictionary *userProfil
 - (UIView *)tableView:(UITableView *)tableView 
             viewForHeaderInSection:(NSInteger)section {
     UIFontDescriptor *fontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
-    UIFont *font = [UIFont fontWithName:@"WhitneySSm-Medium" size:fontDescriptor.pointSize];
+    UIFont *font = [UIFont systemFontOfSize:fontDescriptor.pointSize weight:UIFontWeightMedium];
     NSInteger height = kFolderTitleHeight;
     
     CGRect rect = CGRectMake(0.0, 0.0, tableView.frame.size.width, height + font.pointSize*2);
@@ -3065,7 +3065,7 @@ heightForHeaderInSection:(NSInteger)section {
     }
     
     UIFontDescriptor *fontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
-    UIFont *font = [UIFont fontWithName:@"WhitneySSm-Medium" size:fontDescriptor.pointSize];
+    UIFont *font = [UIFont systemFontOfSize:fontDescriptor.pointSize weight:UIFontWeightMedium];
     NSInteger height = kFolderTitleHeight;
     
     return height + font.pointSize*2;
@@ -4496,7 +4496,7 @@ heightForHeaderInSection:(NSInteger)section {
     yellowIcon.hidden = YES;
     
     neutralCount = [[UILabel alloc] init];
-    neutralCount.font = [UIFont fontWithName:@"WhitneySSm-Book" size:12];
+    neutralCount.font = [UIFont systemFontOfSize:12 weight:UIFontWeightRegular];
     neutralCount.textColor = UIColorFromRGB(0x707070);
     neutralCount.backgroundColor = [UIColor clearColor];
     [self.userInfoView addSubview:neutralCount];
@@ -4508,7 +4508,7 @@ heightForHeaderInSection:(NSInteger)section {
     greenIcon.hidden = YES;
     
     positiveCount = [[UILabel alloc] init];
-    positiveCount.font = [UIFont fontWithName:@"WhitneySSm-Book" size:12];
+    positiveCount.font = [UIFont systemFontOfSize:12 weight:UIFontWeightRegular];
     positiveCount.textColor = UIColorFromRGB(0x707070);
     positiveCount.backgroundColor = [UIColor clearColor];
     [self.userInfoView addSubview:positiveCount];

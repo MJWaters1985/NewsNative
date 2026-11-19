@@ -46,7 +46,7 @@ class StoryTraverseBar: NSObject {
     // MARK: - Helpers
 
     private var buttonFont: UIFont {
-        UIFont(name: "WhitneySSm-Medium", size: 13) ?? .systemFont(ofSize: 13, weight: .medium)
+        UIFont.systemFont(ofSize: 13, weight: .medium)
     }
 
     private func sym(_ name: String, size: CGFloat = 13, weight: UIImage.SymbolWeight = .medium) -> UIImage? {

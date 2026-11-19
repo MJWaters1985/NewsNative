@@ -4769,7 +4769,7 @@ leadingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
                 goto finish_height_measurement;
             }
         }
-        UIFont *font = [UIFont fontWithName:@"WhitneySSm-Medium" size:fontDescriptor.pointSize + 1];
+        UIFont *font = [UIFont systemFontOfSize:fontDescriptor.pointSize + 1 weight:UIFontWeightMedium];
         if ([self isShortTitles] && self.textSize != FeedDetailTextSizeTitleOnly) {
             rowHeight = height + font.pointSize * 3.25;
         } else if (self.textSize != FeedDetailTextSizeTitleOnly) {

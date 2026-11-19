@@ -39,7 +39,7 @@
     
     titleView = [[UILabel alloc] init];
     titleView.textColor = UIColorFromRGB(0x303030);
-    titleView.font = [UIFont fontWithName:@"WhitneySSm-Medium" size:15.0];
+    titleView.font = [UIFont systemFontOfSize:15.0 weight:UIFontWeightMedium];
     titleView.text = [NBLocalization text:@"Loading..."];
     [titleView sizeToFit];
     titleView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
